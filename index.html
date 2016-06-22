@@ -10,15 +10,17 @@
 </head>
 <body ng-controller="GuitarFunction">
 	<div class="header">
-      <h1>Project Title</h1>
-      <p> Prompt Text </p>
+      <h1>{{pageData.promptTitle}}</h1><h2>{{pageData.promptTitle}}</h2>
+      <p>{{pageData.ideas[2].content}}</p>
     </div>
 
 	<div class="ideaPanel">
-		<div ng-repeat="item in guitarVariable" class = "ideaBox">
-			<p> {{item.name }}</p>
-			<p> {{item.time}} </p>
-			<p> {{item.content}} </p>
+		<div ng-repeat="item in pageData.ideas" class = "ideaBox">
+			<h1 id = "ideaName"> {{item.name }}</h1>
+			<div class = "contentBox">
+				<h2 id = "ideaContent"> {{item.content}} </h2>
+			</div>
+			<h1 id = "ideaTime"> {{item.time}} </h1>
 		</div>
 	</div>
 

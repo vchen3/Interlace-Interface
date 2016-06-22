@@ -20,32 +20,56 @@ html, body{
 .header h1{
 	color: green;
 }
-
-/*.header h2{
-	color: black;
-}*/
+.header h2{
+	color: blue;
+}
 
 .ideaPanel{
 	background-color: pink;
-	width: 85%;
+	width: 90%;
 	height: 100%;
 	margin: auto;
 	margin-top: 15px;
 	position: relative;
-	padding: 15px;
 }
 
 
 .ideaBox{
 	background-color: green;
 	height: 150px;
-	width: 150px;
-	overflow-x: scroll;
+	width: 180px;
 	margin: 10px;
 	padding: 15px;
+	float: left;
 }
 
-.ideaBox h1{
-	color: black;
+
+#ideaName{
+	color: blue;
+	font-size: 15px;
+	padding-bottom: 5px;
+	clear: both;
+	overflow-x: scroll;
+}
+
+#ideaTime{
+	color: blue;
+	font-size: 15px;
+	float: right;
+	padding-top: 5px;
+	overflow-x: scroll;
+}
+
+.contentBox{
+	background-color: yellow;
+	height: 80%;
+	width: 100%;
+	margin: auto;
+	clear: both;
+	overflow-y: scroll;
+}
+
+#ideaContent{
+	overflow-x: scroll;
 }
 

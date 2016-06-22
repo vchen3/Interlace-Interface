@@ -1,17 +1,25 @@
-[
+{
+	"promptTitle":"Space is Amazing",
+	"promptText":"Tell us about space",
+	"ideas":[
+
 		{
-			"name" 		 	: "Arnold",
-			"time"			: "June 21 4pm",
-			"content"		: "The sun is a star!"
+		"name":"Ethan", 
+		"time":"4pm",
+		"contentType":"text",
+		"content":"The sun is a star!"
 		},
 		{
-			"name" 		 	: "Carlos",
-			"time"			: "June 22 11am",
-			"content"		: "Pluto is not a planet"
+		"name":"Andrew",
+		"time":"2pm",
+		"contentType":"text",
+		"content":"Pluto is not a planet!"
 		},
 		{
-			"name" 		 	: "Arnold",
-			"time"			: "June 21 4pm",
-			"content"		: "The sun is a star!"
+		"name":"Jessie",
+		"time":"3pm",
+		"contentType":"text",
+		"content":"Saturn is made mostly of hydrogen."
 		}
-]
+	]
+}
