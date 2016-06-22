@@ -12,20 +12,31 @@ html, body{
 	background-color: lightblue;
 	width: 90%;
 	margin: auto;
-	height: 120px;
+	height: 160px;
 	position: relative;
 	margin-top: 15px;
 }
 
 .header h1{
 	color: green;
+	padding: 10px;
+	font-size: 28px;
 }
 .header h2{
 	color: blue;
+	padding: 10px;
+	font-size: 22px;
+}
+
+.header h3{
+	color: blue;
+	padding: 10px;
+	font-size: 16px;
+	float: right;
 }
 
 .ideaPanel{
-	background-color: pink;
+	background-color: silver;
 	width: 90%;
 	height: 100%;
 	margin: auto;
@@ -35,9 +46,9 @@ html, body{
 
 
 .ideaBox{
-	background-color: green;
-	height: 150px;
-	width: 180px;
+	background-color: lightblue;
+	height: 160px;
+	width: 190px;
 	margin: 10px;
 	padding: 15px;
 	float: left;
@@ -45,31 +56,38 @@ html, body{
 
 
 #ideaName{
-	color: blue;
-	font-size: 15px;
+	color: black;
+	font-size: 18px;
 	padding-bottom: 5px;
 	clear: both;
-	overflow-x: scroll;
+	size: fixed;
+	white-space: nowrap;
+	overflow-x: auto;
 }
 
 #ideaTime{
-	color: blue;
+	color: black;
 	font-size: 15px;
 	float: right;
 	padding-top: 5px;
-	overflow-x: scroll;
+	overflow-x: auto;
+	size: fixed;
+	white-space: nowrap;
 }
 
 .contentBox{
-	background-color: yellow;
+	background-color: white;
 	height: 80%;
 	width: 100%;
 	margin: auto;
 	clear: both;
-	overflow-y: scroll;
+	overflow-y: auto;
+	size: fixed;
 }
 
-#ideaContent{
-	overflow-x: scroll;
+#ideaText{
+	overflow-x: auto;
+	font-size: 15px;
+	line-height: 160%;
 }
 
