@@ -1,3 +1,12 @@
+<!--Jun22 Question
+How does this line of code work: 
+	<p>{{pageData.promptTitle="wow"}}</p> 
+Upon inserting, the "VIEW" changes, but JSON file is the same
+Refreshing the page keeps the view as "wow"
+
+CONCEPT: Store "likes" and "dislikes" here to be updated dynamically and value is constant when refreshing page
+-->
+
 <!doctype html>
 <html ng-app="myApp">
 <head>
@@ -14,11 +23,13 @@
       <h2>{{pageData.promptText}}</h2>
       <h3>{{pageData.teacherName}}</h3>
       <h3>{{pageData.date}}</h3>
+
     </div>
 
 	<div class="ideaPanel">
 		<div ng-repeat="item in pageData.ideas" class = "ideaBox">
 			<h1 id = "ideaName"> {{item.name}}</h1>
+			<p class = "likes" ng-click="plusOne($index)">+ {{ item.likes }} </p>
 
 			<div class = "contentBox" ng-if=item.contentType=="text">
 				<h2 id = "ideaText"> {{item.content}} </h2>
@@ -31,6 +42,7 @@
 			<h1 id = "ideaTime"> {{item.time}} </h1>
 		</div>
 	</div>
+
 
 
 </div>
