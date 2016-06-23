@@ -27,7 +27,7 @@ CONCEPT: Store "likes" and "dislikes" here to be updated dynamically and value i
     </div>
 
 	<div class="ideaPanel">
-		<div ng-repeat="item in pageData.ideas | orderObjectBy:'name'" class = "ideaBox">
+		<div ng-repeat="item in pageData.ideas | orderBy: 'name'" class = "ideaBox">
 			<h2 id = "ideaName"> {{item.name}}</h1>
 			<p class = "likes" ng-click="plusOne($index)">+ {{ item.likes }} </p>
 
