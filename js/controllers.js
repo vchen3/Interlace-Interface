@@ -10,14 +10,14 @@ app.controller("InterfaceController", ['$scope','$http', function($scope,$http)
 		$scope.plusOne = function(ideaName) { 
 			var ideasArray = $scope.pageData.ideas;
 			for (var i = 0; i<ideasArray.length; i++)
-				console.log(ideasArray[i]);
+				//console.log(ideasArray[i]);
 			{
-				var trimmedName = ideasArray[i].name.trim();
+				var idea = ideasArray[i];
+				var trimmedName = idea.name.trim();
 				//console.log(trimmedName);
 				var sameName =((trimmedName).localeCompare(ideaName))
-				//console.log(sameName);
 				if (sameName == 0){
-					//console.log(ideasArray[i]);
+					console.log(trimmedName);
 					ideasArray[i].likes += 1; 
 					console.log(ideasArray[i].likes);
 				}
