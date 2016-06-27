@@ -1,13 +1,4 @@
-<!--Jun22 Question
-How does this line of code work: 
-	<p>{{pageData.promptTitle="wow"}}</p> 
-Upon inserting, the "VIEW" changes, but JSON file is the same
-Refreshing the page keeps the view as "wow"
-
-CONCEPT: Store "likes" and "dislikes" here to be updated dynamically and value is constant when refreshing page
--->
-
-<!doctype html>
+<!DOCTYPE html>
 <html ng-app="myApp">
 <head>
 	<meta charset="UTF-8">
@@ -29,27 +20,107 @@ CONCEPT: Store "likes" and "dislikes" here to be updated dynamically and value i
       <h2>{{pageData.promptText}}</h2>
       <h3>{{pageData.teacherName}}</h3>
       <h3>{{pageData.date}}</h3>
-      <order-Time></order-Time>
+
+      <br>
+
+	<p>Order by</p>
+      <select ng-model="myVar">
+			<option value="name">Name
+			<option value="time">Time
+			<option value="other">Original View
+		</select>
     </div>
 
 	<div class="ideaPanel">
-		<div ng-repeat="item in pageData.ideas | orderBy: 'name'" class = "ideaBox">
-			<h2 id = "ideaName"> {{item.name}}</h1>
-			
-			<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
 
-			<!--Load textcontent -->
-			<div class = "contentBox" ng-if=item.contentType=="text">
-				<p id = "ideaText"> {{item.content}} </p>
+		<hr>
+			<div ng-switch="myVar">
+
+				<!-- When "name" is selected -->
+				<div ng-switch-when="name">
+					<div ng-repeat="item in pageData.ideas | orderBy: 'name'" class = "ideaBox">
+					<h2 id = "ideaName"> {{item.name}}</h2>
+					<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+
+					<!--Load textcontent -->
+					<div class = "contentBox" ng-if=item.contentType=="text">
+						<p id = "ideaText"> {{item.content}} </p>
+					</div>
+
+					<!--Load image content -->
+					<div class = "contentBox" ng-if=item.contentType=="image">
+						<img src={{item.content}} style="max-width:100%; max-height:100%">
+					</div>
+
+					<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
+
+					</div>
+				</div>
+
+				<!-- When "time" is selected -->
+				<div ng-switch-when="time">
+					<div ng-repeat="item in pageData.ideas | orderBy: 'time'" class = "ideaBox">
+					<h2 id = "ideaName"> {{item.name}}</h2>
+					<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+
+					<!--Load textcontent -->
+					<div class = "contentBox" ng-if=item.contentType=="text">
+						<p id = "ideaText"> {{item.content}} </p>
+					</div>
+
+					<!--Load image content -->
+					<div class = "contentBox" ng-if=item.contentType=="image">
+						<img src={{item.content}} style="max-width:100%; max-height:100%">
+					</div>
+
+					<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
+
+					</div>
+				</div>
+
+				<div ng-switch-when="other">
+					<div ng-repeat="item in pageData.ideas" class = "ideaBox">
+						<h2 id = "ideaName"> {{item.name}}</h2>
+						<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+
+						<!--Load textcontent -->
+						<div class = "contentBox" ng-if=item.contentType=="text">
+							<p id = "ideaText"> {{item.content}} </p>
+						</div>
+
+						<!--Load image content -->
+						<div class = "contentBox" ng-if=item.contentType=="image">
+							<img src={{item.content}} style="max-width:100%; max-height:100%">
+						</div>
+
+						<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
+
+					</div>
+				</div>
+
+				<!-- Default: Load as in JSON file -->
+				<div ng-switch-default>
+					<div ng-repeat="item in pageData.ideas" class = "ideaBox">
+						<h2 id = "ideaName"> {{item.name}}</h2>
+						<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+
+						<!--Load textcontent -->
+						<div class = "contentBox" ng-if=item.contentType=="text">
+							<p id = "ideaText"> {{item.content}} </p>
+						</div>
+
+						<!--Load image content -->
+						<div class = "contentBox" ng-if=item.contentType=="image">
+							<img src={{item.content}} style="max-width:100%; max-height:100%">
+						</div>
+
+						<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
+
+					</div>
+				</div>
 			</div>
+		<hr>
 
-			<!--Load image content -->
-			<div class = "contentBox" ng-if=item.contentType=="image">
-				<img src={{item.content}} style="max-width:100%; max-height:100%">
-			</div>
-
-			<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
-		</div>
 	</div>
 
 
