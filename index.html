@@ -13,7 +13,11 @@ CONCEPT: Store "likes" and "dislikes" here to be updated dynamically and value i
 	<meta charset="UTF-8">
 	<title>Interlace Interface</title>
 	<link rel="stylesheet" type="text/css" href="styles.css"></link>
+
 	<link href='http://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
 	<script src="lib/Angular/angular.min.js" type="text/javascript" ></script>
 	<script src="js/controllers.js" type="text/javascript" ></script>
 	<script src="js/script.js" type="text/javascript" ></script>
@@ -29,7 +33,7 @@ CONCEPT: Store "likes" and "dislikes" here to be updated dynamically and value i
     </div>
 
 	<div class="ideaPanel">
-		<div ng-repeat="item in pageData.ideas | orderBy: 'time'" class = "ideaBox">
+		<div ng-repeat="item in pageData.ideas | orderBy: 'name'" class = "ideaBox">
 			<h2 id = "ideaName"> {{item.name}}</h1>
 			
 			<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
