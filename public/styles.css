@@ -1,0 +1,118 @@
+* { 
+	padding:0px;
+	margin:0px;
+	font-family: 'Roboto';
+}
+
+html, body{
+	height:100%;
+	width: 100%;
+}
+
+.header{
+	background-color: lightblue;
+	width: 90%;
+	margin: auto;
+	height: 160px;
+	position: relative;
+	margin-top: 15px;
+}
+
+.header h1{
+	color: green;
+	padding: 10px;
+	font-size: 28px;
+}
+.header h2{
+	color: blue;
+	padding: 10px;
+	font-size: 22px;
+}
+
+.header h3{
+	color: blue;
+	padding: 10px;
+	font-size: 16px;
+	float: right;
+}
+
+.ideaPanel{
+	background-color: silver;
+	width: 90%;
+	height: 100%;
+	margin: auto;
+	margin-top: 15px;
+	position: relative;
+}
+
+.ideaBox{
+	background-color: lightblue;
+	height: 220px;
+	width: 190px;
+	margin: 10px;
+	padding: 15px;
+	float: left;
+	border: 1px solid black;
+}
+
+.contentBox{
+	background-color: white;
+	height: 70%;
+	width: 90%;
+	padding: 8px;
+	clear: both;
+	overflow-y: auto;
+	border: 0.5px solid black;
+}
+
+
+#ideaName{
+	color: black;
+	font-size: 18px;
+	padding-bottom: 5px;
+	clear: both;
+	size: fixed;
+	white-space: nowrap;
+	overflow-x: auto;
+}
+
+#ideaTime{
+	color: black;
+	font-size: 12px;
+	float: right;
+	padding-top: 5px;
+	overflow-x: auto;
+	size: fixed;
+	white-space: nowrap;
+}
+
+#ideaText{
+	overflow-x: auto;
+	font-size: 15px;
+	line-height: 160%;
+}
+
+
+.likes {
+	float: right;
+	display: inline-block;
+	background: green ;
+	cursor: pointer;
+	font-size: 13px;
+   	line-height: 20px;
+   	min-width: 20px;
+   	height: 20px;
+ 	text-align: center;
+}
+
+
+.chatBox{
+	background: pink;
+}
+
+form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+#messages { list-style-type: none; margin: 0; padding: 0; }
+#messages li { padding: 5px 10px; }
+#messages li:nth-child(odd) { background: #eee; }
