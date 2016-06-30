@@ -15,12 +15,16 @@
 </head>
 
 <body ng-controller="InterfaceController">
-<script src="/socket.io/socket.io.js"></script>
+<!--<script src="/socket.io/socket.io.js"></script>
 <script>
-	var socket = io.connect();
-</script>
+  var socket = io.connect();
+ 	console.log('here');
+  socket.on('chat message', function(msg){
+  	console.log('received');
+  	console.log(msg);
+  });
+</script>-->
 
-<!--
 <div class = "chatBox">
 		<ul id="messages"></ul>
 	    <form action="">
@@ -43,7 +47,7 @@
             $('#messages').append($('<li>').text(msg));
           });
       </script>
-	</div> -->
+	</div>
 
 	<div class="header">
       <h1>{{pageData.promptTitle}}</h1>
@@ -79,7 +83,7 @@
 
 					<!--Load image content -->
 					<div class = "contentBox" ng-if=item.contentType=="image">
-						<img src={{item.content}} style="max-width:100%; max-height:100%">
+						<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
 					</div>
 
 					<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
@@ -100,7 +104,7 @@
 
 					<!--Load image content -->
 					<div class = "contentBox" ng-if=item.contentType=="image">
-						<img src={{item.content}} style="max-width:100%; max-height:100%">
+						<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
 					</div>
 
 					<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
@@ -120,7 +124,7 @@
 
 						<!--Load image content -->
 						<div class = "contentBox" ng-if=item.contentType=="image">
-							<img src={{item.content}} style="max-width:100%; max-height:100%">
+							<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
 						</div>
 
 						<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
@@ -141,7 +145,7 @@
 
 						<!--Load image content -->
 						<div class = "contentBox" ng-if=item.contentType=="image">
-							<img src={{item.content}} style="max-width:100%; max-height:100%">
+							<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
 						</div>
 
 						<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
