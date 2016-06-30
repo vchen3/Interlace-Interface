@@ -1,14 +1,15 @@
 var express = require('express');
 var app = express();
+var http = require('http').Server(app);
+//var io = require('socket.io').listen(http);
+var io = require('socket.io')(http);
 var path = require('path');
 
-var http = require('http');
-http.Server(app);
-//var io = require('socket.io')(http);
-var io = require('socket.io').listen(http);
+
+var server = app.listen(1337);
 
 app.get('/', function(req, res){
-	console.log('Starting node app');
+	console.log("Starting node app");
   	res.sendFile(__dirname + '/index.html');
 });
 
