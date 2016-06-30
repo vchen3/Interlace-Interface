@@ -1,6 +1,6 @@
 var app = angular.module("myApp", []);
 
-console.log("starting up");
+console.log("starting angular app");
 
 app.controller("InterfaceController", ['$scope','$http', function($scope,$http)
 		{    
