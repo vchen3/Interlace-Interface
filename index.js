@@ -1,12 +1,12 @@
 var express = require('express');
+var http = require('http');
 var app = express();
-var http = require('http').Server(app);
+//var http = require('http').Server(app);
 //var io = require('socket.io').listen(http);
-var io = require('socket.io')(http);
 var path = require('path');
 
-
-var server = app.listen(1337);
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
 
 app.get('/', function(req, res){
 	console.log("Starting node app");
