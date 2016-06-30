@@ -1,0 +1,45 @@
+{
+	"promptTitle":"Around the World in Eighty Minutes",
+	"promptText":"World Geography",
+	"teacherName":"David Laxague",
+	"date":"June 22 2016",
+	"ideas":[
+
+		{
+		
+		"name":"Chris", 
+		"time":974638800,
+		"contentType":"text",
+		"content":"Greenland is the largest island in the world.",
+		"likes":0
+		},
+		{
+		"name":"David",
+		"time":840877200,
+		"contentType":"text",
+		"content":"Angel Falls, meaning 'waterfall of the deepest place' is a waterfall in Venezuela. It is the world's highest uninterrupted waterfall, with a height of 979 metres (3,212 ft) and a plunge of 807 metres (2,648 ft). ",
+		"likes":0
+		},
+		{
+		"name":"Albus PercivalWulfricBrianDumbledore",
+		"time":920314800,
+		"contentType":"text",
+		"content":"Saturn is not solid like Earth, but is instead a giant gas planet. It is made up of 94% hydrogen, 6% helium and small amounts of methane and ammonia. Hydrogen and helium are what most stars are made of. It is thought that there might be a molten, rocky core about the size of Earth deep within Saturn.",
+		"likes":0
+		},
+		{
+		"name":"Ethan",
+		"time":1466582755,
+		"contentType":"image",
+		"content":"img/mountain.jpg",
+		"likes":0
+		},
+		{
+		"name":"Ben",
+		"time":1467036606,
+		"contentType":"image",
+		"content":"img/grandcanyon.jpg",
+		"likes":0
+		}
+	]
+}

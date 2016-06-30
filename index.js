@@ -8,7 +8,10 @@ app.get('/', function(req, res){
   	res.sendFile(__dirname + '/index.html');
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
+app.use('/public', express.static(path.join(__dirname,'/js')));
+app.use('/js', express.static(path.join(__dirname,'/js')));
+app.use('/lib', express.static(path.join(__dirname,'/lib')));
 //app.use(express.static(path.join(__dirname, 'public/img')));
 //app.use(express.static(path.join(__dirname, 'lib')));
 //app.use(express.static(path.join(__dirname, 'js')));
