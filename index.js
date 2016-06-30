@@ -2,31 +2,28 @@ var express = require('express');
 var app = express();
 var path = require('path');
 
+var http = require('http');
+http.Server(app);
+//var io = require('socket.io')(http);
+var io = require('socket.io').listen(http);
+
 app.get('/', function(req, res){
-	//res.send('Hello World!');
 	console.log('Starting node app');
   	res.sendFile(__dirname + '/index.html');
 });
 
-app.use(express.static(path.join(__dirname, '/public')));
-app.use('/public', express.static(path.join(__dirname,'/js')));
-app.use('/js', express.static(path.join(__dirname,'/js')));
-app.use('/lib', express.static(path.join(__dirname,'/lib')));
-//app.use(express.static(path.join(__dirname, 'public/img')));
-//app.use(express.static(path.join(__dirname, 'lib')));
-//app.use(express.static(path.join(__dirname, 'js')));
+app.use(express.static(path.join(__dirname, '/public'))); //Add CSS
+app.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, data
+app.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angular and socket?
+//app.use('/node_modules', express.static(path.join(__dirname,'/node_modules'))); //Add socket?
 
-
-//app.use('/js', express.static(path.join(__dirname,'js')));
-//app.use(express.static('/js'));
-//app.use(express.static(__dirname + '/js'));
-//app.use('/static',express.static('js'));
-//app.use('/js');
-//app.get(express.static('js');
-
-//io.on('connection', function(socket){
-//  socket.on('chat message', function(msg){
-//    io.emit('chat message', msg);
+io.on('connection', function(socket){
+	console.log("io connected");
+});
+//	console.log("io server connected");
+//	socket.on('chat message', function(msg){
+//		io.emit('chat message', msg);
+//   		console.log(ms)g;
 //  });
 //});
 

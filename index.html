@@ -11,18 +11,24 @@
 
 	<script src="lib/Angular/angular.min.js" type="text/javascript" ></script>
 	<script src="js/controllers.js" type="text/javascript" ></script>
+	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 </head>
 
 <body ng-controller="InterfaceController">
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect();
+</script>
+
 <!--
-	<div class = "chatBox">
+<div class = "chatBox">
 		<ul id="messages"></ul>
 	    <form action="">
 	      <input id="sentMessage" autocomplete="off" /><button>Send</button>
 	    </form>
 
 	<script src="/socket.io/socket.io.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    
       <script>
         var socket = io.connect();
         $('form').submit(function(){
@@ -37,7 +43,7 @@
             $('#messages').append($('<li>').text(msg));
           });
       </script>
-	</div>-->
+	</div> -->
 
 	<div class="header">
       <h1>{{pageData.promptTitle}}</h1>
