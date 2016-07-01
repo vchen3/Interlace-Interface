@@ -39,11 +39,28 @@
           //$('#sentMessage').val(''); //Clears content in personal msg box
           //return false
         });
+
+        function plusOne(ideaName) {
+        	alert("In PlusOne, name = " + ideaName);
+			/*var ideasArray = $scope.pageData.ideas;
+			for (var i = 0; i<ideasArray.length; i++)
+				//console.log(ideasArray[i]);
+			{
+				var idea = ideasArray[i];
+				var trimmedName = idea.name.trim();
+				//console.log(trimmedName);
+				var sameName =((trimmedName).localeCompare(ideaName))
+				if (sameName == 0){
+					console.log(trimmedName);
+					ideasArray[i].likes += 1; 
+					console.log(ideasArray[i].likes);
+				}
+			}*/
+		};
           //socket.on('chat message', function(msg){
             //$('#messages').append($('<li>').text(msg));
           //});
       </script>
-	</div>-->
 
 	<div class="header">
       <h1>{{pageData.promptTitle}}</h1>
@@ -91,7 +108,9 @@
 				<div ng-switch-when="time">
 					<div ng-repeat="item in pageData.ideas | orderBy: 'time'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+					<!--<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+					<button type="button">CLICK{{item.likes}}</button>-->
+					<button ng-click="plusOne(item.name);">CLICK{{item.likes}}</button>
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
