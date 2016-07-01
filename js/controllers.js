@@ -23,6 +23,9 @@ app.controller("InterfaceController", ['$scope','$http', function($scope,$http)
 				}
 			}
 		};
+		//$scope.sayHi = function(){
+		//	alert('saying Hi');
+		//};
 	}]
 );
 
