@@ -16,51 +16,28 @@
 </head>
 
 <body ng-controller="InterfaceController">
-<!--<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io.connect();
- 	console.log('here');
-  socket.on('chat message', function(msg){
-  	console.log('received');
-  	console.log(msg);
-  });
-</script>
 
 <div class = "chatBox">
-		<ul id="messages"></ul>
-	    <form action="">
-	      <input id="sentMessage" autocomplete="off" /><button>Send</button>
-	    </form>-->
-    
+<ul id="messages"></ul>
+    <form action="">
+      <input id="sentMessage" autocomplete="off" /><button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
       <script>
         var socket = io.connect();
         $('form').submit(function(){
-          console.log($('.likes').val());
-          //$('#sentMessage').val(''); //Clears content in personal msg box
-          //return false
+          socket.emit('chatmessage', $('#sentMessage').val());
+          $('#sentMessage').val(''); //Clears content in personal msg box
+          return false
         });
-
-        function plusOne(ideaName) {
-        	alert("In PlusOne, name = " + ideaName);
-			/*var ideasArray = $scope.pageData.ideas;
-			for (var i = 0; i<ideasArray.length; i++)
-				//console.log(ideasArray[i]);
-			{
-				var idea = ideasArray[i];
-				var trimmedName = idea.name.trim();
-				//console.log(trimmedName);
-				var sameName =((trimmedName).localeCompare(ideaName))
-				if (sameName == 0){
-					console.log(trimmedName);
-					ideasArray[i].likes += 1; 
-					console.log(ideasArray[i].likes);
-				}
-			}*/
-		};
-          //socket.on('chat message', function(msg){
-            //$('#messages').append($('<li>').text(msg));
-          //});
+          socket.on('chatmessage', function(msg){
+            //alert('adding message ' + msg);
+            $('#messages').append($('<li>').text(msg));
+          });
       </script>
+</div>
 
 	<div class="header">
       <h1>{{pageData.promptTitle}}</h1>
@@ -88,6 +65,7 @@
 					<div ng-repeat="item in pageData.ideas | orderBy: 'name'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
 					<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
+					<!--<button ng-click="plusOne(item.name);">CLICK{{item.likes}}</button>-->
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
@@ -108,9 +86,7 @@
 				<div ng-switch-when="time">
 					<div ng-repeat="item in pageData.ideas | orderBy: 'time'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<!--<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
-					<button type="button">CLICK{{item.likes}}</button>-->
-					<button ng-click="plusOne(item.name);">CLICK{{item.likes}}</button>
+					<p class = "likes" ng-click="plusOne(item.name)">+ {{ item.likes }} </p>
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">

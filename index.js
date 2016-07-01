@@ -6,8 +6,7 @@ var path = require('path');
 //var io = require('socket.io');
 
 app.get('/', function(req, res){
-	console.log("Starting node app");
-	res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index.html');
 });
 
 app.use(express.static(path.join(__dirname, '/public'))); //Add CSS
@@ -15,10 +14,8 @@ app.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, da
 app.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angular and socket?
 
 io.on('connection', function(socket){
-	//console.log('io connected on A');
-	socket.on('chat message', function(msg){
-		io.emit('chat message', msg);
-		console.log(msg);
+	socket.on('chatmessage', function(msg){
+		io.emit('chatmessage', msg);
 	});
 });
 
