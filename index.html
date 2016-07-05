@@ -17,7 +17,7 @@
 
 <body ng-controller="InterfaceController">
 
-<!-- Chat Box --> 
+<!-- Chat Box -->
 <div class = "chatBox">
 <ul id="messages"></ul>
 	<h1>{{pageData.promptTitle}}</h1>
@@ -28,21 +28,18 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="js/controllers.js" type="text/javascript" ></script>
+    <!--<script src="js/services.js" type="text/javascript" ></script>-->
       <script>
 
-      //sayHi = function(){
-      	//alert({{pageData}});
-      //};
         var socket = io.connect();
         $('form').submit(function(){
-        	sayHi();
+        	//sayHi();
           	socket.emit('chatmessage', $('#sentMessage').val());
           	$('#sentMessage').val(''); //Clears content in personal msg box
           	return false
         });
           socket.on('chatmessage', function(msg){
-            //alert('adding message ' + msg);
-            $('#messages').append($('<li>').text(msg));
+           $('#messages').append($('<li>').text(msg));
           });
       </script>
 </div>

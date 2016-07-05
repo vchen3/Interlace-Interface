@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+//var socket = require(__dirname + '/socket.js');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
@@ -13,6 +14,8 @@ app.use(express.static(path.join(__dirname, '/public'))); //Add CSS
 app.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, data
 app.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angular and socket?
 
+//Changed Jul 5
+//io.sockets.on('connection', socket);
 io.on('connection', function(socket){
 	socket.on('chatmessage', function(msg){
 		io.emit('chatmessage', msg);
