@@ -20,8 +20,8 @@ io.on('connection', function(socket){
 	socket.on('chatmessage', function(msg){
 		io.emit('chatmessage', msg);
 	});
-	socket.on('like', function(ideaName){
-		io.emit('like', ideaName);
+	socket.on('like', function(sentData){
+		io.emit('like', sentData);
 	});
 });
 
