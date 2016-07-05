@@ -29,9 +29,15 @@ app.controller("InterfaceController", ['$scope','$http', 'socket', function($sco
 		}
 	};
 	socket.on('like', function(receivedIdea){
+		var ideasArray = $scope.pageData.ideas;
+		for (var i = 0; i<ideasArray.length; i++){
+			if ((ideasArray[i].ID) == (receivedIdea.ID)){
+				ideasArray[i].likes += 1; 
+			}
+		}
 		//alert(receivedIdea.name);
-		receivedIdea.likes += 1;
-		alert(receivedIdea.likes)
+		//receivedIdea.likes += 1;
+		//alert(receivedIdea.likes)
 		//console.log(receivedIdea);
 		//console.log(receivedIdea.likes);
 		//console.log(idea.likes);
