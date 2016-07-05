@@ -20,9 +20,15 @@ app.controller("InterfaceController", ['$scope','$http', 'socket', function($sco
 				//console.log(trimmedName);
 				var sameName =((trimmedName).localeCompare(ideaName))
 				if (sameName == 0){
-					console.log(trimmedName);
-					ideasArray[i].likes += 1; 
-					console.log(ideasArray[i].likes);
+					//console.log(trimmedName);
+					//idea.likes += 1; 
+					//console.log(ideasArray[i].likes);
+					socket.emit('like', ideaName);
+					socket.on('like', function(ideaName){
+						alert(ideaName);
+						//alert(ideasArray[i].likes);
+						//ideasArray[i].likes += 1; 
+					});
 				}
 			}
 		};
@@ -36,10 +42,10 @@ app.controller("InterfaceController", ['$scope','$http', 'socket', function($sco
 app.factory('socket', function ($rootScope) {
   console.log('in app factory');
   var socket = io.connect();
-  console.log(socket.connected);
+  setInterval(function(){ console.log(socket.connected); }, 3000);
   return {
     on: function (eventName, callback) {
-      console.log('general function called');
+      //console.log('general function called');
       socket.on(eventName, function () {  
         var args = arguments;
         $rootScope.$apply(function () {
