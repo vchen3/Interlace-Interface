@@ -96,7 +96,7 @@ html, body{
 .likes {
 	float: right;
 	display: inline-block;
-	background: green ;
+	background: lightgreen ;
 	cursor: pointer;
 	font-size: 13px;
    	line-height: 20px;
