@@ -1,5 +1,7 @@
 {
-		"ID": 1,
+	"ideas":[	
+		{
+		"ideaID": 1,
 		"promptTitle":"Around the World in Eighty Minutes",
 		"promptText":"World Geography",
 		"teacherName":"David Laxague",
@@ -11,7 +13,7 @@
 		"likes":0
 		},
 		{
-		"ID": 2,
+		"ideaID": 2,
 		"promptTitle":"Around the World in Eighty Minutes",
 		"promptText":"World Geography",
 		"teacherName":"David Laxague",
@@ -23,7 +25,7 @@
 		"likes":0
 		},
 		{
-		"ID": 3,
+		"ideaID": 3,
 		"promptTitle":"Around the World in Eighty Minutes",
 		"promptText":"World Geography",
 		"teacherName":"David Laxague",
@@ -35,7 +37,7 @@
 		"likes":0
 		},
 		{
-		"ID": 4,
+		"ideaID": 4,
 		"promptTitle":"Around the World in Eighty Minutes",
 		"promptText":"World Geography",
 		"teacherName":"David Laxague",
@@ -47,7 +49,7 @@
 		"likes":0
 		},
 		{
-		"ID": 5,
+		"ideaID": 5,
 		"promptTitle":"Around the World in Eighty Minutes",
 		"promptText":"World Geography",
 		"teacherName":"David Laxague",
@@ -58,4 +60,5 @@
 		"content":"img/grandcanyon.jpg",
 		"likes":0
 		}
+	]
 }
