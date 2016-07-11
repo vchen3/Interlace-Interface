@@ -1,16 +1,22 @@
-var app = angular.module("myApp", []);
+var angularApp = angular.module("myApp", []);
 
 console.log("starting angular app!!");
 
-app.controller("InterfaceController", ['$scope','$http', 'socket', function($scope,$http, socket)
+angularApp.controller("InterfaceController", ['$scope','$http', 'socket', function($scope,$http, socket)
 {    
+	var vm = this;
 	$http.get('js/data.json').success(function(data){
 				$scope.pageData = data;
 	}); 
-	socket.on('init', function(){
-		console.log('socket on init');
-	});
-	$scope.plusOne = function(ideaName) { 
+
+	$scope.addIdea=function(name,contentType,content){
+		//Get promptTitle, promptText, teacherName
+		//Generate timestamp
+		//Set "likes" to 0
+		//Create new document with this content, insert into MongoDB		
+	}
+
+	$scope.likeIdea = function(ideaName) { 
 		var ideasArray = $scope.pageData.ideas;
 		for (var i = 0; i<ideasArray.length; i++){
 			var idea = ideasArray[i];
@@ -18,12 +24,6 @@ app.controller("InterfaceController", ['$scope','$http', 'socket', function($sco
 			//console.log(trimmedName);
 			var sameName =((trimmedName).localeCompare(ideaName))
 			if (sameName == 0){
-				//console.log(trimmedName);
-				//idea.likes += 1; 
-				//console.log(ideasArray[i].likes);
-				//var sentData ={
-				//	ideaID: idea
-				//}
 				socket.emit('like', idea);
 			}
 		}
@@ -35,14 +35,6 @@ app.controller("InterfaceController", ['$scope','$http', 'socket', function($sco
 				ideasArray[i].likes += 1; 
 			}
 		}
-		//alert(receivedIdea.name);
-		//receivedIdea.likes += 1;
-		//alert(receivedIdea.likes)
-		//console.log(receivedIdea);
-		//console.log(receivedIdea.likes);
-		//console.log(idea.likes);
-		//alert(idea.likes);
-		//ideasArray[i].likes += 1; 
 	});
 }]);
 
@@ -50,7 +42,7 @@ app.controller("InterfaceController", ['$scope','$http', 'socket', function($sco
 
 // Demonstrate how to register services
 // In this case it is a simple value service.
-app.factory('socket', function ($rootScope) {
+angularApp.factory('socket', function ($rootScope) {
   console.log('in app factory');
   var socket = io.connect();
   setInterval(function(){ console.log(socket.connected); }, 5000);
