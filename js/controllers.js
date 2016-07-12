@@ -6,7 +6,7 @@ angularApp.controller("InterfaceController", ['$scope','$http', 'socket', functi
 {    
 	var vm = this;
 	$http.get('js/data.json').success(function(data){
-				$scope.pageData = data;
+		$scope.pageData = data;
 	}); 
 
 	$scope.addIdea=function(name,contentType,content){

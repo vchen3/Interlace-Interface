@@ -30,44 +30,21 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/InterfaceDatabase';
-   		
-/*	
-	], function(err, result) {
-    assert.equal(err, null);
-    //console.log("Inserted a document into the Sessions collection.");
-    console.log(result);
-    //console.log(result.ops[0].promptTitle);
-    callback();
-  });
-};*/
 
 //Connect running mongoDB instance running on localhost port 27017 to test database
 
-MongoClient.connect(url, function(err, db) {
-	console.log("Connected correctly to server.");
-	assert.equal(null, err);
-	db.collection('AroundTheWorld').find().toArray(function(err, result) {
-  	if (err){
-  		throw err;
-  	}
-  	console.log(result);
-  });
-  //insertDocument(db, function() {
-  //    db.close();
-  //});
-});
 
 expressApp.get('/list', function(req, res){
-	//res.send("list of all documents");
-      db.collection('AroundTheWorld').find(), function(err, items) {
-          if(err) {
-              return console.log('Error finding all documents:', err);
-          }
-          else {
-            gres.send("potentially returning items")
-            //res.json(items);
-          }
-      };
+MongoClient.connect(url, function(err, db) {
+  console.log("Connected correctly to server.");
+  assert.equal(null, err);
+  db.collection('AroundTheWorld').find().toArray(function(err, result) {
+    if (err){
+      throw err;
+    }
+    res.send(result);
+  });
+});
 });
 
 
