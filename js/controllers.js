@@ -12,20 +12,10 @@ angularApp.config([
 	$locationProvider.html5Mode(true);
 }]);
 
-/*
-var promise = $http.get("/api/my/name");  
-promise.success(function(name) {  
-   console.log("Your name is: " + name);
-});
-promise.error(function(response, status) {  
-   console.log
-   ("The request failed with response " + response + " and status code " + status);
-});*/
-
 
 angularApp.controller("InterfaceController", 
-	['$scope','$http', 'socket', '$route', '$routeParams', '$location', 
-	function($scope,$http, socket, $route, $routeParams, $location)
+	['$scope','$http', 'socket', '$route', '$routeParams', '$location', '$window',
+	function($scope,$http, socket, $route, $routeParams, $location, $window)
 {    
 	var vm = this;
 	$scope.$route = $route;
@@ -36,17 +26,34 @@ angularApp.controller("InterfaceController",
 		//console.log("something better");
 		$scope.pageData = data;
 	}); 
-	/*$http.get("steaksauce.html")
-    .success(function(response) {
-    	console.log("something good");
-        //First function handles success
-        $scope.content = response.data;
-        console.log(response);
-    }), function(response) {
-        //Second function handles error
-        //$scope.content = "Something went wrong";
-        console.log('something wrong');
-    };*/
+
+	$scope.go = function(url, data){
+		//console.log($scope.new);
+		//Redirect to localhost:3000/like
+		//$window.location.href = 'url';
+		
+		/*$http.post(url, data).success(function (response){
+	  		//$window.location.href('www.google.com');
+			console.log(data);
+			//console.log(data);
+		}).error(function(error){
+			console.log("ERROR!" + error);
+		});*/
+
+		/*$http({
+			method: 'GET',
+			url: 'http://localhost/like/',
+		}).success(function successfulCallback(response){
+			console.log('response');
+		})
+		.error(function(error){
+			//console.log(data);
+			console.log('error ' + error);
+		});*/
+	$http.get('/like').then(function(response){
+			console.log('sent like');
+		});
+	};
 
 	$scope.addIdea=function(name,contentType,content){
 		//Get promptTitle, promptText, teacherName
@@ -111,3 +118,36 @@ angularApp.factory('socket', function ($rootScope) {
   };
 });
 
+
+/*$scope.go = function(url, data){
+		//console.log($scope.new);
+		$http.post(url, $scope.new).success(function (response){
+			console.log(response);
+			//console.log(data);
+		}).error(function(error){
+			console.log("ERROR!" + error);
+		});
+	};*/
+		//console.log(path);
+		//$window.location.replace(path);
+	  	/*var req = {
+			method: 'POST',
+			url: '/sentContent',
+			data: "Angular is sending POST request to /sentContent"
+			//data: {test: path}	  		
+	  	}*/
+	  	//$http(req).then(console.log(req.data));
+	  	/*$http.post(url, data)
+	  		.success(function(data){
+	  			console.log(data)
+	  		})
+	  		.error(function(data){
+	  			console.log("url: " + url);
+	  			console.log("data: " + data);
+	  			console.log("Error!");
+	  		});*/
+	  	//$location.url(path);
+	  	//window.location('www.google.com');
+	  	//$window.location.href('www.google.com');
+	  	//replace();
+	  	//$scope.$apply();

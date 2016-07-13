@@ -4,9 +4,15 @@ var expressApp = express();
 var http = require('http').Server(expressApp);
 var io = require('socket.io')(http);
 var path = require('path');
+var bodyParser = require("body-parser");
 
 expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
+});
+
+expressApp.post('/sentContent', function(req, res){
+  res.send("done");
+  console.log('received sent content');
 });
 
 //Connect running mongoDB instance running on localhost port 27017 to test database
@@ -23,9 +29,9 @@ expressApp.get('/list', function(req, res){
    });
 });
 
-expressApp.get('/likeAll', function(req, res){
+expressApp.get('/like', function(req, res){
   MongoClient.connect(url, function(err, db) {
-    //console.log("Attempting likeAll");
+    console.log("Attempting likeAll");
     assert.equal(null, err);
     db.collection('AroundTheWorld').updateMany({}, {$inc:{likes:1}})
     db.collection('AroundTheWorld').find().toArray(function(err, result) {
