@@ -9,9 +9,13 @@ expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+//expressApp.get('/', '/routes/index');
+//expressApp.get('/api/posts', api.posts);
+
+/*
 expressApp.get('/a1', function(req, res){
-  res.send("steaksauce");
-});
+  res.sendFile(__dirname + '/steaksauce.html');
+});*/
 
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){

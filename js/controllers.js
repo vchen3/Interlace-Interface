@@ -5,11 +5,11 @@ console.log("starting angular app!!");
 angularApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
   $routeProvider.
   	when('/read', {
-  		templateUrl: 'partials/index.html', 
+  		templateUrl: 'partials/p-index.html', 
   		controller: IndexCtrl
 	}).
 	otherwise({
-		redirectTo: '/home'
+		redirectTo: '/'
 	});
 	$locationProvider.html5Mode(true);
 }]);
