@@ -1,27 +1,31 @@
 var angularApp = angular.module("myApp", ['ngRoute']);
 
-console.log("starting angular app!!");
+console.log("starting angular app");
 
-angularApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+angularApp.config([
+	'$routeProvider', '$locationProvider', 
+	function($routeProvider, $locationProvider) {
   $routeProvider.
-  	when('/read', {
-  		templateUrl: 'partials/p-index.html', 
-  		controller: IndexCtrl
-	}).
-	otherwise({
+  	otherwise({
 		redirectTo: '/'
 	});
 	$locationProvider.html5Mode(true);
 }]);
 
-function IndexCtrl($scope, $http){
-	$http.get('/api/posts'). //get contents from faux database
-		success(function(data, status, headers, config) {
-      		$scope.posts = data.posts;
-    	});
-}
+/*
+var promise = $http.get("/api/my/name");  
+promise.success(function(name) {  
+   console.log("Your name is: " + name);
+});
+promise.error(function(response, status) {  
+   console.log
+   ("The request failed with response " + response + " and status code " + status);
+});*/
 
-angularApp.controller("InterfaceController", ['$scope','$http', 'socket', '$route', '$routeParams', '$location', function($scope,$http, socket, $route, $routeParams, $location)
+
+angularApp.controller("InterfaceController", 
+	['$scope','$http', 'socket', '$route', '$routeParams', '$location', 
+	function($scope,$http, socket, $route, $routeParams, $location)
 {    
 	var vm = this;
 	$scope.$route = $route;
@@ -29,8 +33,20 @@ angularApp.controller("InterfaceController", ['$scope','$http', 'socket', '$rout
     $scope.$routeParams = $routeParams;
 	
 	$http.get('js/data.json').success(function(data){
+		//console.log("something better");
 		$scope.pageData = data;
 	}); 
+	/*$http.get("steaksauce.html")
+    .success(function(response) {
+    	console.log("something good");
+        //First function handles success
+        $scope.content = response.data;
+        console.log(response);
+    }), function(response) {
+        //Second function handles error
+        //$scope.content = "Something went wrong";
+        console.log('something wrong');
+    };*/
 
 	$scope.addIdea=function(name,contentType,content){
 		//Get promptTitle, promptText, teacherName
@@ -71,6 +87,7 @@ angularApp.factory('socket', function ($rootScope) {
   //console.log('in app factory');
   var socket = io.connect();
   setInterval(function(){ console.log(socket.connected); }, 5000);
+  //Every five seconds, print status of socket connection
   return {
     on: function (eventName, callback) {
       //console.log('general function called');

@@ -9,26 +9,46 @@ expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-//expressApp.get('/', '/routes/index');
-//expressApp.get('/api/posts', api.posts);
-
-/*
-expressApp.get('/a1', function(req, res){
-  res.sendFile(__dirname + '/steaksauce.html');
-});*/
-
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
-    console.log("Connected correctly to server.");
+    //console.log("Attempting list");
     assert.equal(null, err);
     db.collection('AroundTheWorld').find().toArray(function(err, result) {
       if (err){
         throw err;
       }
       res.json(result);
-      });
+    });
    });
+});
+
+expressApp.get('/likeAll', function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    //console.log("Attempting likeAll");
+    assert.equal(null, err);
+    db.collection('AroundTheWorld').updateMany({}, {$inc:{likes:1}})
+    db.collection('AroundTheWorld').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+  });
+});
+
+expressApp.get('/resetLikes', function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    //console.log("Attempting resetLikes");
+    assert.equal(null, err);
+    db.collection('AroundTheWorld').updateMany({}, {$set:{likes:0}})
+    db.collection('AroundTheWorld').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+  });
 });
 
 expressApp.use(express.static(path.join(__dirname, '/public'))); //Add CSS
