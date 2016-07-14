@@ -45,22 +45,26 @@ angularApp.controller("InterfaceController",
 	}
 
 	$scope.likeIdea = function(ideaName) { 
-		var ideasArray = $scope.pageData.ideas;
+		//console.log(ideaName);
+		//var ideasArray = $scope.pageData.ideas;
+		var ideasArray = $scope.allData;
 		for (var i = 0; i<ideasArray.length; i++){
 			var idea = ideasArray[i];
 			var trimmedName = idea.name.trim();
 			//console.log(trimmedName);
 			var sameName =((trimmedName).localeCompare(ideaName))
 			if (sameName == 0){
+				console.log("This is " + ideaName)
 				socket.emit('like', idea);
 			}
 		}
 	};
 
 	socket.on('like', function(receivedIdea){
-		var ideasArray = $scope.pageData.ideas;
+		//var ideasArray = $scope.pageData.ideas;
+		var ideasArray = $scope.allData;
 		for (var i = 0; i<ideasArray.length; i++){
-			if ((ideasArray[i].ID) == (receivedIdea.ID)){
+			if ((ideasArray[i].name) == (receivedIdea.name)){
 				ideasArray[i].likes += 1; 
 			}
 		}

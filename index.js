@@ -16,7 +16,7 @@ expressApp.post('/sentContent', function(req, res){
 
 expressApp.get('/allData', function(req, res){
     MongoClient.connect(url, function(err, db) {
-    console.log("Attempting to send allData");
+    //console.log("Attempting to send allData");
     assert.equal(null, err);
     db.collection('AroundTheWorld').find().toArray(function(err, result) {
       if (err){
