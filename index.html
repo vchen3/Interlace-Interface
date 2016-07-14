@@ -36,11 +36,11 @@
 	<div></div>
 
 	<div class="header">
-      <h1>{{pageData.promptTitle}}</h1>
-      <h2>{{pageData.promptText}}</h2>
-      <h3>{{pageData.teacherName}}</h3>
-      <h3>{{pageData.date}}</h3>
-      <h3 ng-click=go('/like',"LIKING")>LIKE ALL</h3>
+      <h1>{{allData[0].promptTitle}}</h1>
+      <h2>{{allData[0].promptText}}</h2>
+      <h3>{{allData[0].teacherName}}</h3>
+      <h3>{{allData[0].date}}</h3>
+      <h3 ng-click=likeAll()>LIKE ALL</h3>
 
       <br>
 
@@ -59,7 +59,7 @@
 
 				<!-- When "name" is selected -->
 				<div ng-switch-when="name">
-					<div ng-repeat="item in pageData.ideas | orderBy: 'name'" class = "ideaBox">
+					<div ng-repeat="item in allData | orderBy: 'name'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
 					<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
 
@@ -80,7 +80,7 @@
 
 				<!-- When "time" is selected -->
 				<div ng-switch-when="time">
-					<div ng-repeat="item in pageData.ideas | orderBy: 'time'" class = "ideaBox">
+					<div ng-repeat="item in allData | orderBy: 'time'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
 					<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
 
@@ -100,7 +100,7 @@
 				</div>
 
 				<div ng-switch-when="other">
-					<div ng-repeat="item in pageData.ideas" class = "ideaBox">
+					<div ng-repeat="item in allData" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
 						<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
 
@@ -121,7 +121,7 @@
 
 				<!-- Default: Load as in JSON file -->
 				<div ng-switch-default>
-					<div ng-repeat="item in pageData.ideas" class = "ideaBox">
+					<div ng-repeat="item in allData" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
 						<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
 

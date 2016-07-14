@@ -11,8 +11,20 @@ expressApp.get('/', function(req, res){
 });
 
 expressApp.post('/sentContent', function(req, res){
-  res.send("done");
-  console.log('received sent content');
+  res.send("received sentContent");
+});
+
+expressApp.get('/allData', function(req, res){
+    MongoClient.connect(url, function(err, db) {
+    console.log("Attempting to send allData");
+    assert.equal(null, err);
+    db.collection('AroundTheWorld').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+   });
 });
 
 //Connect running mongoDB instance running on localhost port 27017 to test database
@@ -77,3 +89,4 @@ var url = 'mongodb://localhost:27017/InterfaceDatabase';
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+

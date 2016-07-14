@@ -22,35 +22,17 @@ angularApp.controller("InterfaceController",
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
 	
-	$http.get('js/data.json').success(function(data){
+	/*$http.get('js/data.json').success(function(data){
 		//console.log("something better");
 		$scope.pageData = data;
-	}); 
+	}); */
 
-	$scope.go = function(url, data){
-		//console.log($scope.new);
-		//Redirect to localhost:3000/like
-		//$window.location.href = 'url';
-		
-		/*$http.post(url, data).success(function (response){
-	  		//$window.location.href('www.google.com');
-			console.log(data);
-			//console.log(data);
-		}).error(function(error){
-			console.log("ERROR!" + error);
-		});*/
+	$http.get('/allData').then(function(response){
+		$scope.allData = response.data;
+	});
 
-		/*$http({
-			method: 'GET',
-			url: 'http://localhost/like/',
-		}).success(function successfulCallback(response){
-			console.log('response');
-		})
-		.error(function(error){
-			//console.log(data);
-			console.log('error ' + error);
-		});*/
-	$http.get('/like').then(function(response){
+	$scope.likeAll = function(){
+		$http.get('/like').then(function(response){
 			console.log('sent like');
 		});
 	};
