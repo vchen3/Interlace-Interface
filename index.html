@@ -61,7 +61,7 @@
 				<div ng-switch-when="name">
 					<div ng-repeat="item in allData | orderBy: 'name'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
+					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">

@@ -42,9 +42,33 @@ angularApp.controller("InterfaceController",
 		//Generate timestamp
 		//Set "likes" to 0
 		//Create new document with this content, insert into MongoDB		
-	}
+	};
 
-	$scope.likeIdea = function(ideaName) { 
+	$scope.newLike = function(ideaID) { 
+		//console.log("CLIENT LIKING IDEA: " + ideaID);
+		$http.get('/like/'+ideaID).then(function(response){
+			//console.log(response);
+			$scope.allData = response.data;
+			$route.reload();
+			socket.emit('newLike',ideaID);
+			$route.reload();
+		});
+	};
+
+	socket.on('newLike', function(receivedIdeaID){
+		console.log(receivedIdeaID);
+		//$scope.allData = $scope.allData;
+		$route.reload();
+		/*var ideasArray = $scope.allData;
+		for (var i = 0; i<ideasArray.length; i++){
+			if ((ideasArray[i].name) == (receivedIdea.name)){
+				ideasArray[i].likes += 1; 
+			}
+		}*/
+
+	});
+
+	/*$scope.likeIdea = function(ideaName) { 
 		//console.log(ideaName);
 		//var ideasArray = $scope.pageData.ideas;
 		var ideasArray = $scope.allData;
@@ -58,7 +82,7 @@ angularApp.controller("InterfaceController",
 				socket.emit('like', idea);
 			}
 		}
-	};
+	};*/
 
 	socket.on('like', function(receivedIdea){
 		//var ideasArray = $scope.pageData.ideas;

@@ -27,6 +27,23 @@ expressApp.get('/allData', function(req, res){
    });
 });
 
+expressApp.get('/like/:id', function(req,res){
+  //console.log("SERVER RECEIVING IDEA: " + req.params.id);
+  MongoClient.connect(url, function(err, db) {
+    //console.log("Attempting to send allData");
+    assert.equal(null, err);
+    var idNumber = Number(req.params.id);
+    //console.log("SERVER INTERPRETING ID AS : " + idNumber);
+    db.collection('AroundTheWorld').update({ideaID: idNumber}, {$inc:{likes:1}})
+    db.collection('AroundTheWorld').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+   });
+});
+
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
