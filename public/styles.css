@@ -118,6 +118,18 @@ input[type=text]:focus{
     background-color: lightblue;
 }
 
+input[type=text]{
+    width: 100%;
+	white-space: nowrap;
+	overflow-x: auto;
+}
+
+input[type=image]{
+    width: 100%;
+	white-space: nowrap;
+	overflow-x: auto;
+}
+
 /*
 
 input[type=text]{

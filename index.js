@@ -86,7 +86,7 @@ expressApp.get('/like', function(req, res){
 });
 
 expressApp.post('/addNewIdea', function(req, res){
-    console.log(req.body);
+    //console.log(req.body);
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     //console.log(db.collection('AroundTheWorld').count());
@@ -96,7 +96,8 @@ expressApp.post('/addNewIdea', function(req, res){
       if (err){
         throw err;
       }
-      res.json(result);
+      res.send("Received");
+      //res.json(result);
     });
    });
 });

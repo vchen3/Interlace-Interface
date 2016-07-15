@@ -142,6 +142,76 @@
 			</div>
 		<hr>
 
+	<div class = "ideaBox">
+	<h2 id = "ideaName"> Add New Idea </h2>
+		<form novalidate class="simple-form">
+			<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
+
+		<p>What idea type would you like to share?</p>
+      		<label for="textButton">Text</label>
+      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
+      		<br />
+     		 <label for="imageButton">Image</label>
+      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
+
+    	<div>
+      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="your idea content here" ng-show="newIdea.contentType == 'text'"/><br />
+      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Your image url here" ng-show="newIdea.contentType == 'image'"/><br />
+    	</div>
+
+    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+    	</form>
+	</div>
+
+	    	
+
+			<!--ContentType: <input type="radio" ng-model="newIdea.contentType" value="text"/>text<br />
+	    	<input type="radio" ng-model="newIdea.contentType" value="image"/>image<br />
+		</form ->
+
+<!--
+	<div ng-controller="InterfaceController">
+	  <form novalidate class="simple-form">
+	    Name: <input type="text" ng-model="newIdea.name" /><br />
+	    
+	    ContentType: <input type="radio" ng-model="newIdea.contentType" value="text"/>text<br />
+	    <input type="radio" ng-model="newIdea.contentType" value="image"/>image<br />
+	    
+	    Content: <input type="text" ng-model="newIdea.content"/><br />
+	    <input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+
+	  </form>
+	  <pre>user = {{newIdea | json}}</pre>
+
+
+
+	  <select ng-model="formContentType">
+				<option ng-model="newIdea.contentType" value="text">Text
+				<option ng-model="newIdea.contentType" value="image">Image
+			</select>
+
+			<div ng-switch="formContentType">
+				<div ng-switch-when="text">
+					<p>TEXT</p>
+				</div>
+
+				<div ng-switch-when="image">
+					<p>IMAGE</p>
+				</div>
+			</div>
+
+			<p>ContentType</p>
+			<label for="textType">Text</label>
+			<input id="textType" type="radio" name="textButton" ng-model="newIdea.contentType" value="text">
+      		<br /> 
+      	
+      		<label for="imageType">Image</label>
+     		 <input id="imageType" type="radio" name="imageButton" ng-model="newIdea.contentType" value="image">
+
+     		 <p ng-show="content == 'text'">This is the texttype !</p>
+     		 <h2 ng-show="content == 'image'">This is the image content!</h2>
+</div>-->
+
 	</div>
 
 
