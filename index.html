@@ -31,16 +31,14 @@
 
 </div>
 
-	<div ng-view></div>
-	<ng-view></ng-view>
-	<div></div>
-
 	<div class="header">
       <h1>{{allData[0].promptTitle}}</h1>
       <h2>{{allData[0].promptText}}</h2>
       <h3>{{allData[0].teacherName}}</h3>
       <h3>{{allData[0].date}}</h3>
-      <h3 ng-click=likeAll()>LIKE ALL</h3>
+      <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
+      <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
+      <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
 
       <br>
 
@@ -82,7 +80,7 @@
 				<div ng-switch-when="time">
 					<div ng-repeat="item in allData | orderBy: 'time'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
+					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
@@ -97,12 +95,14 @@
 					<p id = "ideaTime"> {{item.time * 1000 | date:'MM-dd-yyyy HH:mm'}} </p>
 
 					</div>
+
+
 				</div>
 
 				<div ng-switch-when="other">
 					<div ng-repeat="item in allData" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
+						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
 
 						<!--Load textcontent -->
 						<div class = "contentBox" ng-if=item.contentType=="text">
@@ -123,7 +123,7 @@
 				<div ng-switch-default>
 					<div ng-repeat="item in allData" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="likeIdea(item.name)">+ {{ item.likes }} </p>
+						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
 
 						<!--Load textcontent -->
 						<div class = "contentBox" ng-if=item.contentType=="text">

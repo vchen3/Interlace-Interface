@@ -6,8 +6,20 @@ var io = require('socket.io')(http);
 var path = require('path');
 var bodyParser = require("body-parser");
 
+expressApp.use(bodyParser.json());
+expressApp.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+expressApp.use(express.json());       // to support JSON-encoded bodies
+expressApp.use(express.urlencoded()); // to support URL-encoded bodies
+
 expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
+});
+
+expressApp.get('/a1', function(req, res){
+  res.sendFile(__dirname + '/steaksauce.html');
 });
 
 expressApp.post('/sentContent', function(req, res){
@@ -28,12 +40,13 @@ expressApp.get('/allData', function(req, res){
 });
 
 expressApp.get('/like/:id', function(req,res){
-  //console.log("SERVER RECEIVING IDEA: " + req.params.id);
+  //console.log('Liking idea ' + req.params.id);
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting to send allData");
     assert.equal(null, err);
     var idNumber = Number(req.params.id);
-    //console.log("SERVER INTERPRETING ID AS : " + idNumber);
+    //var objectIDNumber = 'ObjectID(' + req.params.id + ')';
+   // console.log(objectIDNumber);
     db.collection('AroundTheWorld').update({ideaID: idNumber}, {$inc:{likes:1}})
     db.collection('AroundTheWorld').find().toArray(function(err, result) {
       if (err){
@@ -59,7 +72,7 @@ expressApp.get('/list', function(req, res){
 });
 
 expressApp.get('/like', function(req, res){
-  MongoClient.connect(url, function(err, db) {
+    MongoClient.connect(url, function(err, db) {
     console.log("Attempting likeAll");
     assert.equal(null, err);
     db.collection('AroundTheWorld').updateMany({}, {$inc:{likes:1}})
@@ -70,6 +83,23 @@ expressApp.get('/like', function(req, res){
       res.json(result);
     });
   });
+});
+
+expressApp.post('/addNewIdea', function(req, res){
+    console.log(req);
+    console.log(typeof(req));
+    MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    //console.log(db.collection('AroundTheWorld').count());
+    db.collection('AroundTheWorld').save(req);
+    //console.log(db.collection('AroundTheWorld').count());
+    db.collection('AroundTheWorld').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+   });
 });
 
 expressApp.get('/resetLikes', function(req, res){

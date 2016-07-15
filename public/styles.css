@@ -96,7 +96,7 @@ html, body{
 .likes {
 	float: right;
 	display: inline-block;
-	background: lightgreen ;
+	background: lightgreen;
 	cursor: pointer;
 	font-size: 13px;
    	line-height: 20px;
@@ -105,14 +105,34 @@ html, body{
  	text-align: center;
 }
 
+.css-form input.ng-invalid.ng-touched {
+    background-color: #FA787E;
+  }
 
-.chatBox{
-	background: pink;
+  .css-form input.ng-valid.ng-touched {
+    background-color: #78FA89;
+  }
+
+
+input[type=text]:focus{
+    background-color: lightblue;
 }
 
-form { background: #000; padding: 3px; bottom: 0; width: 100%; }
-form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-#messages { list-style-type: none; margin: 0; padding: 0; }
-#messages li { padding: 5px 10px; }
-#messages li:nth-child(odd) { background: #eee; }
+/*
+
+input[type=text]{
+    background-color: blue;
+}
+
+input[type=text]{
+    background-color: blue;
+}
+
+input.ng-invalid.ng-touched {
+    background-color: pink;
+  }
+
+input.ng-valid.ng-touched {
+    background-color: lightblue;
+  }
+*/

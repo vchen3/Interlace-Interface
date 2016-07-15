@@ -26,7 +26,21 @@
 <script src="js/controllers.js" type="text/javascript" ></script>
 
 <body ng-controller="InterfaceController">
-<h2>Steaksauce html page!!</h2>
+<h4>Steaksauce html page!!</h4>
+
+<div ng-controller="InterfaceController">
+	  <form novalidate class="simple-form">
+	    Name: <input type="text" ng-model="newIdea.name" /><br />
+	    
+	    ContentType: <input type="radio" ng-model="newIdea.contentType" value="text"/>text<br />
+	    <input type="radio" ng-model="newIdea.contentType" value="image"/>image<br />
+	    
+	    Content: <input type="text" ng-model="newIdea.content"/><br />
+	    <input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+
+	  </form>
+	  <pre>user = {{newIdea | json}}</pre>
+</div>
 
 </body>
 </html>

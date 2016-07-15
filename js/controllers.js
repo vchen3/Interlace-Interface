@@ -21,11 +21,6 @@ angularApp.controller("InterfaceController",
 	$scope.$route = $route;
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
-	
-	/*$http.get('js/data.json').success(function(data){
-		//console.log("something better");
-		$scope.pageData = data;
-	}); */
 
 	$http.get('/allData').then(function(response){
 		$scope.allData = response.data;
@@ -37,15 +32,46 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
-	$scope.addIdea=function(name,contentType,content){
-		//Get promptTitle, promptText, teacherName
-		//Generate timestamp
-		//Set "likes" to 0
-		//Create new document with this content, insert into MongoDB		
+	$scope.getUpdates = function(){
+		console.log("Should be updating");
+		$http.get('/allData').then(function(response){
+			$scope.allData = response.data;
+			$route.reload();
+		});
+	};
+
+
+	/*$scope.updateForm = function(InputtedIdea){
+		console.log("****");
+		$scope.newIdea = angular.copy(InputtedIdea);
+		console.log($scope.newIdea);
+	};*/
+
+	$scope.addIdea = function(InputtedIdea){
+		$scope.newIdea = angular.copy(InputtedIdea);
+		var savedContent = $scope.allData;
+		var fullNewIdea = {
+			//"ideaID":9,
+			"promptTitle":savedContent[0].promptTitle,
+			"promptText":savedContent[0].promptText,
+			"teacherName":savedContent[0].teacherName,
+			//"date":
+			"name": $scope.newIdea.name,
+			"time": Date.now(),
+			"contentType": $scope.newIdea.contentType,
+			"content": $scope.newIdea.content,
+			"likes":0
+		};
+		console.log("****");
+		console.log(fullNewIdea);
+		$http.post('/addNewIdea',fullNewIdea).then(function(response){
+			console.log('should be added');
+		});
+		
 	};
 
 	$scope.newLike = function(ideaID) { 
-		//console.log("CLIENT LIKING IDEA: " + ideaID);
+		console.log("CLIENT LIKING IDEA: " + ideaID);
 		$http.get('/like/'+ideaID).then(function(response){
 			//console.log(response);
 			$scope.allData = response.data;
@@ -65,33 +91,6 @@ angularApp.controller("InterfaceController",
 				ideasArray[i].likes += 1; 
 			}
 		}*/
-
-	});
-
-	/*$scope.likeIdea = function(ideaName) { 
-		//console.log(ideaName);
-		//var ideasArray = $scope.pageData.ideas;
-		var ideasArray = $scope.allData;
-		for (var i = 0; i<ideasArray.length; i++){
-			var idea = ideasArray[i];
-			var trimmedName = idea.name.trim();
-			//console.log(trimmedName);
-			var sameName =((trimmedName).localeCompare(ideaName))
-			if (sameName == 0){
-				console.log("This is " + ideaName)
-				socket.emit('like', idea);
-			}
-		}
-	};*/
-
-	socket.on('like', function(receivedIdea){
-		//var ideasArray = $scope.pageData.ideas;
-		var ideasArray = $scope.allData;
-		for (var i = 0; i<ideasArray.length; i++){
-			if ((ideasArray[i].name) == (receivedIdea.name)){
-				ideasArray[i].likes += 1; 
-			}
-		}
 
 	});
 }]);
@@ -127,37 +126,3 @@ angularApp.factory('socket', function ($rootScope) {
     }
   };
 });
-
-
-/*$scope.go = function(url, data){
-		//console.log($scope.new);
-		$http.post(url, $scope.new).success(function (response){
-			console.log(response);
-			//console.log(data);
-		}).error(function(error){
-			console.log("ERROR!" + error);
-		});
-	};*/
-		//console.log(path);
-		//$window.location.replace(path);
-	  	/*var req = {
-			method: 'POST',
-			url: '/sentContent',
-			data: "Angular is sending POST request to /sentContent"
-			//data: {test: path}	  		
-	  	}*/
-	  	//$http(req).then(console.log(req.data));
-	  	/*$http.post(url, data)
-	  		.success(function(data){
-	  			console.log(data)
-	  		})
-	  		.error(function(data){
-	  			console.log("url: " + url);
-	  			console.log("data: " + data);
-	  			console.log("Error!");
-	  		});*/
-	  	//$location.url(path);
-	  	//window.location('www.google.com');
-	  	//$window.location.href('www.google.com');
-	  	//replace();
-	  	//$scope.$apply();
