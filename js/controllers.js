@@ -65,7 +65,7 @@ angularApp.controller("InterfaceController",
 		console.log("****");
 		console.log(fullNewIdea);
 		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			console.log('should be added');
+			console.log('Added ' + response);
 		});
 		
 	};

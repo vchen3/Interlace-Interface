@@ -4,15 +4,15 @@ var expressApp = express();
 var http = require('http').Server(expressApp);
 var io = require('socket.io')(http);
 var path = require('path');
-var bodyParser = require("body-parser");
+var bodyParser = require('body-parser');
 
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({
   extended: true
 }));
 
-expressApp.use(express.json());       // to support JSON-encoded bodies
-expressApp.use(express.urlencoded()); // to support URL-encoded bodies
+//expressApp.use(express.json());       // to support JSON-encoded bodies
+//expressApp.use(express.urlencoded()); // to support URL-encoded bodies
 
 expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -86,12 +86,11 @@ expressApp.get('/like', function(req, res){
 });
 
 expressApp.post('/addNewIdea', function(req, res){
-    console.log(req);
-    console.log(typeof(req));
+    console.log(req.body);
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     //console.log(db.collection('AroundTheWorld').count());
-    db.collection('AroundTheWorld').save(req);
+    db.collection('AroundTheWorld').save(req.body);
     //console.log(db.collection('AroundTheWorld').count());
     db.collection('AroundTheWorld').find().toArray(function(err, result) {
       if (err){
