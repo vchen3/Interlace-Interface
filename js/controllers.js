@@ -25,6 +25,8 @@ angularApp.controller("InterfaceController",
 
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
+		console.log("*******");
+		console.log($scope.allData);
 	});
 
 	$http.get('/getSessions').then(function(response){
@@ -46,21 +48,15 @@ angularApp.controller("InterfaceController",
 		$scope.newIdea = angular.copy(InputtedIdea);
 		var savedContent = $scope.allData;
 		var fullNewIdea = {
-			//"ideaID":9,
-			"promptTitle":savedContent[0].promptTitle,
-			"promptText":savedContent[0].promptText,
-			"teacherName":savedContent[0].teacherName,
-			//"date":
+			"ideaID": savedContent.ideas.length + 1,
 			"name": $scope.newIdea.name,
 			"time": Date.now(),
 			"contentType": $scope.newIdea.contentType,
 			"content": $scope.newIdea.content,
 			"likes":0
 		};
-		console.log("****");
-		console.log(fullNewIdea);
 		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			socket.emit('addNewIdea', fullNewIdea);
+			socket.emit('updateAll', fullNewIdea);
 			//console.log('Added ' + response);
 		});
 	};
@@ -89,10 +85,16 @@ angularApp.controller("InterfaceController",
 		//console.log("CLIENT LIKING IDEA: " + ideaID);
 		var ideasArray = $scope.allData;
 		$http.get('/like/'+ideaID).then(function(response){
-			socket.emit('like',ideaID);
+			socket.emit('updateAll',ideaID);
 			$scope.allData = response.data;
 		});
 	};
+
+	socket.on('updateAll', function(receivedIdea){
+		$http.get('/list').then(function(response){
+			$scope.allData = response.data;
+		})
+	});
 
 	socket.on('like', function(receivedIdea){
 		$http.get('/list').then(function(response){

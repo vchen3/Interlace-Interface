@@ -31,10 +31,10 @@
 </div>
 
 	<div class="header">
-      <h1>{{allData.promptTitle}}</h1>
-      <h2>{{allData.promptText}}</h2>
-      <h3>{{allData.teacherName}}</h3>
-      <h3>{{allData.date}}</h3>
+      <h1>{{allData[0].promptTitle}}</h1>
+      <h2>{{allData[0].promptText}}</h2>
+      <h3>{{allData[0].teacherName}}</h3>
+      <h3>{{allData[0].date}}</h3>
       <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
       <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
       <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
@@ -56,9 +56,9 @@
 
 				<!-- When "name" is selected -->
 				<div ng-switch-when="name">
-					<div ng-repeat="item in allData.ideas | orderBy: 'name'" class = "ideaBox">
+					<div ng-repeat="item in allData | orderBy: 'name'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+					<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
@@ -77,9 +77,9 @@
 
 				<!-- When "time" is selected -->
 				<div ng-switch-when="time">
-					<div ng-repeat="item in allData.ideas | orderBy: 'time'" class = "ideaBox">
+					<div ng-repeat="item in allData | orderBy: 'time'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+					<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
@@ -99,9 +99,9 @@
 				</div>
 
 				<div ng-switch-when="other">
-					<div ng-repeat="item in allData.ideas" class = "ideaBox">
+					<div ng-repeat="item in allData" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+						<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
 
 						<!--Load textcontent -->
 						<div class = "contentBox" ng-if=item.contentType=="text">
@@ -120,9 +120,9 @@
 
 				<!-- Default: Load as in JSON file -->
 				<div ng-switch-default>
-					<div ng-repeat="item in allData.ideas" class = "ideaBox">
+					<div ng-repeat="item in allData" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+						<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
 
 						<!--Load textcontent -->
 						<div class = "contentBox" ng-if=item.contentType=="text">
@@ -158,7 +158,7 @@
 
 				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
 				    	</form>
-					</div>
+				</div>
 			</div>
 		<hr>
 	</div>
@@ -173,4 +173,52 @@
 	
 
 	    	
+
+			<!--ContentType: <input type="radio" ng-model="newIdea.contentType" value="text"/>text<br />
+	    	<input type="radio" ng-model="newIdea.contentType" value="image"/>image<br />
+		</form ->
+
+<!--
+	<div ng-controller="InterfaceController">
+	  <form novalidate class="simple-form">
+	    Name: <input type="text" ng-model="newIdea.name" /><br />
+	    
+	    ContentType: <input type="radio" ng-model="newIdea.contentType" value="text"/>text<br />
+	    <input type="radio" ng-model="newIdea.contentType" value="image"/>image<br />
+	    
+	    Content: <input type="text" ng-model="newIdea.content"/><br />
+	    <input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+
+	  </form>
+	  <pre>user = {{newIdea | json}}</pre>
+
+
+
+	  <select ng-model="formContentType">
+				<option ng-model="newIdea.contentType" value="text">Text
+				<option ng-model="newIdea.contentType" value="image">Image
+			</select>
+
+			<div ng-switch="formContentType">
+				<div ng-switch-when="text">
+					<p>TEXT</p>
+				</div>
+
+				<div ng-switch-when="image">
+					<p>IMAGE</p>
+				</div>
+			</div>
+
+			<p>ContentType</p>
+			<label for="textType">Text</label>
+			<input id="textType" type="radio" name="textButton" ng-model="newIdea.contentType" value="text">
+      		<br /> 
+      	
+      		<label for="imageType">Image</label>
+     		 <input id="imageType" type="radio" name="imageButton" ng-model="newIdea.contentType" value="image">
+
+     		 <p ng-show="content == 'text'">This is the texttype !</p>
+     		 <h2 ng-show="content == 'image'">This is the image content!</h2>
+</div>-->
+
 	

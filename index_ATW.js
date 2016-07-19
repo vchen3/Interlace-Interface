@@ -19,11 +19,44 @@ expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-/*expressApp.get('/a1', function(req, res){
-  res.sendFile(__dirname + '/steaksauce.html');
+expressApp.post('/jsonFile', function(req, res){
+  console.log(req);
+  /*var sentFile = (__dirname + '/js/data.json');
+  console.log(sentFile);
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('Geography').save(sentFile);
+    db.collection('Geography').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+  })*/
 });
 
-expressApp.post('/sentContent', function(req, res){
+expressApp.get('/getSessions', function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    //console.log("Attempting list");
+    assert.equal(null, err);
+    db.collections(function(err, result) {
+      if (err){
+        throw err;
+      }
+      var collectionArray = result;
+      for (var i = 0; i<collectionArray.length; i++){
+        console.log(collectionArray[i].s.name);
+      }
+      
+    });
+   });
+});
+
+expressApp.get('/allSessions', function(req, res){
+  res.sendFile(__dirname + '/allSessions.html');
+});
+
+/*expressApp.post('/sentContent', function(req, res){
   res.send("received sentContent");
 });
 
@@ -37,8 +70,8 @@ expressApp.get('/list', function(req, res){
       if (err){
         throw err;
       }
-      //console.log(result[0]);
-      res.json(result[0]);
+      //console.log(result);
+      res.json(result);
     });
    });
 });
@@ -48,12 +81,11 @@ expressApp.get('/like/:id', function(req,res){
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting to send allData");
     assert.equal(null, err);
-    var idNumber = Number(req.params.id);
-    //console.log("Sending " + idNumber)
-    //var objectIDNumber = 'ObjectID(' + req.params.id + ')';
-   // console.log(objectIDNumber);
-    //db.collection(currentCollection).update({ideaID: idNumber}, {$inc:{likes:1}})
-    db.collection(currentCollection).update({"ideas.ideaID":idNumber},{$inc:{"ideas.$.likes":1}});
+    //var idNumber = Number(req.params.id);
+    var idNumber = req.params.id;
+    //var objectIDNumber = "ObjectId(" + req.params.id + ")";
+    var objectIDNumber = new ObjectId(req.params.id);
+    db.collection(currentCollection).update({"_id" : objectIDNumber}, {$inc:{likes:1}})
     db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
         throw err;
@@ -69,9 +101,8 @@ expressApp.post('/addNewIdea', function(req, res){
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     //console.log(db.collection('AroundTheWorld').count());
-    //db.collection(currentCollection).save(req.body);
+    db.collection(currentCollection).save(req.body);
     //console.log(db.collection('AroundTheWorld').count());
-    db.collection(currentCollection).update({},{$push:{"ideas":req.body}});
     db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
         throw err;
@@ -86,7 +117,8 @@ expressApp.get('/resetLikes', function(req, res){
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting resetLikes");
     assert.equal(null, err);
-    db.collection(currentCollection).updateMany({}, {$set:{likes:0}})
+    db.collection(currentCollection).updateMany({}, {$set:{likes:0}});
+    //res.sendFile(__dirname + '/index.html');
     db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
         throw err;
@@ -102,10 +134,6 @@ expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angul
 
 //Connect with socket.io
 io.on('connection', function(socket){
-  socket.on('updateAll', function(ideaObject){
-    //console.log('socket on newLike '+ideaName);
-    io.emit('updateAll', ideaObject);
-  });
 	socket.on('like', function(ideaID){
     //console.log('socket on newLike '+ideaName);
 		io.emit('like', ideaID);
@@ -121,7 +149,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/InterfaceDatabase';
-var currentCollection = 'Geography';
+var currentCollection = 'AroundTheWorld';
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
