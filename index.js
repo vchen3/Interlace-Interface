@@ -5,6 +5,7 @@ var http = require('http').Server(expressApp);
 var io = require('socket.io')(http);
 var path = require('path');
 var bodyParser = require('body-parser');
+var util = require('util');
 
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({
@@ -39,24 +40,6 @@ expressApp.get('/allData', function(req, res){
    });
 });
 
-expressApp.get('/like/:id', function(req,res){
-  //console.log('Liking idea ' + req.params.id);
-  MongoClient.connect(url, function(err, db) {
-    //console.log("Attempting to send allData");
-    assert.equal(null, err);
-    var idNumber = Number(req.params.id);
-    //var objectIDNumber = 'ObjectID(' + req.params.id + ')';
-   // console.log(objectIDNumber);
-    db.collection('AroundTheWorld').update({ideaID: idNumber}, {$inc:{likes:1}})
-    db.collection('AroundTheWorld').find().toArray(function(err, result) {
-      if (err){
-        throw err;
-      }
-      res.json(result);
-    });
-   });
-});
-
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
@@ -71,6 +54,25 @@ expressApp.get('/list', function(req, res){
    });
 });
 
+expressApp.get('/like/:id', function(req,res){
+  //console.log('Liking idea ' + req.params.id);
+  MongoClient.connect(url, function(err, db) {
+    console.log("Attempting to send allData");
+    assert.equal(null, err);
+    var idNumber = Number(req.params.id);
+    //var objectIDNumber = 'ObjectID(' + req.params.id + ')';
+   // console.log(objectIDNumber);
+    db.collection('AroundTheWorld').update({ideaID: idNumber}, {$inc:{likes:1}})
+    db.collection('AroundTheWorld').find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+   });
+});
+
+/*
 expressApp.get('/like', function(req, res){
     MongoClient.connect(url, function(err, db) {
     console.log("Attempting likeAll");
@@ -83,7 +85,7 @@ expressApp.get('/like', function(req, res){
       res.json(result);
     });
   });
-});
+});*/
 
 expressApp.post('/addNewIdea', function(req, res){
     //console.log(req.body);
@@ -122,8 +124,15 @@ expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angul
 
 //Connect with socket.io
 io.on('connection', function(socket){
-	socket.on('like', function(ideaName){
-		io.emit('like', ideaName);
+  //console.log("HELLO " + socket)
+  //console.log('#connected clients\n');
+  //console.log(util.inspect(io.sockets.connected));
+  //console.log(io.sockets.connected);
+
+  //console.log('#connected clients ' + io.sockets.server.eio.clientsCount);
+	socket.on('newLike', function(ideaName){
+    console.log('socket on newLike '+ideaName);
+		//io.emit('like', ideaName);
 	});
 });
 
