@@ -19,7 +19,7 @@ expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-expressApp.get('/a1', function(req, res){
+/*expressApp.get('/a1', function(req, res){
   res.sendFile(__dirname + '/steaksauce.html');
 });
 
@@ -27,19 +27,7 @@ expressApp.post('/sentContent', function(req, res){
   res.send("received sentContent");
 });
 
-expressApp.get('/allData', function(req, res){
-    MongoClient.connect(url, function(err, db) {
-    //console.log("Attempting to send allData");
-    assert.equal(null, err);
-    db.collection('AroundTheWorld').find().toArray(function(err, result) {
-      if (err){
-        throw err;
-      }
-      res.json(result);
-    });
-   });
-});
-
+*/
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
@@ -72,20 +60,6 @@ expressApp.get('/like/:id', function(req,res){
    });
 });
 
-/*
-expressApp.get('/like', function(req, res){
-    MongoClient.connect(url, function(err, db) {
-    console.log("Attempting likeAll");
-    assert.equal(null, err);
-    db.collection('AroundTheWorld').updateMany({}, {$inc:{likes:1}})
-    db.collection('AroundTheWorld').find().toArray(function(err, result) {
-      if (err){
-        throw err;
-      }
-      res.json(result);
-    });
-  });
-});*/
 
 expressApp.post('/addNewIdea', function(req, res){
     //console.log(req.body);
@@ -124,16 +98,14 @@ expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angul
 
 //Connect with socket.io
 io.on('connection', function(socket){
-  //console.log("HELLO " + socket)
-  //console.log('#connected clients\n');
-  //console.log(util.inspect(io.sockets.connected));
-  //console.log(io.sockets.connected);
-
-  //console.log('#connected clients ' + io.sockets.server.eio.clientsCount);
-	socket.on('newLike', function(ideaName){
-    console.log('socket on newLike '+ideaName);
-		//io.emit('like', ideaName);
+	socket.on('like', function(ideaID){
+    //console.log('socket on newLike '+ideaName);
+		io.emit('like', ideaID);
 	});
+  socket.on('addNewIdea', function(ideaObject){
+    //console.log('socket on newLike '+ideaName);
+    io.emit('addNewIdea', ideaObject);
+  });
 });
 
 //Connect with mongoDB

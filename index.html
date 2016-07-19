@@ -42,7 +42,7 @@
       <br>
 
 	<p>Order by</p>
-      <select ng-model="myVar">
+      	<select ng-model="myVar">
 			<option value="name">Name
 			<option value="time">Time
 			<option value="other">Original
@@ -138,29 +138,39 @@
 
 					</div>
 				</div>
+
+				<div class = "ideaBox">
+					<h2 id = "ideaName"> Add New Idea </h2>
+						<form novalidate class="simple-form">
+							<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
+
+						<p>What idea type would you like to share?</p>
+				      		<label for="textButton">Text</label>
+				      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
+				      		<br />
+				     		 <label for="imageButton">Image</label>
+				      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
+
+				    	<div>
+				      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="your idea content here" ng-show="newIdea.contentType == 'text'"/><br />
+				      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Your image url here" ng-show="newIdea.contentType == 'image'"/><br />
+				    	</div>
+
+				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+				    	</form>
+					</div>
 			</div>
 		<hr>
-
-	<div class = "ideaBox">
-	<h2 id = "ideaName"> Add New Idea </h2>
-		<form novalidate class="simple-form">
-			<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
-
-		<p>What idea type would you like to share?</p>
-      		<label for="textButton">Text</label>
-      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
-      		<br />
-     		 <label for="imageButton">Image</label>
-      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
-
-    	<div>
-      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="your idea content here" ng-show="newIdea.contentType == 'text'"/><br />
-      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Your image url here" ng-show="newIdea.contentType == 'image'"/><br />
-    	</div>
-
-    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
-    	</form>
 	</div>
+
+
+
+</div>
+
+</body>
+</html>
+
+	
 
 	    	
 
@@ -211,11 +221,4 @@
      		 <h2 ng-show="content == 'image'">This is the image content!</h2>
 </div>-->
 
-	</div>
-
-
-
-</div>
-
-</body>
-</html>
+	

@@ -12,37 +12,6 @@ console.log("starting angular app");
 	$locationProvider.html5Mode(true);
 }]);*/
 
-'use strict';
-
-// Demonstrate how to register services
-// In this case it is a simple value service .
-angularApp.factory('socket', function ($rootScope) {
-  console.log('in app factory');
-  var socket = io.connect();
-  //console.log(socket.connected);
-  setInterval(function(){ console.log(socket.connected); }, 5000);
-  return {
-    on: function (eventName, callback) {
-      console.log('general function called');
-      socket.on(eventName, function () {  
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
 
 angularApp.controller("InterfaceController", 
 	['$scope','$http', 'socket', '$route', '$routeParams', '$location', '$window',
@@ -50,23 +19,28 @@ angularApp.controller("InterfaceController",
 {    
 	var vm = this;
 
-	socket.on('init', function(){
-		console.log('socket on init');
-	});
-
 	//$scope.$route = $route;
 	//$scope.$location = $location;
     //$scope.$routeParams = $routeParams;
 
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
+		console.log($scope.allData);
 	});
 
-	$scope.likeAll = function(){
+	/*$http.get('js/data.json').success(function(data){
+		$scope.pageData = data;
+	}); */
+
+	socket.on('init', function(){
+		console.log('socket on init');
+	});
+
+	/*$scope.likeAll = function(){
 		$http.get('/like').then(function(response){
 			console.log('sent like');
 		});
-	};
+	};*/
 
 	$scope.addIdea = function(InputtedIdea){
 		$scope.newIdea = angular.copy(InputtedIdea);
@@ -88,39 +62,70 @@ angularApp.controller("InterfaceController",
 		$http.post('/addNewIdea',fullNewIdea).then(function(response){
 			console.log('Added ' + response);
 		});
-		
+		socket.emit('addNewIdea', fullNewIdea);
 	};
+
 
 	$scope.newLike = function(ideaID) { 
 		console.log("CLIENT LIKING IDEA: " + ideaID);
+		var ideasArray = $scope.allData;
 		$http.get('/like/'+ideaID).then(function(response){
-			//console.log("client received response" + response);
 			$scope.allData = response.data;
-			//console.log($scope.allData);
-			//var socketStatus = socket;
-			//for 
 			console.log('U THERE? ' + socket.connected);
-			socket.emit('newLike',ideaID);//, function(data){
-			//socket.emit('newLike',ideaID){
-			//console.log(data);
-				//alert(data);
-			//});
+			socket.emit('like',ideaID);
 		});
 	};
+
+	socket.on('like', function(receivedIdea){
+		console.log('HELLO I AM HERE');
+		$http.get('/list').then(function(response){
+			$scope.allData = response.data;
+		})
+	});
+
+	socket.on('addNewIdea', function(receivedIdea){
+		$http.get('/list').then(function(response){
+			$scope.allData = response.data;
+		});
+	})
+
 
 	socket.on('error', function (err) {
     	console.log("!ERROR! " + err);
 	});
 
-	socket.on('newLike', function(ideaID){
-		console.log($scope.allData);
-		//alert("Socket :" + ideaID);
-		$http.get('/list').then(function(response){
-			console.log(response);
-			$scope.allData = response.data;
-			$route.reload();
-		});
-	});
 }]);
+
+'use strict';
+
+// Demonstrate how to register services
+// In this case it is a simple value service .
+angularApp.factory('socket', function ($rootScope) {
+  console.log('in app factory');
+  var socket = io.connect();
+  //console.log(socket.connected);
+  setInterval(function(){ console.log(socket.connected); }, 5000);
+  return {
+    on: function (eventName, callback) {
+      //console.log('general function called');
+      socket.on(eventName, function () {  
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
 
 
