@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Interlace Interface</title>
+	<link rel="stylesheet" type="text/css" href="styles.css"></link>
+
+	<link href='http://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+	<base href="/" />
+	
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-route.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-route.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-resource.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="index.js" type="text/javascript"></script>
+<script src="js/controllers.js" type="text/javascript" ></script>
+
+<body ng-controller="InterfaceController">
+
+</div>
+
+	<div class="header">
+      <h1>All Sessions</h1>
+      <h2>Listed below are all sessions</h2>
+      <h3>Teacher Name Here</h3>
+      <!--<h3>{{allData[0].date}}</h3>-->
+      <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
+      <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
+      <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
+
+      <br>
+
+	<div class="ideaPanel">
+
+		<hr>
+			<div>
+				<div ng-repeat="item in allSessions" class = "ideaBox">
+					<h2 id = "ideaName"> {{item.name}}</h2>
+					<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
+				</div>
+			</div>
+
+			<div class = "ideaBox">
+				<h2 id = "ideaName"> Create New Session </h2>
+					<form novalidate class="simple-form">
+						<input type="text" ng-model="newSession.promptTitle" id = "ideaName" placeholder="Prompt Title"/><br />
+						<input type="text" ng-model="newSession.promptText" id = "ideaName" placeholder="Prompt Text"/><br />
+						<input type="text" ng-model="newSession.teacherName" id = "ideaName" placeholder="Teacher Name"/><br />
+						<input type="text" ng-model="newSession.date" id = "ideaName" placeholder="Date"/><br />
+
+						<input type="submit" ng-click="makeSession(newSession)" value="Save" />
+					</form>
+				</div>
+			</div>
+		<hr>
+	</div>
+</div>
+
+</body>
+</html>
+
+	

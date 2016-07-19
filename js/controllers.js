@@ -25,7 +25,11 @@ angularApp.controller("InterfaceController",
 
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
-		//console.log($scope.allData);
+	});
+
+	$http.get('/getSessions').then(function(response){
+		//$scope.getSessions = response.data;
+		console.log(response);
 	});
 
 	socket.on('init', function(){
@@ -59,6 +63,25 @@ angularApp.controller("InterfaceController",
 			socket.emit('addNewIdea', fullNewIdea);
 			//console.log('Added ' + response);
 		});
+	};
+
+	$scope.makeSession = function(InputtedSession){
+		$scope.newSession = angular.copy(InputtedSession);
+		//var savedContent = $scope.allData;
+		var fullNewSession = {
+			//"ideaID":9,
+			"promptTitle":$scope.newSession.promptTitle,
+			"promptText":$scope.newSession.promptText,
+			"teacherName":$scope.newSession.teacherName,
+			"date":$scope.newSession.date,
+			"ideas":[]
+		};
+		console.log("****");
+		console.log(fullNewSession);
+		/*$http.post('/addNewIdea',fullNewIdea).then(function(response){
+			socket.emit('addNewIdea', fullNewIdea);
+			//console.log('Added ' + response);
+		});*/
 	};
 
 

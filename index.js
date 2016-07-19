@@ -35,11 +35,28 @@ expressApp.post('/jsonFile', function(req, res){
   })*/
 });
 
-/*expressApp.get('/a1', function(req, res){
-  res.sendFile(__dirname + '/steaksauce.html');
+expressApp.get('/getSessions', function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    //console.log("Attempting list");
+    assert.equal(null, err);
+    db.collections(function(err, result) {
+      if (err){
+        throw err;
+      }
+      var collectionArray = result;
+      for (var i = 0; i<collectionArray.length; i++){
+        console.log(collectionArray[i].s.name);
+      }
+      
+    });
+   });
 });
 
-expressApp.post('/sentContent', function(req, res){
+expressApp.get('/allSessions', function(req, res){
+  res.sendFile(__dirname + '/allSessions.html');
+});
+
+/*expressApp.post('/sentContent', function(req, res){
   res.send("received sentContent");
 });
 

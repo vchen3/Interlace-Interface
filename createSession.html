@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Interlace Interface</title>
+	<link rel="stylesheet" type="text/css" href="styles.css"></link>
+
+	<link href='http://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+	<base href="/" />
+	
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-route.js"></script>
+
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-route.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="index.js" type="text/javascript"></script>
+<script src="js/controllers.js" type="text/javascript" ></script>
+
+<body ng-controller="InterfaceController">
+
+	<div class = ideaBox>
+		<h2 id = "ideaName"> Create a new session </h2>
+			<form novalidate class="simple-form">
+				<input type="text" ng-model="newSession.promptTitle" id = "ideaName" placeholder="Prompt Title"/><br />
+				<input type="text" ng-model="newSession.promptText" id = "ideaName" placeholder="Prompt Text"/><br />
+				<input type="text" ng-model="newSession.teacherName" id = "ideaName" placeholder="Teacher Name"/><br />
+				<input type="text" ng-model="newSession.date" id = "ideaName" placeholder="Date"/><br />
+
+				<!--<p>What idea type would you like to share?</p>
+				<label for="textButton">Text</label>
+				<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text"><br />
+				
+				<label for="imageButton">Image</label>
+				<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
+
+				<div>
+				   	<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="your idea content here" ng-show="newIdea.contentType == 'text'"/><br />
+				    <input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Your image url here" ng-show="newIdea.contentType == 'image'"/><br />
+				</div>-->
+
+				<input type="submit" ng-click="makeSession(newSession)" value="Save" />
+			</form>
+	</div>
+
+</body>
+</html>
