@@ -6,12 +6,12 @@ console.log("starting angular app");
 	'$routeProvider', '$locationProvider', 
 	function($routeProvider, $locationProvider) {
   $routeProvider.
-  	/*otherwise({
+  	otherwise({
 		redirectTo: '/'
 	});
 	$locationProvider.html5Mode(true);
-}]);
-*/
+}]);*/
+
 
 angularApp.controller("InterfaceController", 
 	['$scope','$http', 'socket', '$route', '$routeParams', '$location', '$window',
@@ -19,9 +19,9 @@ angularApp.controller("InterfaceController",
 {    
 	var vm = this;
 
-	$scope.$route = $route;
-	$scope.$location = $location;
-    $scope.$routeParams = $routeParams;
+	//$scope.$route = $route;
+	//$scope.$location = $location;
+    //$scope.$routeParams = $routeParams;
 
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
@@ -56,22 +56,24 @@ angularApp.controller("InterfaceController",
 		console.log("****");
 		console.log(fullNewIdea);
 		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			socket.emit('addNewIdea', fullNewIdea);
-			//console.log('Added ' + response);
+			console.log('Added ' + response);
 		});
+		socket.emit('addNewIdea', fullNewIdea);
 	};
 
 
 	$scope.newLike = function(ideaID) { 
-		//console.log("CLIENT LIKING IDEA: " + ideaID);
+		console.log("CLIENT LIKING IDEA: " + ideaID);
 		var ideasArray = $scope.allData;
 		$http.get('/like/'+ideaID).then(function(response){
-			socket.emit('like',ideaID);
 			$scope.allData = response.data;
+			console.log('U THERE? ' + socket.connected);
+			socket.emit('like',ideaID);
 		});
 	};
 
 	socket.on('like', function(receivedIdea){
+		console.log('HELLO I AM HERE');
 		$http.get('/list').then(function(response){
 			$scope.allData = response.data;
 		})
@@ -83,8 +85,9 @@ angularApp.controller("InterfaceController",
 		});
 	})
 
+
 	socket.on('error', function (err) {
-    	console.log("!error! " + err);
+    	console.log("!ERROR! " + err);
 	});
 
 }]);
