@@ -45,23 +45,6 @@ angularApp.controller("InterfaceController",
 		});
 	};*/
 
-	$scope.addIdea = function(InputtedIdea){
-		$scope.newIdea = angular.copy(InputtedIdea);
-		var savedContent = $scope.allData;
-		var fullNewIdea = {
-			"ideaID": savedContent.ideas.length + 1,
-			"name": $scope.newIdea.name,
-			"time": Date.now(),
-			"contentType": $scope.newIdea.contentType,
-			"content": $scope.newIdea.content,
-			"likes":0
-		};
-		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			socket.emit('addNewIdea', fullNewIdea);
-			//console.log('Added ' + response);
-		});
-	};
-
 	$scope.makeSession = function(InputtedSession){
 		$scope.newSession = angular.copy(InputtedSession);
 		//var savedContent = $scope.allData;
@@ -105,6 +88,37 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
+	$scope.addIdea = function(InputtedIdea){
+		$scope.newIdea = angular.copy(InputtedIdea);
+		var savedContent = $scope.allData;
+		var fullNewIdea = {
+			"ideaID": savedContent.ideas.length + 1,
+			"name": $scope.newIdea.name,
+			"time": Date.now(),
+			"contentType": $scope.newIdea.contentType,
+			"content": $scope.newIdea.content,
+			"likes":0
+		};
+		$http.post('/addNewIdea',fullNewIdea).then(function(response){
+			//Receiving new idea and pushing to scope array
+			//console.log(response.data);
+			($scope.allData.ideas).push(response.data);
+
+			//Update all clients
+			socket.emit('updateNewIdea', fullNewIdea);
+			//console.log('Added ' + response);
+		});
+	};
+
+	socket.on('updateNewIdea', function(receivedIdea){
+		var rIdeaID = (receivedIdea.ideaID);
+		$http.get('/updateNewIdea/'+rIdeaID).then(function(response){
+			console.log("RESPONSE DATA");
+			console.log(response.data);
+			($scope.allData.ideas) = response.data;
+		})
+	});
+
 	socket.on('updateLike', function(receivedIdea){
 		//console.log('updating like of idea '+receivedIdea);
 		$http.get('/updateLike/'+receivedIdea).then(function(response){
@@ -121,11 +135,7 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
-	socket.on('addNewIdea', function(receivedIdea){
-		$http.get('/list').then(function(response){
-			$scope.allData = response.data;
-		});
-	})
+	socket.on('')
 
 	socket.on('error', function (err) {
     	console.log("!error! " + err);

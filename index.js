@@ -88,6 +88,7 @@ expressApp.get('/updateLike/:id', function(req,res){
       if (err){
         throw err;
       }
+      //console.log(result[0].ideas[0]);
       //console.log(result[0].ideas[0].likes);
       //Send back updated number of likes
       res.json(result[0].ideas[0].likes);
@@ -95,22 +96,54 @@ expressApp.get('/updateLike/:id', function(req,res){
    });
 });
 
-
-expressApp.post('/addNewIdea', function(req, res){
-    //console.log(req.body);
-    MongoClient.connect(url, function(err, db) {
+expressApp.get('/updateNewIdea/:id', function(req,res){
+  //var newID = (req.params.id);
+  //console.log(newID);
+  MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    //console.log(db.collection('AroundTheWorld').count());
-    //db.collection(currentCollection).save(req.body);
-    //console.log(db.collection('AroundTheWorld').count());
-    db.collection(currentCollection).update({},{$push:{"ideas":req.body}});
+    var idNumber = Number(req.params.id);
+
+    //Send back all ideas
     db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
         throw err;
       }
-      res.send("Received");
-      //res.json(result);
+      //console.log(result[0]);
+      res.json(result[0].ideas);
     });
+    /*db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      //Send back newest idea
+      res.json(result[0].ideas[0]);
+    })*/
+   });
+});
+
+expressApp.post('/addNewIdea', function(req, res){
+    MongoClient.connect(url, function(err, db) {
+
+    assert.equal(null, err);
+    db.collection(currentCollection).update({},{$push:{"ideas":req.body}});
+    var idNumber = Number(req.body.ideaID);
+    /*Send everything back
+    db.collection(currentCollection).find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      console.log(result[0]);
+      //res.json(result[0]);
+    });*/
+    /*Send back just the new idea*/
+    db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      //console.log(result[0].ideas[0]);
+      //Send back new idea
+      res.json(result[0].ideas[0]);
+    })
    });
 });
 
@@ -163,6 +196,10 @@ io.on('connection', function(socket){
   socket.on('addNewIdea', function(ideaObject){
     //console.log('socket on newLike '+ideaName);
     io.emit('addNewIdea', ideaObject);
+  });
+    socket.on('updateNewIdea', function(ideaID){
+    //console.log('socket on newLike '+ideaName);
+    io.emit('updateNewIdea', ideaID);
   });
 });
 
