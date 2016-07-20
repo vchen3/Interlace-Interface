@@ -25,13 +25,14 @@ angularApp.controller("InterfaceController",
 
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
-		console.log("*******");
-		console.log($scope.allData);
+		//console.log("*******");
+		//console.log($scope.allData);
 	});
 
-	$http.get('/getSessions').then(function(response){
-		//$scope.getSessions = response.data;
-		console.log(response);
+	$http.get('/allSessions').then(function(response){
+		$scope.allSessions = response.data;
+		//console.log("successful getting of sessions");
+		//console.log(response.data);
 	});
 
 	socket.on('init', function(){
@@ -56,7 +57,7 @@ angularApp.controller("InterfaceController",
 			"likes":0
 		};
 		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			socket.emit('updateAll', fullNewIdea);
+			socket.emit('addNewIdea', fullNewIdea);
 			//console.log('Added ' + response);
 		});
 	};
@@ -81,12 +82,20 @@ angularApp.controller("InterfaceController",
 	};
 
 
-	$scope.newLike = function(ideaID) { 
-		//console.log("CLIENT LIKING IDEA: " + ideaID);
-		var ideasArray = $scope.allData;
-		$http.get('/like/'+ideaID).then(function(response){
-			socket.emit('updateAll',ideaID);
-			$scope.allData = response.data;
+	$scope.newLike = function(incomingID) { 
+		//console.log("CLIENT LIKING IDEA: " + incomingID);
+		$http.get('/like/'+incomingID).then(function(response){
+			var ideasArray = $scope.allData.ideas;
+			for (var i = 0; i<ideasArray.length; i++){
+				var currentID = ideasArray[i].ideaID;
+				if (currentID===incomingID){
+					$scope.allData.ideas[i].likes = response.data;
+				}
+ 
+      		}
+			socket.emit('updateLike',incomingID);
+			//$scope.allData = response.data;
+			//$scope.allData.ideas[i].likes = response.data;
 		});
 	};
 
@@ -96,9 +105,19 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
-	socket.on('like', function(receivedIdea){
-		$http.get('/list').then(function(response){
-			$scope.allData = response.data;
+	socket.on('updateLike', function(receivedIdea){
+		//console.log('updating like of idea '+receivedIdea);
+		$http.get('/updateLike/'+receivedIdea).then(function(response){
+			//console.log("RESPONSE DATA");
+			//console.log(response.data);
+			var ideasArray = $scope.allData.ideas;
+			for (var i = 0; i<ideasArray.length; i++){
+				var currentID = ideasArray[i].ideaID;
+				if (currentID===receivedIdea){
+					$scope.allData.ideas[i].likes = response.data;
+				}
+ 
+      		}
 		})
 	});
 
@@ -119,7 +138,7 @@ angularApp.controller("InterfaceController",
 // Demonstrate how to register services
 // In this case it is a simple value service .
 angularApp.factory('socket', function ($rootScope) {
-  console.log('in app factory');
+  //console.log('in app factory');
   var socket = io.connect();
   //console.log(socket.connected);
   setInterval(function(){ console.log(socket.connected); }, 5000);

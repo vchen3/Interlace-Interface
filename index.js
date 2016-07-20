@@ -19,6 +19,25 @@ expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+expressApp.get('/allSessions', function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    //console.log("Attempting list");
+    assert.equal(null, err);
+    db.collections(function(err, result) {
+      if (err){
+        throw err;
+      }
+      var collectionArray = [];
+      //console.log(collectionArray);
+      for (var i = 0; i<result.length; i++){
+        //console.log(result[i].s.name);
+        collectionArray.push(result[i].s.name)
+      }
+      res.send(collectionArray);
+    });
+   });
+});
+
 /*expressApp.get('/a1', function(req, res){
   res.sendFile(__dirname + '/steaksauce.html');
 });
@@ -49,17 +68,30 @@ expressApp.get('/like/:id', function(req,res){
     //console.log("Attempting to send allData");
     assert.equal(null, err);
     var idNumber = Number(req.params.id);
-    //console.log("Sending " + idNumber)
-    //var objectIDNumber = 'ObjectID(' + req.params.id + ')';
-   // console.log(objectIDNumber);
-    //db.collection(currentCollection).update({ideaID: idNumber}, {$inc:{likes:1}})
     db.collection(currentCollection).update({"ideas.ideaID":idNumber},{$inc:{"ideas.$.likes":1}});
-    db.collection(currentCollection).find().toArray(function(err, result) {
+    db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
       if (err){
         throw err;
       }
-      res.json(result);
-    });
+      //console.log(result[0].ideas[0].likes);
+      res.json(result[0].ideas[0].likes);
+    })
+   });
+});
+
+expressApp.get('/updateLike/:id', function(req,res){
+ // console.log('updating like idea ' + req.params.id);
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    var idNumber = Number(req.params.id);
+    db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      //console.log(result[0].ideas[0].likes);
+      //Send back updated number of likes
+      res.json(result[0].ideas[0].likes);
+    })
    });
 });
 
@@ -82,19 +114,37 @@ expressApp.post('/addNewIdea', function(req, res){
    });
 });
 
-expressApp.get('/resetLikes', function(req, res){
+/*expressApp.get('/resetLikes', function(req, res){
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting resetLikes");
     assert.equal(null, err);
-    db.collection(currentCollection).updateMany({}, {$set:{likes:0}})
+    //mongoDB shell command: 
+    //db.collection(currentCollection)update({},{$set:{'ideas.1.likes':0}})
     db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
         throw err;
       }
-      res.json(result);
-    });
-  });
-});
+      var fullDocument = result;
+      console.log(fullDocument);
+      var ideasArray = fullDocument.ideas;
+
+    //Need to get number of likes to iterate through
+    //var ideaSize = db.collection(currentCollection)
+    /*for (var i = 0; i<ideasArray.length; i++){
+      var likedIdea = 'ideas['+i+'].likes';
+      console.log(likedIdea);
+      db.collection(currentCollection).update({},{$set:{'likedIdea':0}})
+      //console.log(result[i].s.name);
+      //collectionArray.push(result[i].s.name)
+      }
+
+    });*/
+
+
+
+    //db.collection(currentCollection).updateMany({}, {$set:{likes:0}})
+    //db.collection(currentCollection).updateMany({"ideas.ideaID":""},{$set:{"ideas.$.likes":0}});
+    
 
 expressApp.use(express.static(path.join(__dirname, '/public'))); //Add CSS
 expressApp.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, data
@@ -106,9 +156,9 @@ io.on('connection', function(socket){
     //console.log('socket on newLike '+ideaName);
     io.emit('updateAll', ideaObject);
   });
-	socket.on('like', function(ideaID){
+	socket.on('updateLike', function(ideaID){
     //console.log('socket on newLike '+ideaName);
-		io.emit('like', ideaID);
+		io.emit('updateLike', ideaID);
 	});
   socket.on('addNewIdea', function(ideaObject){
     //console.log('socket on newLike '+ideaName);

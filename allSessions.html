@@ -42,11 +42,11 @@
       <br>
 
 	<div class="ideaPanel">
-
+	<h1>all the sessions</h1>
 		<hr>
 			<div>
 				<div ng-repeat="item in allSessions" class = "ideaBox">
-					<h2 id = "ideaName"> {{item.name}}</h2>
+					<h2 id = "ideaName"> {{item}}</h2>
 					<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
 				</div>
 			</div>
