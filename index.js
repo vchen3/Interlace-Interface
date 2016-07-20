@@ -19,23 +19,27 @@ expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-expressApp.get('/allSessions', function(req, res){
+expressApp.get('/getSessionData', function(req, res){
   MongoClient.connect(url, function(err, db) {
-    //console.log("Attempting list");
     assert.equal(null, err);
-    db.collections(function(err, result) {
+
+    db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
         throw err;
       }
       var collectionArray = [];
-      //console.log(collectionArray);
       for (var i = 0; i<result.length; i++){
-        //console.log(result[i].s.name);
-        collectionArray.push(result[i].s.name)
+        //console.log(result[i].promptTitle);
+        collectionArray.push(result[i].promptTitle)
       }
       res.send(collectionArray);
+      //res.json();
     });
    });
+});
+
+expressApp.get('/allSessions', function(req, res){
+  res.sendFile(__dirname + '/allSessions.html');  
 });
 
 /*expressApp.get('/a1', function(req, res){
@@ -127,22 +131,25 @@ expressApp.post('/addNewIdea', function(req, res){
     assert.equal(null, err);
     db.collection(currentCollection).update({},{$push:{"ideas":req.body}});
     var idNumber = Number(req.body.ideaID);
-    /*Send everything back
-    db.collection(currentCollection).find().toArray(function(err, result) {
-      if (err){
-        throw err;
-      }
-      console.log(result[0]);
-      //res.json(result[0]);
-    });*/
-    /*Send back just the new idea*/
     db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
       if (err){
         throw err;
       }
-      //console.log(result[0].ideas[0]);
-      //Send back new idea
       res.json(result[0].ideas[0]);
+    })
+   });
+});
+
+expressApp.post('/addNewSession', function(req, res){
+  //console.log(req.body);
+    MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection(currentCollection).save(req.body);
+    db.collection(currentCollection).find().toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      res.json();
     })
    });
 });
@@ -186,19 +193,12 @@ expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angul
 //Connect with socket.io
 io.on('connection', function(socket){
   socket.on('updateAll', function(ideaObject){
-    //console.log('socket on newLike '+ideaName);
     io.emit('updateAll', ideaObject);
   });
 	socket.on('updateLike', function(ideaID){
-    //console.log('socket on newLike '+ideaName);
 		io.emit('updateLike', ideaID);
 	});
-  socket.on('addNewIdea', function(ideaObject){
-    //console.log('socket on newLike '+ideaName);
-    io.emit('addNewIdea', ideaObject);
-  });
-    socket.on('updateNewIdea', function(ideaID){
-    //console.log('socket on newLike '+ideaName);
+  socket.on('updateNewIdea', function(ideaID){
     io.emit('updateNewIdea', ideaID);
   });
 });

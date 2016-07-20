@@ -28,8 +28,6 @@
 
 <body ng-controller="InterfaceController">
 
-</div>
-
 	<div class="header">
       <h1>{{allData.promptTitle}}</h1>
       <h2>{{allData.promptText}}</h2>
@@ -38,7 +36,7 @@
       <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
       <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
       <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
-
+  
       <br>
 
 	<p>Order by</p>
@@ -141,7 +139,7 @@
 
 				<div class = "newIdeaBox">
 					<h2 id = "ideaName"> Add New Idea </h2>
-						<form novalidate class="simple-form">
+						<form id = "newIdea_frm" novalidate class="simple-form">
 							<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
 
 						<p>What idea type would you like to share?</p>

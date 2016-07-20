@@ -28,30 +28,25 @@
 
 <body ng-controller="InterfaceController">
 
-</div>
-
 	<div class="header">
       <h1>All Sessions</h1>
       <h2>Listed below are all sessions</h2>
       <h3>Teacher Name Here</h3>
-      <!--<h3>{{allData[0].date}}</h3>-->
-      <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
-      <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
-      <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
-
+  
       <br>
 
-	<div class="ideaPanel">
-	<h1>all the sessions</h1>
-		<hr>
-			<div>
-				<div ng-repeat="item in allSessions" class = "ideaBox">
-					<h2 id = "ideaName"> {{item}}</h2>
-					<p class = "likes" ng-click="newLike(item._id)">+ {{ item.likes }} </p>
-				</div>
-			</div>
+    </div>
 
-			<div class = "ideaBox">
+	<div class="ideaPanel">
+
+		<div ng-repeat="item in allSessions" class = "sessionBox">
+			<h2 id = "ideaName"> {{item}}</h2>
+			<h2 id = "ideaName"> {{item.promptText}}</h2>
+			<h2 id = "ideaName"> {{item.teacherName}}</h2>
+			<h2 id = "ideaName"> {{item.date}}</h2>
+		</div>
+
+			<div class = "newSessionBox">
 				<h2 id = "ideaName"> Create New Session </h2>
 					<form novalidate class="simple-form">
 						<input type="text" ng-model="newSession.promptTitle" id = "ideaName" placeholder="Prompt Title"/><br />
@@ -59,13 +54,11 @@
 						<input type="text" ng-model="newSession.teacherName" id = "ideaName" placeholder="Teacher Name"/><br />
 						<input type="text" ng-model="newSession.date" id = "ideaName" placeholder="Date"/><br />
 
-						<input type="submit" ng-click="makeSession(newSession)" value="Save" />
+						<input type="submit" ng-click="addSession(newSession)" value="Save" />
 					</form>
-				</div>
 			</div>
 		<hr>
 	</div>
-</div>
 
 </body>
 </html>

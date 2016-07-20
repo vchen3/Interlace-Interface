@@ -29,11 +29,12 @@ angularApp.controller("InterfaceController",
 		//console.log($scope.allData);
 	});
 
-	$http.get('/allSessions').then(function(response){
+	$http.get('/getSessionData').then(function(response){
 		$scope.allSessions = response.data;
-		//console.log("successful getting of sessions");
+		//console.log($scope.allSessions);
 		//console.log(response.data);
 	});
+
 
 	socket.on('init', function(){
 		console.log('socket on init');
@@ -45,7 +46,7 @@ angularApp.controller("InterfaceController",
 		});
 	};*/
 
-	$scope.makeSession = function(InputtedSession){
+	$scope.addSession = function(InputtedSession){
 		$scope.newSession = angular.copy(InputtedSession);
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
@@ -56,12 +57,33 @@ angularApp.controller("InterfaceController",
 			"date":$scope.newSession.date,
 			"ideas":[]
 		};
-		console.log("****");
-		console.log(fullNewSession);
-		/*$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			socket.emit('addNewIdea', fullNewIdea);
+		$http.post('/addNewSession',fullNewSession).then(function(response){
+			//Receiving new idea and pushing to sessions array
+			($scope.allSessions).push(response.data);
+
+		});
+	};
+
+	$scope.addIdea = function(InputtedIdea){
+		$("#newIdea_frm")[0].reset();
+		$scope.newIdea = angular.copy(InputtedIdea);
+		var savedContent = $scope.allData;
+		var fullNewIdea = {
+			"ideaID": savedContent.ideas.length + 1,
+			"name": $scope.newIdea.name,
+			"time": Date.now(),
+			"contentType": $scope.newIdea.contentType,
+			"content": $scope.newIdea.content,
+			"likes":0
+		};
+		$http.post('/addNewIdea',fullNewIdea).then(function(response){
+			//Receiving new idea and pushing to ideas array
+			($scope.allData.ideas).push(response.data);
+
+			//Update all clients
+			socket.emit('updateNewIdea', fullNewIdea);
 			//console.log('Added ' + response);
-		});*/
+		});
 	};
 
 
@@ -88,32 +110,11 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
-	$scope.addIdea = function(InputtedIdea){
-		$scope.newIdea = angular.copy(InputtedIdea);
-		var savedContent = $scope.allData;
-		var fullNewIdea = {
-			"ideaID": savedContent.ideas.length + 1,
-			"name": $scope.newIdea.name,
-			"time": Date.now(),
-			"contentType": $scope.newIdea.contentType,
-			"content": $scope.newIdea.content,
-			"likes":0
-		};
-		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			//Receiving new idea and pushing to scope array
-			//console.log(response.data);
-			($scope.allData.ideas).push(response.data);
-
-			//Update all clients
-			socket.emit('updateNewIdea', fullNewIdea);
-			//console.log('Added ' + response);
-		});
-	};
 
 	socket.on('updateNewIdea', function(receivedIdea){
 		var rIdeaID = (receivedIdea.ideaID);
 		$http.get('/updateNewIdea/'+rIdeaID).then(function(response){
-			console.log("RESPONSE DATA");
+			//console.log("RESPONSE DATA");
 			console.log(response.data);
 			($scope.allData.ideas) = response.data;
 		})
