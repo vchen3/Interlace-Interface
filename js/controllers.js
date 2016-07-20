@@ -66,15 +66,8 @@ angularApp.controller("InterfaceController",
 	};
 
 	$scope.useSession = function(inputtedSession){
-		console.log(String(inputtedSession));
-		$http.post('/setCurrentSession',inputtedSession).then(function(response){
-		//$http.post('/setCurrentSession',String(inputtedSession)).then(function(response){
-		//	console.log('hey');
-		//});
-		//$http.post('/currentSession',inputtedSession).then(function(response){
-			//
-		//});
-		});
+		$http.post('/setSession',inputtedSession).then(function(response){
+		})
 	};
 
 	$scope.addIdea = function(InputtedIdea){

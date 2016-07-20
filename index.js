@@ -7,15 +7,24 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
 
-//var currentSession;
+var currentSession = "578e3ed70e9540ef03359b6d";
 
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({
   extended: true
 }));
 
-//expressApp.use(express.json());       // to support JSON-encoded bodies
-//expressApp.use(express.urlencoded()); // to support URL-encoded bodies
+expressApp.get('/allSessions', function(req, res){
+  res.sendFile(__dirname + '/allSessions.html');  
+});
+
+expressApp.post('/setSession', function(req, res){
+  //console.log(req.body);
+  var sessionID = req.body._id;
+  //console.log(sessionID);
+  currentSession = sessionID;
+  //console.log(currentSession);
+});
 
 expressApp.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -33,16 +42,6 @@ expressApp.get('/getSessionData', function(req, res){
   });
 });
 
-expressApp.get('/allSessions', function(req, res){
-  res.sendFile(__dirname + '/allSessions.html');  
-});
-
-expressApp.post('/setCurrentSession', function(req, res){
-  //console.log(req.params.id);
-  //console.log(req.body);
-  //currentSession = req.body 
-});
-
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
@@ -52,19 +51,34 @@ expressApp.get('/list', function(req, res){
       if (err){
         throw err;
       }
-      //console.log(result[0]);
-      res.json(result[0]);
+      for (var i = 0; i<result.length; i++){
+        if (result[i]._id == currentSession){
+          res.json(result[i]);
+        }
+      }
     });
    });
 });
 
 expressApp.get('/like/:id', function(req,res){
-  //console.log('Liking idea ' + req.params.id);
+  var idNumber = Number(req.params.id);
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting to send allData");
     assert.equal(null, err);
-    var idNumber = Number(req.params.id);
-    db.collection(currentCollection).update({"ideas.ideaID":idNumber},{$inc:{"ideas.$.likes":1}});
+    db.collection(currentCollection).find().toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      for (var i = 0; i<result.length; i++){
+        if (result[i]._id == currentSession){
+          //console.log(idNumber);
+          db.collection(currentCollection).update({_id:currentSession},{$set:{"ideas.1":{"likes":0}}});
+          //db.collection(currentCollection).update({_id:currentSession},{$inc:{"ideas.4":{"likes":1}}});
+        }
+      }
+    });
+    //var idNumber = Number(req.params.id);
+    /*db.collection(currentCollection).update({"ideas.ideaID":idNumber},{$inc:{"ideas.$.likes":1}});
     db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
       if (err){
         throw err;
@@ -72,7 +86,7 @@ expressApp.get('/like/:id', function(req,res){
       console.log(result);
       //console.log(result[0].ideas[0].likes);
       //res.json(result[0].ideas[0].likes);
-    })
+    })*/
    });
 });
 
