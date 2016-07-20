@@ -7,6 +7,8 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
 
+//var currentSession;
+
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({
   extended: true
@@ -22,35 +24,25 @@ expressApp.get('/', function(req, res){
 expressApp.get('/getSessionData', function(req, res){
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-
-    db.collection(currentCollection).find().toArray(function(err, result) {
+    db.collection(currentCollection).find().toArray(function(err,result){
       if (err){
         throw err;
       }
-      var collectionArray = [];
-      for (var i = 0; i<result.length; i++){
-        //console.log(result[i].promptTitle);
-        collectionArray.push(result[i].promptTitle)
-      }
-      res.send(collectionArray);
-      //res.json();
+      res.json(result);
     });
-   });
+  });
 });
 
 expressApp.get('/allSessions', function(req, res){
   res.sendFile(__dirname + '/allSessions.html');  
 });
 
-/*expressApp.get('/a1', function(req, res){
-  res.sendFile(__dirname + '/steaksauce.html');
+expressApp.post('/setCurrentSession', function(req, res){
+  //console.log(req.params.id);
+  //console.log(req.body);
+  //currentSession = req.body 
 });
 
-expressApp.post('/sentContent', function(req, res){
-  res.send("received sentContent");
-});
-
-*/
 //Connect running mongoDB instance running on localhost port 27017 to test database
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
@@ -77,8 +69,9 @@ expressApp.get('/like/:id', function(req,res){
       if (err){
         throw err;
       }
+      console.log(result);
       //console.log(result[0].ideas[0].likes);
-      res.json(result[0].ideas[0].likes);
+      //res.json(result[0].ideas[0].likes);
     })
    });
 });

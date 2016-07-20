@@ -46,8 +46,8 @@ angularApp.controller("InterfaceController",
 		});
 	};*/
 
-	$scope.addSession = function(InputtedSession){
-		$scope.newSession = angular.copy(InputtedSession);
+	$scope.addSession = function(inputtedSession){
+		$scope.newSession = angular.copy(inputtedSession);
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
 			//"ideaID":9,
@@ -57,10 +57,23 @@ angularApp.controller("InterfaceController",
 			"date":$scope.newSession.date,
 			"ideas":[]
 		};
+
 		$http.post('/addNewSession',fullNewSession).then(function(response){
 			//Receiving new idea and pushing to sessions array
-			($scope.allSessions).push(response.data);
+			//($scope.allSessions).push(response.data);
 
+		});
+	};
+
+	$scope.useSession = function(inputtedSession){
+		console.log(String(inputtedSession));
+		$http.post('/setCurrentSession',inputtedSession).then(function(response){
+		//$http.post('/setCurrentSession',String(inputtedSession)).then(function(response){
+		//	console.log('hey');
+		//});
+		//$http.post('/currentSession',inputtedSession).then(function(response){
+			//
+		//});
 		});
 	};
 
