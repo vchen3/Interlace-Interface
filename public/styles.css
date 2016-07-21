@@ -13,26 +13,58 @@ html, body{
 	background-color: lightblue;
 	width: 90%;
 	margin: auto;
-	height: 180px;
+	height: 160px;
 	position: relative;
 	margin-top: 15px;
 }
 
+.orderByBox{
+	margin: 10px;
+}
+.archiveButton{
+	cursor: pointer;
+	color: red;
+}
+
+.restoreButton{
+	cursor: pointer;
+	color: green;
+}
+.useSessionButton{
+	cursor: pointer;
+}
+
+ /* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; cursor: pointer; padding-left: 10px; padding-top:5px;}
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
 .header h1{
 	color: green;
-	padding: 10px;
-	font-size: 28px;
+	padding-left: 10px;
+	padding-top:2px;
+	padding-bottom:2px;
+	font-size: 26px;
 }
 .header h2{
 	color: blue;
-	padding: 10px;
-	font-size: 22px;
+	padding-left: 10px;
+	font-size: 18px;
 }
 
 .header h3{
 	color: blue;
-	padding: 10px;
-	font-size: 16px;
+	padding-right: 10px;
+	font-size: 14px;
 	float: right;
 }
 
@@ -169,22 +201,3 @@ input[type=image]{
 	white-space: nowrap;
 	overflow-x: auto;
 }
-
-/*
-
-input[type=text]{
-    background-color: blue;
-}
-
-input[type=text]{
-    background-color: blue;
-}
-
-input.ng-invalid.ng-touched {
-    background-color: pink;
-  }
-
-input.ng-valid.ng-touched {
-    background-color: lightblue;
-  }
-*/

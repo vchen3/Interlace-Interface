@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="myApp">
 <head>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
 	<meta charset="UTF-8">
 	<title>Interlace Interface</title>
 	<link rel="stylesheet" type="text/css" href="styles.css"></link>
@@ -12,6 +13,7 @@
 	<base href="/" />
 	
 </head>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
@@ -29,18 +31,23 @@
 <body ng-controller="InterfaceController">
 
 	<div class="header">
-      <h5>See all sessions</h5>
+	<md-button class="md-icon-button" onclick="location.href='/allSessions'">
+    	<i class="material-icons md-36">home</i>
+	</md-button>
+
       <h1>{{allData.promptTitle}}</h1>
       <h2>{{allData.promptText}}</h2>
       <h3>{{allData.teacherName}}</h3>
       <h3>{{allData.date}}</h3>
 
-      <p>Order by</p>
-      	<select ng-model="myVar">
-			<option value="name">Name
-			<option value="time">Time
-			<option value="other">Original
-		</select>
+      	<div class = "orderByBox">
+      		<p>Order by</p>
+	      	<select ng-model="myVar">
+				<option value="name">Name</option>
+				<option value="time">Time</option>
+				<option value="other">Original</option>
+			</select>
+		</div>
       <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
       <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
       <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
@@ -56,7 +63,7 @@
 				<div ng-switch-when="name">
 					<div ng-repeat="item in allData.ideas | orderBy: 'name'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+					<!--<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>-->
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
@@ -77,7 +84,7 @@
 				<div ng-switch-when="time">
 					<div ng-repeat="item in allData.ideas | orderBy: 'time'" class = "ideaBox">
 					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+					<!--<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>-->
 
 					<!--Load textcontent -->
 					<div class = "contentBox" ng-if=item.contentType=="text">
@@ -99,7 +106,7 @@
 				<div ng-switch-when="other">
 					<div ng-repeat="item in allData.ideas" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+						<!--<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>-->
 
 						<!--Load textcontent -->
 						<div class = "contentBox" ng-if=item.contentType=="text">
@@ -120,7 +127,7 @@
 				<div ng-switch-default>
 					<div ng-repeat="item in allData.ideas" class = "ideaBox">
 						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
+						<!--<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>-->
 
 						<!--Load textcontent -->
 						<div class = "contentBox" ng-if=item.contentType=="text">
@@ -141,7 +148,7 @@
 					<h2 id = "ideaName"> Add New Idea </h2>
 						<form id = "newIdea_frm" novalidate class="simple-form">
 							<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
-
+							<br>
 						<p>What idea type would you like to share?</p>
 				      		<label for="textButton">Text</label>
 				      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
@@ -150,8 +157,8 @@
 				      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
 
 				    	<div>
-				      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="your idea content here" ng-show="newIdea.contentType == 'text'"/><br />
-				      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Your image url here" ng-show="newIdea.contentType == 'image'"/><br />
+				      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="Idea content here" ng-show="newIdea.contentType == 'text'"/><br />
+				      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
 				    	</div>
 
 				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />

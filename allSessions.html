@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="myApp">
 <head>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
 	<meta charset="UTF-8">
 	<title>Interlace Interface</title>
 	<link rel="stylesheet" type="text/css" href="styles.css"></link>
@@ -12,6 +13,8 @@
 	<base href="/" />
 	
 </head>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
@@ -29,33 +32,36 @@
 <body ng-controller="InterfaceController">
 
 	<div class="header">
+	<md-button class="md-icon-button" onclick="location.href='/allSessions'">
+    	<i class="material-icons md-36">home</i>
+	</md-button>
       <h1>All Sessions</h1>
+      <h2>Click to use specific session</h2>
       <h3>Dr. E</h3>
-  
-      <br>
 
     </div>
 
 	<div class="ideaPanel">
 
 		<div ng-repeat="item in allSessions | filter:{visible:true}" class = "visibleSessionBox">
-			<h5 ng-click="removeSession(item)">[archive]</h5>
-			<h5 ng-click="restoreSession(item)">[restore]</h5>
+			<h5 ng-click="removeSession(item)" class = "archiveButton">[archive]</h5>
 			<br>
 			<h2 id = "ideaName"> {{item.promptTitle}}</h2>
 			<h2 id = "ideaText"> {{item.promptText}}</h2>
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
 			<h2 id = "ideaText"> {{item.date}}</h2>
-			<input type="button" ng-click="useSession(item)" value="Use Session" />
+			<br>
+			<input type="button" class = "useSessionButton" onclick="location.href='/'" ng-click="useSession(item)" value="Use Session" />
+
 		</div>
 		<div ng-repeat="item in allSessions | filter:{visible:false}" class = "invisibleSessionBox">
-			<h5 ng-click="removeSession(item)">[archive]</h5>
-			<h5 ng-click="restoreSession(item)">[restore]</h5>
+			<h5 ng-click="restoreSession(item)" class = "restoreButton">[restore]</h5>
+			<br>
 			<h2 id = "ideaName"> {{item.promptTitle}}</h2>
 			<h2 id = "ideaText"> {{item.promptText}}</h2>
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
 			<h2 id = "ideaText"> {{item.date}}</h2>
-			<input type="button" ng-click="useSession(item)" value="Use Session" />
+
 		</div>
 
 			<div class = "newSessionBox">
