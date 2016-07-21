@@ -14,35 +14,41 @@ expressApp.use(bodyParser.urlencoded({
   extended: true
 }));
 
+//Load default HTML 
+expressApp.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+
+//Load HTML with data of all mongoDB documents
 expressApp.get('/allSessions', function(req, res){
   res.sendFile(__dirname + '/allSessions.html');  
 });
 
+//Set current session to use
 expressApp.post('/setSession', function(req, res){
   //console.log(req.body);
   var sessionID = req.body._id;
   //console.log(sessionID);
   currentSession = sessionID;
+  console.log('current session ID: '+currentSession)
   //console.log(currentSession);
 });
 
-expressApp.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-
-expressApp.get('/getSessionData', function(req, res){
+//Returns all documents in collection
+expressApp.get('/getAllSessionData', function(req, res){
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     db.collection(currentCollection).find().toArray(function(err,result){
       if (err){
         throw err;
       }
+      //console.log(result);
       res.json(result);
     });
   });
 });
 
-//Connect running mongoDB instance running on localhost port 27017 to test database
+//List information about current session
 expressApp.get('/list', function(req, res){
     MongoClient.connect(url, function(err, db) {
     //console.log("Attempting list");
@@ -60,8 +66,10 @@ expressApp.get('/list', function(req, res){
    });
 });
 
+//Receives the ideaID of liked idea (string integer)
 expressApp.get('/like/:id', function(req,res){
   var idNumber = Number(req.params.id);
+  //console.log(idNumber);
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting to send allData");
     assert.equal(null, err);
@@ -69,24 +77,22 @@ expressApp.get('/like/:id', function(req,res){
       if (err){
         throw err;
       }
+      //Iterate through all documents
       for (var i = 0; i<result.length; i++){
         if (result[i]._id == currentSession){
-          //console.log(idNumber);
-          db.collection(currentCollection).update({_id:currentSession},{$set:{"ideas.1":{"likes":0}}});
-          //db.collection(currentCollection).update({_id:currentSession},{$inc:{"ideas.4":{"likes":1}}});
+          //console.log('found sesh');
+          var objectSession = ObjectId(currentSession);
+          var setLike = 'ideas.'+String(idNumber)+'.likes';
+          //console.log(setLike);
+          //console.log('ideas.1.likes');
+          //var n = setLike.localeCompare('ideas.1.likes');
+          //console.log(n);
+          db.collection(currentCollection).update({_id:objectSession},{$inc:{setLike:1}});
+          //db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
+          //db.collection(currentCollection).update({_id:objectSession},{$set:{setLike:0}});
         }
       }
     });
-    //var idNumber = Number(req.params.id);
-    /*db.collection(currentCollection).update({"ideas.ideaID":idNumber},{$inc:{"ideas.$.likes":1}});
-    db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
-      if (err){
-        throw err;
-      }
-      console.log(result);
-      //console.log(result[0].ideas[0].likes);
-      //res.json(result[0].ideas[0].likes);
-    })*/
    });
 });
 

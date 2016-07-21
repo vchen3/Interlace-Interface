@@ -25,14 +25,14 @@ angularApp.controller("InterfaceController",
 
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
+
 		//console.log("*******");
-		//console.log($scope.allData);
+		console.log($scope.allData);
 	});
 
-	$http.get('/getSessionData').then(function(response){
+	$http.get('/getAllSessionData').then(function(response){
+		//All mongoDB documents
 		$scope.allSessions = response.data;
-		//console.log($scope.allSessions);
-		//console.log(response.data);
 	});
 
 
