@@ -29,23 +29,23 @@
 <body ng-controller="InterfaceController">
 
 	<div class="header">
+      <h5>See all sessions</h5>
       <h1>{{allData.promptTitle}}</h1>
       <h2>{{allData.promptText}}</h2>
       <h3>{{allData.teacherName}}</h3>
       <h3>{{allData.date}}</h3>
-      <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
-      <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
-      <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
-  
-      <br>
 
-	<p>Order by</p>
+      <p>Order by</p>
       	<select ng-model="myVar">
 			<option value="name">Name
 			<option value="time">Time
 			<option value="other">Original
 		</select>
-    </div>
+      <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
+      <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
+      <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
+  
+      </div>
 
 	<div class="ideaPanel">
 

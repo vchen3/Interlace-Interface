@@ -27,12 +27,22 @@ angularApp.controller("InterfaceController",
 		$scope.allData = response.data;
 
 		//console.log("*******");
-		console.log($scope.allData);
+		//console.log($scope.allData);
 	});
 
 	$http.get('/getAllSessionData').then(function(response){
 		//All mongoDB documents
 		$scope.allSessions = response.data;
+
+		var visibleSessionsArray = [];
+		for (var i = 0; i<response.data.length; i++){
+			if (response.data[i].visible){
+				visibleSessionsArray.push(response.data[i]);
+			}
+		} 
+
+		$scope.visibleSessions = visibleSessionsArray;
+		console.log($scope.visibleSessions);
 	});
 
 
@@ -40,13 +50,32 @@ angularApp.controller("InterfaceController",
 		console.log('socket on init');
 	});
 
-	/*$scope.likeAll = function(){
-		$http.get('/like').then(function(response){
-			console.log('sent like');
+	$scope.removeSession = function(inputtedSession){
+		//console.log(inputtedSession);
+		//console.log(typeof(inputtedSession));
+		$http.post('/removeSession',inputtedSession).then(function(response){
+			//Receiving new session and pushing to sessions array
+			($scope.allSessions) = (response.data);
+
+			//Update all clients
+			//socket.emit('updateSessions');
 		});
-	};*/
+	};
+
+	$scope.restoreSession = function(inputtedSession){
+		//console.log(inputtedSession);
+		//console.log(typeof(inputtedSession));
+		$http.post('/restoreSession',inputtedSession).then(function(response){
+			//Receiving new session and pushing to sessions array
+			($scope.allSessions) = (response.data);
+
+			//Update all clients
+			//socket.emit('updateSessions');
+		});
+	};
 
 	$scope.addSession = function(inputtedSession){
+		$("#newSession_frm")[0].reset();
 		$scope.newSession = angular.copy(inputtedSession);
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
@@ -55,15 +84,25 @@ angularApp.controller("InterfaceController",
 			"promptText":$scope.newSession.promptText,
 			"teacherName":$scope.newSession.teacherName,
 			"date":$scope.newSession.date,
-			"ideas":[]
+			"ideas":[],
+			"visible":true
 		};
 
 		$http.post('/addNewSession',fullNewSession).then(function(response){
-			//Receiving new idea and pushing to sessions array
-			//($scope.allSessions).push(response.data);
+			//Receiving new session and pushing to sessions array
+			($scope.allSessions).push(response.data);
 
+			//Update all clients
+			socket.emit('updateSessions');
 		});
 	};
+
+	socket.on('updateSessions', function(){
+		$http.get('/getAllSessionData/').then(function(response){
+			//console.log(response.data);
+			$scope.allSessions = response.data;
+		})
+	});
 
 	$scope.useSession = function(inputtedSession){
 		$http.post('/setSession',inputtedSession).then(function(response){
@@ -87,10 +126,15 @@ angularApp.controller("InterfaceController",
 			($scope.allData.ideas).push(response.data);
 
 			//Update all clients
-			socket.emit('updateNewIdea', fullNewIdea);
-			//console.log('Added ' + response);
+			socket.emit('updateIdeas');
 		});
 	};
+
+	socket.on('updateIdeas', function(){
+		$http.get('/updateIdeas/').then(function(response){
+			($scope.allData.ideas) = response.data;
+		})
+	});
 
 
 	$scope.newLike = function(incomingID) { 
@@ -108,25 +152,8 @@ angularApp.controller("InterfaceController",
 			//$scope.allData = response.data;
 			//$scope.allData.ideas[i].likes = response.data;
 		});
-	};
 
-	socket.on('updateAll', function(receivedIdea){
-		$http.get('/list').then(function(response){
-			$scope.allData = response.data;
-		})
-	});
-
-
-	socket.on('updateNewIdea', function(receivedIdea){
-		var rIdeaID = (receivedIdea.ideaID);
-		$http.get('/updateNewIdea/'+rIdeaID).then(function(response){
-			//console.log("RESPONSE DATA");
-			console.log(response.data);
-			($scope.allData.ideas) = response.data;
-		})
-	});
-
-	socket.on('updateLike', function(receivedIdea){
+		socket.on('updateLike', function(receivedIdea){
 		//console.log('updating like of idea '+receivedIdea);
 		$http.get('/updateLike/'+receivedIdea).then(function(response){
 			//console.log("RESPONSE DATA");
@@ -141,8 +168,13 @@ angularApp.controller("InterfaceController",
       		}
 		})
 	});
+	};
 
-	socket.on('')
+	socket.on('updateAll', function(receivedIdea){
+		$http.get('/list').then(function(response){
+			$scope.allData = response.data;
+		})
+	});
 
 	socket.on('error', function (err) {
     	console.log("!error! " + err);

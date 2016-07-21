@@ -30,7 +30,7 @@ expressApp.post('/setSession', function(req, res){
   var sessionID = req.body._id;
   //console.log(sessionID);
   currentSession = sessionID;
-  console.log('current session ID: '+currentSession)
+  console.log('switched to session ID: '+currentSession)
   //console.log(currentSession);
 });
 
@@ -68,6 +68,7 @@ expressApp.get('/list', function(req, res){
 
 //Receives the ideaID of liked idea (string integer)
 expressApp.get('/like/:id', function(req,res){
+  console.log('liking');
   var idNumber = Number(req.params.id);
   //console.log(idNumber);
   MongoClient.connect(url, function(err, db) {
@@ -83,12 +84,13 @@ expressApp.get('/like/:id', function(req,res){
           //console.log('found sesh');
           var objectSession = ObjectId(currentSession);
           var setLike = 'ideas.'+String(idNumber)+'.likes';
-          //console.log(setLike);
+          console.log(setLike);
           //console.log('ideas.1.likes');
           //var n = setLike.localeCompare('ideas.1.likes');
           //console.log(n);
           db.collection(currentCollection).update({_id:objectSession},{$inc:{setLike:1}});
-          //db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
+          console.log('like');
+          //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.1.likes':1}});
           //db.collection(currentCollection).update({_id:objectSession},{$set:{setLike:0}});
         }
       }
@@ -101,6 +103,7 @@ expressApp.get('/updateLike/:id', function(req,res){
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var idNumber = Number(req.params.id);
+    var objectSession = ObjectId(currentSession);
     db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
       if (err){
         throw err;
@@ -113,43 +116,38 @@ expressApp.get('/updateLike/:id', function(req,res){
    });
 });
 
-expressApp.get('/updateNewIdea/:id', function(req,res){
-  //var newID = (req.params.id);
-  //console.log(newID);
-  MongoClient.connect(url, function(err, db) {
+//Add new idea to database in relevant document
+expressApp.post('/addNewIdea', function(req, res){
+    MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    var idNumber = Number(req.params.id);
-
-    //Send back all ideas
-    db.collection(currentCollection).find().toArray(function(err, result) {
+    var objectSession = ObjectId(currentSession);
+    db.collection(currentCollection).update({_id:objectSession},{$push:{"ideas":req.body}});
+    //var idNumber = Number(req.body.ideaID);
+    db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
       if (err){
         throw err;
       }
-      //console.log(result[0]);
-      res.json(result[0].ideas);
-    });
-    /*db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
-      if (err){
-        throw err;
-      }
-      //Send back newest idea
-      res.json(result[0].ideas[0]);
-    })*/
+      //Result holds an array with the one relevant document
+      //Send back the new idea
+      res.json(result[0].ideas.slice(-1)[0]);
+    })
    });
 });
 
-expressApp.post('/addNewIdea', function(req, res){
-    MongoClient.connect(url, function(err, db) {
-
+expressApp.get('/updateIdeas', function(req,res){
+  //var objectSession = ObjectId(currentSession);
+  MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    db.collection(currentCollection).update({},{$push:{"ideas":req.body}});
-    var idNumber = Number(req.body.ideaID);
-    db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
+    var objectSession = ObjectId(currentSession);
+    //Send back all ideas
+    db.collection(currentCollection).find({_id:objectSession}).toArray(function(err, result) {
       if (err){
         throw err;
       }
-      res.json(result[0].ideas[0]);
-    })
+      //Result holds an array with the one relevant document
+      //Send back the ideas array
+      res.json(result[0].ideas);
+    });
    });
 });
 
@@ -162,8 +160,45 @@ expressApp.post('/addNewSession', function(req, res){
       if (err){
         throw err;
       }
-      res.json();
+      res.json(result.slice(-1)[0]);
+      //res.json(result);
     })
+   });
+});
+
+expressApp.post('/removeSession', function(req, res){
+    //Incoming entire session document
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      var objectSession = ObjectId(req.body._id);
+      //console.log(objectSession);
+      db.collection(currentCollection).update({_id:objectSession},{$set:{"visible":false}})
+      db.collection(currentCollection).find().toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        res.json(result);
+        //res.json(result.slice(-1)[0]);
+        //console.log(result);
+      })
+   });
+});
+
+expressApp.post('/restoreSession', function(req, res){
+    //Incoming entire session document
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      var objectSession = ObjectId(req.body._id);
+      //console.log(objectSession);
+      db.collection(currentCollection).update({_id:objectSession},{$set:{"visible":true}})
+      db.collection(currentCollection).find().toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        res.json(result);
+        //res.json(result.slice(-1)[0]);
+        //console.log(result);
+      })
    });
 });
 
@@ -211,8 +246,11 @@ io.on('connection', function(socket){
 	socket.on('updateLike', function(ideaID){
 		io.emit('updateLike', ideaID);
 	});
-  socket.on('updateNewIdea', function(ideaID){
-    io.emit('updateNewIdea', ideaID);
+  socket.on('updateIdeas', function(ideaID){
+    io.emit('updateIdeas', ideaID);
+  });
+  socket.on('updateSessions', function(ideaID){
+  io.emit('updateSessions', ideaID);
   });
 });
 
