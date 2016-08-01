@@ -177,6 +177,45 @@ expressApp.get('/updateIdeas', function(req,res){
 
 //Save incoming JSON object as document in database
 expressApp.post('/addNewSession', function(req, res){
+    //console.log(req.body);
+    //Check that req.body has title, text, teacher, date, visible value, ideas array
+    //if missing any of these, send error message
+    //If req.body doesn't have ideas array, then create it here
+    //after checking: insert full idea into database
+
+    //var thisSession = JSON.stringify(req.body);
+    //console.log(typeof(thisSession));
+    //what is res send? does it include exiting?  Make sure that by sending this, it doesn't accidentally
+    //fulfill and go back to the addNewSession on the controller.js side
+    if (!('promptTitle' in req.body)){
+      res.send('Please include a prompt title.');
+      return;
+    }
+    if (!('promptText' in req.body)){
+      res.send('Please include prompt text.');
+      return;
+    }
+    if (!('teacherName' in req.body)){
+      console.log("Please include a teacher's name.");
+      return;
+    }
+    if (!('teacherName' in req.body)){
+      console.log("Please include a teacher's name.");
+      return;
+    }
+    if (!('date' in req.body)){
+      console.log("Please include the date.");
+      return;
+    }
+    if (!('visible' in req.body)){
+      console.log("Please specify if this session should be visible or not.");
+      return;
+    }
+    if (!('ideas' in req.body)){
+      req.body['ideas'] = [];
+      console.log(req.body);
+    }
+
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     db.collection(currentCollection).save(req.body);

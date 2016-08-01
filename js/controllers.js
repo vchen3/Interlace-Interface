@@ -50,24 +50,22 @@ angularApp.controller("InterfaceController",
 	});
 
 	//Functions for editing sessions
-	$scope.removeSession = function(inputtedSession){
+	$scope.archiveSession = function(inputtedSession){
 		$http.post('/removeSession',inputtedSession).then(function(response){
 			($scope.allSessions) = (response.data);
 
 			//Update all clients
-			//socket.emit('updateSessions');
+			socket.emit('updateSessions');
 		});
 	};
 
 	$scope.restoreSession = function(inputtedSession){
-		//console.log(inputtedSession);
-		//console.log(typeof(inputtedSession));
 		$http.post('/restoreSession',inputtedSession).then(function(response){
 			//Receiving new session and pushing to sessions array
 			($scope.allSessions) = (response.data);
 
 			//Update all clients
-			//socket.emit('updateSessions');
+			socket.emit('updateSessions');
 		});
 	};
 
@@ -89,8 +87,10 @@ angularApp.controller("InterfaceController",
 		};
 
 		$http.post('/addNewSession',fullNewSession).then(function(response){
+			console.log(response.data);
+			console.log("********");
 			//Receiving new session and pushing to sessions array
-			($scope.allSessions).push(response.data);
+			//($scope.allSessions).push(response.data);
 
 			//Update all clients
 			socket.emit('updateSessions');
@@ -160,6 +160,7 @@ angularApp.controller("InterfaceController",
 	};
 
 	//Show real-time updates of likes by updating the scope value of all other windows
+	//Update scope value to current value stored in database 
 	socket.on('updateLike', function(receivedIdea){
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
 				var ideasArray = $scope.allData.ideas;
