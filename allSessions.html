@@ -48,9 +48,8 @@
     <div ng-controller="InterfaceController">
 
 	<div class="ideaPanel">
-
-	<p ng-click="myStyle={'background-color':'red'}" ng-style = "myStyle">mp3 </p>
-	<pre>myStyle = {{myStyle}}</pre>
+	<!--<p ng-click="myStyle={'background-color':'red'}" ng-style = "myStyle">mp3 </p>
+	<pre>myStyle = {{myStyle}}</pre>-->
 		<div ng-repeat="item in allSessions | filter:{visible:true}" class = "visibleSessionBox">
 			<h5 ng-click="removeSession(item)" class = "archiveButton">[archive]</h5>
 			<br>
@@ -59,7 +58,7 @@
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
 			<h2 id = "ideaText"> {{item.date}}</h2>
 			<br>
-			<input type="button" class = "useSessionButton" onclick="location.href='/'" ng-click="useSession(item)" value="Use Session" />
+			<input type="button" class = "useSessionButton" onclick="location.href='/index'" ng-click="useSession(item)" value="Use Session" />
 
 		</div>
 		<div ng-repeat="item in allSessions | filter:{visible:false}" class = "invisibleSessionBox">
@@ -83,7 +82,6 @@
 						<input type="submit" ng-click="addSession(newSession)" value="Save" />
 					</form>
 			</div>
-		<hr>
 	</div>
 
 </body>

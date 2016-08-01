@@ -29,13 +29,15 @@ angularApp.controller("InterfaceController",
 	$http.get('/list').then(function(response){
 		$scope.allData = response.data;
 
-		//console.log("*******");
+		//console.log("***allData***");
 		//console.log($scope.allData);
 	});
 
 	$http.get('/getAllSessionData').then(function(response){
 		//All mongoDB documents
 		$scope.allSessions = response.data;
+		//console.log("***allSessions***");
+		//console.log($scope.allSessions);
 
 		var visibleSessionsArray = [];
 		for (var i = 0; i<response.data.length; i++){
@@ -46,6 +48,10 @@ angularApp.controller("InterfaceController",
 		$scope.visibleSessions = visibleSessionsArray;
 		//console.log($scope.visibleSessions);
 	});
+
+	//console.log($scope.allData);
+	//console.log("*******");
+	//console.log($scope.allSessions);
 
 
 	socket.on('init', function(){
@@ -130,12 +136,12 @@ angularApp.controller("InterfaceController",
 			//Update all clients
 			socket.emit('updateIdeas');
 		});
-		socket.on('updateIdeas', function(){
+	};
+	socket.on('updateIdeas', function(){
 			$http.get('/updateIdeas/').then(function(response){
 				($scope.allData.ideas) = response.data;
 			})
-		});
-	};
+	});
 
 	
 
@@ -143,7 +149,7 @@ angularApp.controller("InterfaceController",
 	$scope.newLike = function(incomingID) { 
 		//console.log("CLIENT LIKING IDEA: " + incomingID);
 		$http.get('/like/'+incomingID).then(function(response){
-			console.log(response.data);
+			//console.log(response.data);
 			var ideasArray = $scope.allData.ideas;
 			for (var i = 0; i<ideasArray.length; i++){
 				var currentID = ideasArray[i].ideaID;
@@ -153,25 +159,24 @@ angularApp.controller("InterfaceController",
 				}
 			}
 		});
+	};
 
-		socket.on('updateLike', function(receivedIdea){
+	socket.on('updateLike', function(receivedIdea){
 			//console.log('received emit');
 			//console.log('updating like of idea '+receivedIdea);
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
-				//console.log("RESPONSE DATA");
+				//alert(response.data);
 				//console.log(response.data);
 				var ideasArray = $scope.allData.ideas;
 				for (var i = 0; i<ideasArray.length; i++){
 					var currentID = ideasArray[i].ideaID;
 					if (currentID===receivedIdea){
-						//console.log(receivedIdea);
 						$scope.allData.ideas[i].likes = response.data;
 					}
 	 
 	      		}
 			})
 	});
-	};
 
 	socket.on('updateAll', function(receivedIdea){
 		$http.get('/list').then(function(response){

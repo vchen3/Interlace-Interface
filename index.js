@@ -16,6 +16,10 @@ expressApp.use(bodyParser.urlencoded({
 
 //Load default HTML 
 expressApp.get('/', function(req, res){
+  res.sendFile(__dirname + '/allSessions.html');
+});
+
+expressApp.get('/index', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
@@ -89,8 +93,15 @@ expressApp.get('/like/:id', function(req,res){
 
           var action = {};
           action[trueVar] = 1;
-         
+
           db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
+
+          /*//Reset all likes
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.0.likes':0}});
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.2.likes':0}});
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.3.likes':0}});*/
+
           db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
             if (err) {
               throw err;
