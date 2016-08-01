@@ -106,7 +106,7 @@ expressApp.get('/like/:id', function(req,res){
 
 
 expressApp.get('/updateLike/:id', function(req,res){
-  console.log('updating like idea ' + req.params.id);
+  //console.log('updating like idea ' + req.params.id);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var idNumber = Number(req.params.id);
@@ -209,33 +209,6 @@ expressApp.post('/restoreSession', function(req, res){
       })
    });
 });
-
-/*expressApp.get('/resetLikes', function(req, res){
-  MongoClient.connect(url, function(err, db) {
-    //console.log("Attempting resetLikes");
-    assert.equal(null, err);
-    //mongoDB shell command: 
-    //db.collection(currentCollection)update({},{$set:{'ideas.1.likes':0}})
-    db.collection(currentCollection).find().toArray(function(err, result) {
-      if (err){
-        throw err;
-      }
-      var fullDocument = result;
-      console.log(fullDocument);
-      var ideasArray = fullDocument.ideas;
-
-    //Need to get number of likes to iterate through
-    //var ideaSize = db.collection(currentCollection)
-    /*for (var i = 0; i<ideasArray.length; i++){
-      var likedIdea = 'ideas['+i+'].likes';
-      console.log(likedIdea);
-      db.collection(currentCollection).update({},{$set:{'likedIdea':0}})
-      //console.log(result[i].s.name);
-      //collectionArray.push(result[i].s.name)
-      }
-
-    });*/
-
 
 
     //db.collection(currentCollection).updateMany({}, {$set:{likes:0}})

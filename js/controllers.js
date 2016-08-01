@@ -43,7 +43,6 @@ angularApp.controller("InterfaceController",
 				visibleSessionsArray.push(response.data[i]);
 			}
 		} 
-
 		$scope.visibleSessions = visibleSessionsArray;
 		//console.log($scope.visibleSessions);
 	});
@@ -152,18 +151,15 @@ angularApp.controller("InterfaceController",
 					$scope.allData.ideas[i].likes = response.data;
 					socket.emit('updateLike',incomingID);
 				}
- 
-      		}
-			//$scope.allData = response.data;
-			//$scope.allData.ideas[i].likes = response.data;
+			}
 		});
 
 		socket.on('updateLike', function(receivedIdea){
 			//console.log('received emit');
 			//console.log('updating like of idea '+receivedIdea);
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
-				console.log("RESPONSE DATA");
-				console.log(response.data);
+				//console.log("RESPONSE DATA");
+				//console.log(response.data);
 				var ideasArray = $scope.allData.ideas;
 				for (var i = 0; i<ideasArray.length; i++){
 					var currentID = ideasArray[i].ideaID;
