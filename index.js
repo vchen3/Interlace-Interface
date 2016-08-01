@@ -30,7 +30,7 @@ expressApp.post('/setSession', function(req, res){
   var sessionID = req.body._id;
   //console.log(sessionID);
   currentSession = sessionID;
-  console.log('switched to session ID: '+currentSession)
+  //console.log('switched to session ID: '+currentSession)
   //console.log(currentSession);
 });
 
@@ -68,9 +68,9 @@ expressApp.get('/list', function(req, res){
 
 //Receives the ideaID of liked idea (string integer)
 expressApp.get('/like/:id', function(req,res){
-  console.log('liking');
+  //console.log('liking');
   var idNumber = Number(req.params.id);
-  //console.log(idNumber);
+  console.log('liking ' + idNumber);
   MongoClient.connect(url, function(err, db) {
     //console.log("Attempting to send allData");
     assert.equal(null, err);
@@ -84,14 +84,29 @@ expressApp.get('/like/:id', function(req,res){
           //console.log('found sesh');
           var objectSession = ObjectId(currentSession);
           var setLike = 'ideas.'+String(idNumber)+'.likes';
-          console.log(setLike);
+          var trueLike = String(setLike)
           //console.log('ideas.1.likes');
-          //var n = setLike.localeCompare('ideas.1.likes');
+          //var n = trueLike.localeCompare('ideas.1.likes');
           //console.log(n);
-          db.collection(currentCollection).update({_id:objectSession},{$inc:{setLike:1}});
-          console.log('like');
+          //db.collection(currentCollection).update({_id:objectSession},{$inc:{trueLike:1}});
+          //console.log('like');
           //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.1.likes':1}});
-          //db.collection(currentCollection).update({_id:objectSession},{$set:{setLike:0}});
+         
+          //setModifier.$inc['ideas' + String(idNumber) + '.name'];
+
+          var variable = 'ideas.' + String(idNumber - 1) + '.likes';
+          var trueVar = String(variable)
+          console.log(trueVar);
+
+          var action = {};
+          action[trueVar] = 1;
+         
+          db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
+
+          /*//Reset all likes
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.2.likes':0}});
+          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.3.likes':0}});*/
         }
       }
     });

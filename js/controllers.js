@@ -19,6 +19,9 @@ angularApp.controller("InterfaceController",
 {    
 	var vm = this;
 
+	//$scope.name = 'Vivien';
+	//console.log($scope.name);
+
 	$scope.$route = $route;
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
@@ -42,12 +45,12 @@ angularApp.controller("InterfaceController",
 		} 
 
 		$scope.visibleSessions = visibleSessionsArray;
-		console.log($scope.visibleSessions);
+		//console.log($scope.visibleSessions);
 	});
 
 
 	socket.on('init', function(){
-		console.log('socket on init');
+		//console.log('socket on init');
 	});
 
 	$scope.removeSession = function(inputtedSession){
@@ -128,17 +131,18 @@ angularApp.controller("InterfaceController",
 			//Update all clients
 			socket.emit('updateIdeas');
 		});
+		socket.on('updateIdeas', function(){
+			$http.get('/updateIdeas/').then(function(response){
+				($scope.allData.ideas) = response.data;
+			})
+		});
 	};
 
-	socket.on('updateIdeas', function(){
-		$http.get('/updateIdeas/').then(function(response){
-			($scope.allData.ideas) = response.data;
-		})
-	});
+	
 
 
 	$scope.newLike = function(incomingID) { 
-		//console.log("CLIENT LIKING IDEA: " + incomingID);
+		console.log("CLIENT LIKING IDEA: " + incomingID);
 		$http.get('/like/'+incomingID).then(function(response){
 			var ideasArray = $scope.allData.ideas;
 			for (var i = 0; i<ideasArray.length; i++){

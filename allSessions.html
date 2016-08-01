@@ -38,11 +38,19 @@
       <h1>All Sessions</h1>
       <h2>Click to use specific session</h2>
       <h3>Dr. E</h3>
+      <!--<input type = "button" value = "set color" ng-click="myStyle={'background-color':'red'}">-->
+
+    <!--Hello <input ng-model='name'> <hr/>
+  	<p>{{name}}</p>-->
 
     </div>
 
+    <div ng-controller="InterfaceController">
+
 	<div class="ideaPanel">
 
+	<p ng-click="myStyle={'background-color':'red'}" ng-style = "myStyle">mp3 </p>
+	<pre>myStyle = {{myStyle}}</pre>
 		<div ng-repeat="item in allSessions | filter:{visible:true}" class = "visibleSessionBox">
 			<h5 ng-click="removeSession(item)" class = "archiveButton">[archive]</h5>
 			<br>
