@@ -142,35 +142,38 @@ angularApp.controller("InterfaceController",
 
 
 	$scope.newLike = function(incomingID) { 
-		console.log("CLIENT LIKING IDEA: " + incomingID);
+		//console.log("CLIENT LIKING IDEA: " + incomingID);
 		$http.get('/like/'+incomingID).then(function(response){
+			console.log(response.data);
 			var ideasArray = $scope.allData.ideas;
 			for (var i = 0; i<ideasArray.length; i++){
 				var currentID = ideasArray[i].ideaID;
 				if (currentID===incomingID){
 					$scope.allData.ideas[i].likes = response.data;
+					socket.emit('updateLike',incomingID);
 				}
  
       		}
-			socket.emit('updateLike',incomingID);
 			//$scope.allData = response.data;
 			//$scope.allData.ideas[i].likes = response.data;
 		});
 
 		socket.on('updateLike', function(receivedIdea){
-		//console.log('updating like of idea '+receivedIdea);
-		$http.get('/updateLike/'+receivedIdea).then(function(response){
-			//console.log("RESPONSE DATA");
-			//console.log(response.data);
-			var ideasArray = $scope.allData.ideas;
-			for (var i = 0; i<ideasArray.length; i++){
-				var currentID = ideasArray[i].ideaID;
-				if (currentID===receivedIdea){
-					$scope.allData.ideas[i].likes = response.data;
-				}
- 
-      		}
-		})
+			//console.log('received emit');
+			//console.log('updating like of idea '+receivedIdea);
+			$http.get('/updateLike/'+receivedIdea).then(function(response){
+				console.log("RESPONSE DATA");
+				console.log(response.data);
+				var ideasArray = $scope.allData.ideas;
+				for (var i = 0; i<ideasArray.length; i++){
+					var currentID = ideasArray[i].ideaID;
+					if (currentID===receivedIdea){
+						//console.log(receivedIdea);
+						$scope.allData.ideas[i].likes = response.data;
+					}
+	 
+	      		}
+			})
 	});
 	};
 

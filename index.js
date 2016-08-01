@@ -68,11 +68,9 @@ expressApp.get('/list', function(req, res){
 
 //Receives the ideaID of liked idea (string integer)
 expressApp.get('/like/:id', function(req,res){
-  //console.log('liking');
   var idNumber = Number(req.params.id);
-  console.log('liking ' + idNumber);
   MongoClient.connect(url, function(err, db) {
-    //console.log("Attempting to send allData");
+    var objectSession = ObjectId(currentSession);
     assert.equal(null, err);
     db.collection(currentCollection).find().toArray(function(err, result) {
       if (err){
@@ -82,51 +80,46 @@ expressApp.get('/like/:id', function(req,res){
       for (var i = 0; i<result.length; i++){
         if (result[i]._id == currentSession){
           //console.log('found sesh');
-          var objectSession = ObjectId(currentSession);
           var setLike = 'ideas.'+String(idNumber)+'.likes';
           var trueLike = String(setLike)
-          //console.log('ideas.1.likes');
-          //var n = trueLike.localeCompare('ideas.1.likes');
-          //console.log(n);
-          //db.collection(currentCollection).update({_id:objectSession},{$inc:{trueLike:1}});
-          //console.log('like');
-          //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.1.likes':1}});
-         
-          //setModifier.$inc['ideas' + String(idNumber) + '.name'];
 
           var variable = 'ideas.' + String(idNumber - 1) + '.likes';
           var trueVar = String(variable)
-          console.log(trueVar);
+          //console.log(trueVar);
 
           var action = {};
           action[trueVar] = 1;
          
           db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
-
-          /*//Reset all likes
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.2.likes':0}});
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.3.likes':0}});*/
+          db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
+            if (err) {
+              throw err;
+            }
+            res.json(result[0].ideas[idNumber-1].likes);
+          })
         }
       }
-    });
-   });
+    })
+  })
 });
+    
+
 
 expressApp.get('/updateLike/:id', function(req,res){
- // console.log('updating like idea ' + req.params.id);
+  console.log('updating like idea ' + req.params.id);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var idNumber = Number(req.params.id);
     var objectSession = ObjectId(currentSession);
-    db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
+    //db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
+    db.collection(currentCollection).find({_id:objectSession},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
       if (err){
         throw err;
       }
-      //console.log(result[0].ideas[0]);
+      res.json(result[0].ideas[0].likes);
       //console.log(result[0].ideas[0].likes);
       //Send back updated number of likes
-      res.json(result[0].ideas[0].likes);
+      //res.json(result[0].ideas[0].likes);
     })
    });
 });
