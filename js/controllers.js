@@ -1,3 +1,8 @@
+/*Angular App 
+ * Holds all scope variables and functions for Angular/client-side
+ */
+
+
 var angularApp = angular.module("myApp", ['ngRoute']);
 
 console.log("starting angular app");
@@ -13,31 +18,27 @@ console.log("starting angular app");
 }]);
 */
 
+//Angular controller with scope variables defined
 angularApp.controller("InterfaceController", 
 	['$scope','$http', 'socket', '$route', '$routeParams', '$location', '$window',
 	function($scope,$http, socket, $route, $routeParams, $location, $window)
 {    
-	var vm = this;
 
-	//$scope.name = 'Vivien';
-	//console.log($scope.name);
+	//Setting scope variables
+	var vm = this;
 
 	$scope.$route = $route;
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
 
 	$http.get('/list').then(function(response){
+		//Current document's information
 		$scope.allData = response.data;
-
-		//console.log("***allData***");
-		//console.log($scope.allData);
 	});
 
 	$http.get('/getAllSessionData').then(function(response){
-		//All mongoDB documents
+		//All mongoDB documents' information
 		$scope.allSessions = response.data;
-		//console.log("***allSessions***");
-		//console.log($scope.allSessions);
 
 		var visibleSessionsArray = [];
 		for (var i = 0; i<response.data.length; i++){
@@ -46,23 +47,11 @@ angularApp.controller("InterfaceController",
 			}
 		} 
 		$scope.visibleSessions = visibleSessionsArray;
-		//console.log($scope.visibleSessions);
 	});
 
-	//console.log($scope.allData);
-	//console.log("*******");
-	//console.log($scope.allSessions);
-
-
-	socket.on('init', function(){
-		//console.log('socket on init');
-	});
-
+	//Functions for editing sessions
 	$scope.removeSession = function(inputtedSession){
-		//console.log(inputtedSession);
-		//console.log(typeof(inputtedSession));
 		$http.post('/removeSession',inputtedSession).then(function(response){
-			//Receiving new session and pushing to sessions array
 			($scope.allSessions) = (response.data);
 
 			//Update all clients
@@ -82,6 +71,9 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+	//Get input from form and create new JSON object for session
+	//Post JSON object to insert it as a document into database
+	//Append JSON object to allSessions array and call socket emit to update in real time
 	$scope.addSession = function(inputtedSession){
 		$("#newSession_frm")[0].reset();
 		$scope.newSession = angular.copy(inputtedSession);
@@ -104,7 +96,7 @@ angularApp.controller("InterfaceController",
 			socket.emit('updateSessions');
 		});
 	};
-
+	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateSessions', function(){
 		$http.get('/getAllSessionData/').then(function(response){
 			//console.log(response.data);
@@ -112,11 +104,15 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
+	//Set current session
 	$scope.useSession = function(inputtedSession){
 		$http.post('/setSession',inputtedSession).then(function(response){
 		})
 	};
 
+	//Get input from form and create new JSON object for idea
+	//Post JSON object to append to the "ideas" array in the relevant document
+	//Append JSON object to allSessions's ideas array and call socket emit to update in real time
 	$scope.addIdea = function(InputtedIdea){
 		$("#newIdea_frm")[0].reset();
 		$scope.newIdea = angular.copy(InputtedIdea);
@@ -137,15 +133,17 @@ angularApp.controller("InterfaceController",
 			socket.emit('updateIdeas');
 		});
 	};
+	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(){
 			$http.get('/updateIdeas/').then(function(response){
 				($scope.allData.ideas) = response.data;
 			})
 	});
 
-	
-
-
+	//Like idea based on ideaID
+	//Iterate through all ideas and change the value of $scope.allData.ideas[i].likes 
+	//to display the new value without refreshing the page
+	//Call socket emit to update in real time
 	$scope.newLike = function(incomingID) { 
 		//console.log("CLIENT LIKING IDEA: " + incomingID);
 		$http.get('/like/'+incomingID).then(function(response){
@@ -161,12 +159,9 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+	//Show real-time updates of likes by updating the scope value of all other windows
 	socket.on('updateLike', function(receivedIdea){
-			//console.log('received emit');
-			//console.log('updating like of idea '+receivedIdea);
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
-				//alert(response.data);
-				//console.log(response.data);
 				var ideasArray = $scope.allData.ideas;
 				for (var i = 0; i<ideasArray.length; i++){
 					var currentID = ideasArray[i].ideaID;
@@ -178,12 +173,6 @@ angularApp.controller("InterfaceController",
 			})
 	});
 
-	socket.on('updateAll', function(receivedIdea){
-		$http.get('/list').then(function(response){
-			$scope.allData = response.data;
-		})
-	});
-
 	socket.on('error', function (err) {
     	console.log("!error! " + err);
 	});
@@ -192,12 +181,10 @@ angularApp.controller("InterfaceController",
 
 'use strict';
 
-// Demonstrate how to register services
-// In this case it is a simple value service .
+// Factory to use socket.io service
 angularApp.factory('socket', function ($rootScope) {
-  //console.log('in app factory');
   var socket = io.connect();
-  //console.log(socket.connected);
+  //Print whether the sockets are connected every 5 seconds (true or false)
   setInterval(function(){ console.log(socket.connected); }, 5000);
   return {
     on: function (eventName, callback) {
@@ -220,6 +207,10 @@ angularApp.factory('socket', function ($rootScope) {
       })
     }
   };
+});
+
+socket.on('init', function(){
+	//console.log('socket on init');
 });
 
 

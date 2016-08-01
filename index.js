@@ -7,12 +7,40 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
 
-var currentSession = "578e3ed70e9540ef03359b6d";
-
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({
   extended: true
 }));
+
+expressApp.use(express.static(path.join(__dirname, '/public'))); //Add CSS
+expressApp.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, data
+expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angular and socket
+
+//Connect with socket.io
+io.on('connection', function(socket){
+  socket.on('updateAll', function(ideaObject){
+    io.emit('updateAll', ideaObject);
+  });
+  socket.on('updateLike', function(ideaID){
+    io.emit('updateLike', ideaID);
+  });
+  socket.on('updateIdeas', function(ideaID){
+    io.emit('updateIdeas', ideaID);
+  });
+  socket.on('updateSessions', function(ideaID){
+  io.emit('updateSessions', ideaID);
+  });
+});
+
+//Connect with mongoDB and set currentCollection
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+var ObjectId = require('mongodb').ObjectID;
+var url = 'mongodb://localhost:27017/InterfaceDatabase';
+var currentCollection = 'Geography';
+
+//Set default currentSession to be "World Geography" document on start
+var currentSession = "578e3ed70e9540ef03359b6d";
 
 //Load default HTML 
 expressApp.get('/', function(req, res){
@@ -23,19 +51,11 @@ expressApp.get('/index', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-//Load HTML with data of all mongoDB documents
-expressApp.get('/allSessions', function(req, res){
-  res.sendFile(__dirname + '/allSessions.html');  
-});
 
 //Set current session to use
 expressApp.post('/setSession', function(req, res){
-  //console.log(req.body);
   var sessionID = req.body._id;
-  //console.log(sessionID);
   currentSession = sessionID;
-  //console.log('switched to session ID: '+currentSession)
-  //console.log(currentSession);
 });
 
 //Returns all documents in collection
@@ -46,7 +66,6 @@ expressApp.get('/getAllSessionData', function(req, res){
       if (err){
         throw err;
       }
-      //console.log(result);
       res.json(result);
     });
   });
@@ -70,67 +89,53 @@ expressApp.get('/list', function(req, res){
    });
 });
 
+//Function to like idea
 //Receives the ideaID of liked idea (string integer)
+//Returns idea's updated number of likes
 expressApp.get('/like/:id', function(req,res){
   var idNumber = Number(req.params.id);
   MongoClient.connect(url, function(err, db) {
     var objectSession = ObjectId(currentSession);
     assert.equal(null, err);
-    db.collection(currentCollection).find().toArray(function(err, result) {
-      if (err){
+    
+    //Necessary for being able to increment value of dynamic variable
+    var variable = 'ideas.' + String(idNumber - 1) + '.likes';
+    var trueVar = String(variable)
+    var action = {};
+    action[trueVar] = 1;
+
+    db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
+    
+    //Equivalent of this call, but idNumber cannot be called in this format:
+    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
+
+    /*//Reset all likes
+    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.0.likes':0}});
+    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
+    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.2.likes':0}});
+    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.3.likes':0}});*/
+
+    db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
+      if (err) {
         throw err;
       }
-      //Iterate through all documents
-      for (var i = 0; i<result.length; i++){
-        if (result[i]._id == currentSession){
-          //console.log('found sesh');
-          var setLike = 'ideas.'+String(idNumber)+'.likes';
-          var trueLike = String(setLike)
-
-          var variable = 'ideas.' + String(idNumber - 1) + '.likes';
-          var trueVar = String(variable)
-          //console.log(trueVar);
-
-          var action = {};
-          action[trueVar] = 1;
-
-          db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
-
-          /*//Reset all likes
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.0.likes':0}});
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.2.likes':0}});
-          db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.3.likes':0}});*/
-
-          db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
-            if (err) {
-              throw err;
-            }
-            res.json(result[0].ideas[idNumber-1].likes);
-          })
-        }
-      }
-    })
+        res.json(result[0].ideas[idNumber-1].likes);
+      })
   })
 });
     
 
-
+//Update like value by returning the current number of likes stored in database
 expressApp.get('/updateLike/:id', function(req,res){
-  //console.log('updating like idea ' + req.params.id);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var idNumber = Number(req.params.id);
     var objectSession = ObjectId(currentSession);
-    //db.collection(currentCollection).find({},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
     db.collection(currentCollection).find({_id:objectSession},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
       if (err){
         throw err;
       }
       res.json(result[0].ideas[0].likes);
-      //console.log(result[0].ideas[0].likes);
-      //Send back updated number of likes
-      //res.json(result[0].ideas[0].likes);
     })
    });
 });
@@ -141,7 +146,6 @@ expressApp.post('/addNewIdea', function(req, res){
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
     db.collection(currentCollection).update({_id:objectSession},{$push:{"ideas":req.body}});
-    //var idNumber = Number(req.body.ideaID);
     db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
       if (err){
         throw err;
@@ -153,6 +157,7 @@ expressApp.post('/addNewIdea', function(req, res){
    });
 });
 
+//Update like value by returning all ideas in ideas array stored in database
 expressApp.get('/updateIdeas', function(req,res){
   //var objectSession = ObjectId(currentSession);
   MongoClient.connect(url, function(err, db) {
@@ -170,8 +175,8 @@ expressApp.get('/updateIdeas', function(req,res){
    });
 });
 
+//Save incoming JSON object as document in database
 expressApp.post('/addNewSession', function(req, res){
-  //console.log(req.body);
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     db.collection(currentCollection).save(req.body);
@@ -180,7 +185,6 @@ expressApp.post('/addNewSession', function(req, res){
         throw err;
       }
       res.json(result.slice(-1)[0]);
-      //res.json(result);
     })
    });
 });
@@ -215,43 +219,10 @@ expressApp.post('/restoreSession', function(req, res){
           throw err;
         }
         res.json(result);
-        //res.json(result.slice(-1)[0]);
-        //console.log(result);
       })
    });
 });
 
-
-    //db.collection(currentCollection).updateMany({}, {$set:{likes:0}})
-    //db.collection(currentCollection).updateMany({"ideas.ideaID":""},{$set:{"ideas.$.likes":0}});
-    
-
-expressApp.use(express.static(path.join(__dirname, '/public'))); //Add CSS
-expressApp.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, data
-expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angular and socket?
-
-//Connect with socket.io
-io.on('connection', function(socket){
-  socket.on('updateAll', function(ideaObject){
-    io.emit('updateAll', ideaObject);
-  });
-	socket.on('updateLike', function(ideaID){
-		io.emit('updateLike', ideaID);
-	});
-  socket.on('updateIdeas', function(ideaID){
-    io.emit('updateIdeas', ideaID);
-  });
-  socket.on('updateSessions', function(ideaID){
-  io.emit('updateSessions', ideaID);
-  });
-});
-
-//Connect with mongoDB
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/InterfaceDatabase';
-var currentCollection = 'Geography';
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
