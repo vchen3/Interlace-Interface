@@ -142,6 +142,33 @@ expressApp.get('/updateLike/:id', function(req,res){
 
 //Add new idea to database in relevant document
 expressApp.post('/addNewIdea', function(req, res){
+  console.log(req.body);
+    if (!('ideaID' in req.body)){
+      //Add this dynamically somehow, find the value
+      console.log('missing ideaID');
+      return;
+    }
+    if (!('name' in req.body)){
+      res.send("Please include the author's name.");
+      return;
+    }
+    if (!('time' in req.body)){
+      req.body['time'] = Date.now();
+      console.log(req.body);
+    }
+    if (!('contentType' in req.body)){
+      res.send("Please specify what type of content you'd like to share.");
+      return;
+    }
+    if (!('content' in req.body)){
+      res.send("Please include your idea's content.");
+      return;
+    }
+    if (!('likes' in req.body)){
+      req.body['likes'] = 0;
+      console.log(req.body);
+    }
+
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
@@ -177,16 +204,6 @@ expressApp.get('/updateIdeas', function(req,res){
 
 //Save incoming JSON object as document in database
 expressApp.post('/addNewSession', function(req, res){
-    //console.log(req.body);
-    //Check that req.body has title, text, teacher, date, visible value, ideas array
-    //if missing any of these, send error message
-    //If req.body doesn't have ideas array, then create it here
-    //after checking: insert full idea into database
-
-    //var thisSession = JSON.stringify(req.body);
-    //console.log(typeof(thisSession));
-    //what is res send? does it include exiting?  Make sure that by sending this, it doesn't accidentally
-    //fulfill and go back to the addNewSession on the controller.js side
     if (!('promptTitle' in req.body)){
       res.send('Please include a prompt title.');
       return;

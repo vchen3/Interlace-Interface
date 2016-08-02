@@ -90,7 +90,7 @@ angularApp.controller("InterfaceController",
 			console.log(response.data);
 			console.log("********");
 			//Receiving new session and pushing to sessions array
-			//($scope.allSessions).push(response.data);
+			($scope.allSessions).push(response.data);
 
 			//Update all clients
 			socket.emit('updateSessions');
