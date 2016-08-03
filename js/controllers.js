@@ -86,7 +86,7 @@ angularApp.controller("InterfaceController",
 		};
 
 		$http.post('/addNewSession',fullNewSession).then(function(response){
-			console.log(response.data);
+			//console.log(response.data);
 			console.log("********");
 			//Receiving new session and pushing to sessions array
 			($scope.allSessions).push(response.data);
@@ -108,6 +108,38 @@ angularApp.controller("InterfaceController",
 		$http.post('/setSession',inputtedSession).then(function(response){
 		})
 	};
+
+	//Get input from form and create new JSON object for session
+	//Post JSON object to insert it as a document into database
+	//Append JSON object to allSessions array and call socket emit to update in real time
+	$scope.addPrompt = function(inputtedPrompt){
+		$("#newPrompt_frm")[0].reset();
+		$scope.newPrompt = angular.copy(inputtedPrompt);
+		//var savedContent = $scope.allData;
+		var fullNewPrompt = {
+			"promptID": $scope.allData.prompts.length + 1,
+			"text":$scope.newPrompt.text,
+			"ideas":[],
+		};
+
+		$http.post('/addNewPrompt',fullNewPrompt).then(function(response){
+			//console.log(typeof(response.data));
+			//console.log($scope.allData.prompts);
+			//Receiving new session and pushing to sessions array
+			($scope.allData.prompts).push(response.data);
+			//console.log($scope.allData.prompts);
+
+			//Update all clients
+			socket.emit('updatePrompts');
+		});
+	};
+	//socket.emit and socket.on must be declared in separate functions
+	socket.on('updatePrompts', function(){
+		$http.get('/updatePrompts/').then(function(response){
+			//console.log(response.data);
+			$scope.allData.prompts = response.data;
+		})
+	});
 
 	//Get input from form and create new JSON object for idea
 	//Post JSON object to append to the "ideas" array in the relevant document
@@ -141,7 +173,8 @@ angularApp.controller("InterfaceController",
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
 			$http.get('/updateIdeas/'+incomingPrompt).then(function(response){
-				//console.log(response.data);
+				console.log(response.data);
+				//console.log($scope.allData.prompts);
 				//($scope.allData.ideas) = response.data;
 			})
 	});
@@ -154,14 +187,14 @@ angularApp.controller("InterfaceController",
 		//console.log("CLIENT LIKING IDEA: " + incomingID);
 		$http.get('/like/'+incomingID).then(function(response){
 			//console.log(response.data);
-			var ideasArray = $scope.allData.ideas;
+			/*var ideasArray = $scope.allData.ideas;
 			for (var i = 0; i<ideasArray.length; i++){
 				var currentID = ideasArray[i].ideaID;
 				if (currentID===incomingID){
 					$scope.allData.ideas[i].likes = response.data;
 					socket.emit('updateLike',incomingID);
 				}
-			}
+			}*/
 		});
 	};
 

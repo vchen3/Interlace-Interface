@@ -30,6 +30,9 @@ io.on('connection', function(socket){
   socket.on('updateSessions', function(ideaID){
   io.emit('updateSessions', ideaID);
   });
+  socket.on('updatePrompts', function(ideaID){
+  io.emit('updatePrompts', ideaID);
+  });
 });
 
 //Connect with mongoDB and set currentCollection
@@ -56,6 +59,7 @@ expressApp.get('/index', function(req, res){
 expressApp.post('/setSession', function(req, res){
   var sessionID = req.body._id;
   currentSession = sessionID;
+  console.log("Now using session " + currentSession);
 });
 
 //Returns all documents in collection
@@ -142,7 +146,7 @@ expressApp.get('/updateLike/:id', function(req,res){
 
 //Add new idea to database in relevant document
 expressApp.post('/addNewIdea', function(req, res){
-  //console.log(req.body);
+  console.log('adding new idea');
     if (!('ideaID' in req.body)){
       //Add this dynamically somehow, find the value
       console.log('missing ideaID');
@@ -183,13 +187,8 @@ expressApp.post('/addNewIdea', function(req, res){
     //console.log(action);
     db.collection(currentCollection).update({_id:objectSession}, {$push : action});
     
-    //Equivalent of this call, but idNumber cannot be called in this format:
-    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
+    //Equivalent of this call, but promptIndex cannot be called in this format:
     //db.collection(currentCollection).update({_id:objectSession},{$push:{'prompts.promptIndex.ideas':req.body}});
-
-
-
-
 
     db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
       if (err){
@@ -205,9 +204,10 @@ expressApp.post('/addNewIdea', function(req, res){
 
 //Update like value by returning all ideas in ideas array stored in database
 expressApp.get('/updateIdeas/:id', function(req,res){
+  console.log('updating ideas');
   //var objectSession = ObjectId(currentSession);
   var promptIndex = req.params.id - 1;
-  console.log(promptIndex);
+  console.log('promptIndex: ' + promptIndex);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
@@ -218,20 +218,56 @@ expressApp.get('/updateIdeas/:id', function(req,res){
       }
       //Result holds an array with the one relevant document
       //Send back the ideas array
-      console.log(result[0].prompts[promptIndex]);
+      //console.log("*********");
+      res.json(result[0].prompts[promptIndex].ideas);
       //res.json(result[0].ideas);
     });
    });
+});
+
+//Save incoming JSON object as prompt in document database
+expressApp.post('/addNewPrompt', function(req, res){
+    //console.log(req.body);
+    if (!('text' in req.body)){
+      res.send('Please include a prompt.');
+      return;
+    }
+    if (!('ideas' in req.body)){
+      req.body['prompts'] = [];
+      console.log(req.body);
+    }
+
+    MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    var objectSession = ObjectId(currentSession);
+    //db.collection(currentCollection).save(req.body);
+    db.collection(currentCollection).update({_id:objectSession},{$push : {prompts:req.body}});
+    db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      res.json(result[0].prompts.slice(-1)[0]);
+    })
+   });
+});
+
+expressApp.get('/updatePrompts', function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    var objectSession = ObjectId(currentSession);
+    db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      res.json(result[0].prompts);
+    });
+  });
 });
 
 //Save incoming JSON object as document in database
 expressApp.post('/addNewSession', function(req, res){
     if (!('promptTitle' in req.body)){
       res.send('Please include a prompt title.');
-      return;
-    }
-    if (!('promptText' in req.body)){
-      res.send('Please include prompt text.');
       return;
     }
     if (!('teacherName' in req.body)){
@@ -247,11 +283,10 @@ expressApp.post('/addNewSession', function(req, res){
       return;
     }
     if (!('visible' in req.body)){
-      console.log("Please specify if this session should be visible or not.");
-      return;
+      req.body['visible'] = true;
     }
-    if (!('ideas' in req.body)){
-      req.body['ideas'] = [];
+    if (!('prompts' in req.body)){
+      req.body['prompts'] = [];
       console.log(req.body);
     }
 

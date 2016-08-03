@@ -51,7 +51,7 @@
 
     <div class="ideaPanel">
     	<br>
-	   		<div ng-repeat="prompt in allData.prompts">
+	   		<div ng-repeat="prompt in allData.prompts" class = "promptBox">
 				<h2 id = "ideaName"> {{prompt.text}}</h2>
 
 					<div ng-repeat="idea in prompt.ideas" class = "ideaBox">
@@ -89,6 +89,16 @@
 				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
 				    	</form>
 					</div>	
+			</div>
+
+
+			<div class = "newPromptBox">
+			<h2 id = "ideaName"> Add New Prompt </h2>
+					<form id = "newPrompt_frm" novalidate class="simple-form">
+						<input type="text" ng-model="newPrompt.text" id = "ideaName" placeholder="New Prompt Text"/><br />
+						
+						<input type="submit" ng-click="addPrompt(newPrompt)" value="Save" />
+					</form>
 			</div>
 
     </div>
