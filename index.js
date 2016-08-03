@@ -142,7 +142,7 @@ expressApp.get('/updateLike/:id', function(req,res){
 
 //Add new idea to database in relevant document
 expressApp.post('/addNewIdea', function(req, res){
-  console.log(req.body);
+  //console.log(req.body);
     if (!('ideaID' in req.body)){
       //Add this dynamically somehow, find the value
       console.log('missing ideaID');
@@ -172,21 +172,42 @@ expressApp.post('/addNewIdea', function(req, res){
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
-    db.collection(currentCollection).update({_id:objectSession},{$push:{"ideas":req.body}});
+    var promptIndex = req.body.promptID - 1;
+
+
+    //Necessary for being able to increment value of dynamic variable
+    var variable = 'prompts.' + promptIndex + '.ideas';
+    var trueVar = String(variable)
+    var action = {};
+    action[trueVar] = req.body;
+    //console.log(action);
+    db.collection(currentCollection).update({_id:objectSession}, {$push : action});
+    
+    //Equivalent of this call, but idNumber cannot be called in this format:
+    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
+    //db.collection(currentCollection).update({_id:objectSession},{$push:{'prompts.promptIndex.ideas':req.body}});
+
+
+
+
+
     db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
       if (err){
         throw err;
       }
       //Result holds an array with the one relevant document
       //Send back the new idea
-      res.json(result[0].ideas.slice(-1)[0]);
+      res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
+      //res.json(result[0].ideas.slice(-1)[0]);
     })
    });
 });
 
 //Update like value by returning all ideas in ideas array stored in database
-expressApp.get('/updateIdeas', function(req,res){
+expressApp.get('/updateIdeas/:id', function(req,res){
   //var objectSession = ObjectId(currentSession);
+  var promptIndex = req.params.id - 1;
+  console.log(promptIndex);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
@@ -197,7 +218,8 @@ expressApp.get('/updateIdeas', function(req,res){
       }
       //Result holds an array with the one relevant document
       //Send back the ideas array
-      res.json(result[0].ideas);
+      console.log(result[0].prompts[promptIndex]);
+      //res.json(result[0].ideas);
     });
    });
 });
@@ -276,6 +298,47 @@ expressApp.post('/restoreSession', function(req, res){
         }
         res.json(result);
       })
+   });
+});
+
+expressApp.get('/moveIdeas', function(req,res){
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    var objectSession = ObjectId("578e3ed70e9540ef03359b6d");
+    var newInput = {
+      "promptID": 2,
+      "text": "How do forces act on us?"
+    }; 
+    //db.collection(currentCollection).update({_id:objectSession}, {$push:{prompts:newInput}});
+    
+    db.collection(currentCollection).find({_id:objectSession}).toArray(function(err, result) {
+      if (err){
+        throw err;
+      }
+      //Result holds an array with the one relevant document
+      //Send back the ideas array
+      var ideasArray = [
+    {
+      "ideaID" : 1,
+      "name" : "Allen",
+      "time" : 1469124849197,
+      "contentType" : "text",
+      "content" : "Friction is the force exerted by a surface as an object moves across it.",
+      "likes" : 3
+    },
+    {
+      "ideaID" : 2,
+      "name" : "Anna",
+      "time" : 1469124894977,
+      "contentType" : "image",
+      "content" : "http://cdn.funkidslive.com/wp-content/uploads/carforces-physics-245x170-custom.jpg",
+      "likes" : 0
+    }
+    ];
+
+    //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.1.ideas':ideasArray}}); 
+      //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
+    });
    });
 });
 

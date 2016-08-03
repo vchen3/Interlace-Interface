@@ -79,10 +79,9 @@ angularApp.controller("InterfaceController",
 		var fullNewSession = {
 			//"ideaID":9,
 			"promptTitle":$scope.newSession.promptTitle,
-			"promptText":$scope.newSession.promptText,
 			"teacherName":$scope.newSession.teacherName,
 			"date":$scope.newSession.date,
-			"ideas":[],
+			"prompts":[],
 			"visible":true
 		};
 
@@ -116,27 +115,34 @@ angularApp.controller("InterfaceController",
 	$scope.addIdea = function(InputtedIdea){
 		$("#newIdea_frm")[0].reset();
 		$scope.newIdea = angular.copy(InputtedIdea);
-		var savedContent = $scope.allData;
+		//console.log($scope.newIdea);
+		//console.log($scope.allData.prompts[0]);
+		var promptID = $scope.newIdea.promptID;
+		var cPrompt = $scope.allData.prompts[promptID - 1];
+
 		var fullNewIdea = {
-			"ideaID": savedContent.ideas.length + 1,
+			"ideaID": cPrompt.ideas.length + 1,
 			"name": $scope.newIdea.name,
 			"time": Date.now(),
 			"contentType": $scope.newIdea.contentType,
 			"content": $scope.newIdea.content,
-			"likes":0
+			"likes":0,
+			"promptID": $scope.newIdea.promptID
 		};
-		$http.post('/addNewIdea',fullNewIdea).then(function(response){
-			//Receiving new idea and pushing to ideas array
-			($scope.allData.ideas).push(response.data);
+
+		$http.post('/addNewIdea', fullNewIdea).then(function(response){
+			//Receiving new idea and pushing to ideas array of current prompt
+			cPrompt.ideas.push(response.data);
 
 			//Update all clients
-			socket.emit('updateIdeas');
+			socket.emit('updateIdeas', cPrompt.promptID);
 		});
 	};
 	//socket.emit and socket.on must be declared in separate functions
-	socket.on('updateIdeas', function(){
-			$http.get('/updateIdeas/').then(function(response){
-				($scope.allData.ideas) = response.data;
+	socket.on('updateIdeas', function(incomingPrompt){
+			$http.get('/updateIdeas/'+incomingPrompt).then(function(response){
+				//console.log(response.data);
+				//($scope.allData.ideas) = response.data;
 			})
 	});
 

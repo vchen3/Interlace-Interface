@@ -77,6 +77,14 @@ html, body{
 	position: relative;
 }
 
+.promptPanel{
+	background-color: pink;
+	width: 90%;
+	margin: auto;
+	margin-top: 15px;
+	position: relative;
+}
+
 .ideaBox{
 	background-color: lightblue;
 	height: 220px;

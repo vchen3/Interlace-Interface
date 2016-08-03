@@ -36,114 +36,38 @@
 	</md-button>
 
       <h1>{{allData.promptTitle}}</h1>
-      <h2>{{allData.promptText}}</h2>
-      <h3>{{allData.teacherName}}</h3>
       <h3>{{allData.date}}</h3>
+      <h3>{{allData.teacherName}}</h3>
 
       	<div class = "orderByBox">
       		<p>Order by</p>
 	      	<select ng-model="myVar">
 				<option value="name">Name</option>
 				<option value="time">Time</option>
-				<option value="other">Original</option>
 			</select>
 		</div>
-      <!--<h3 ng-click=getUpdates()>Get Updates</h3>-->
-      <!--<h3 ng-click=addIdea()>ADD IDEA</h3>-->
-      <!--<h3 ng-click=likeAll()>LIKE ALL</h3>-->
-  
-      </div>
+   
+    </div>
 
-	<div class="ideaPanel">
+    <div class="ideaPanel">
+    	<br>
+	   		<div ng-repeat="prompt in allData.prompts">
+				<h2 id = "ideaName"> {{prompt.text}}</h2>
 
-		<hr>
-			<div ng-switch="myVar">
-
-				<!-- When "name" is selected -->
-				<div ng-switch-when="name">
-					<div ng-repeat="item in allData.ideas | orderBy: 'name'" class = "ideaBox">
-					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
-
-					<!--Load textcontent -->
-					<div class = "contentBox" ng-if=item.contentType=="text">
-						<p id = "ideaText"> {{item.content}} </p>
-					</div>
-
-					<!--Load image content -->
-					<div class = "contentBox" ng-if=item.contentType=="image">
-						<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
-					</div>
-
-					<p id = "ideaTime"> {{item.time | date:'MM-dd-yyyy HH:mm'}} </p>
-
-					</div>
-				</div>
-
-				<!-- When "time" is selected -->
-				<div ng-switch-when="time">
-					<div ng-repeat="item in allData.ideas | orderBy: 'time'" class = "ideaBox">
-					<h2 id = "ideaName"> {{item.name}}</h2>
-					<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
-
-					<!--Load textcontent -->
-					<div class = "contentBox" ng-if=item.contentType=="text">
-						<p id = "ideaText"> {{item.content}} </p>
-					</div>
-
-					<!--Load image content -->
-					<div class = "contentBox" ng-if=item.contentType=="image">
-						<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
-					</div>
-
-					<p id = "ideaTime"> {{item.time | date:'MM-dd-yyyy HH:mm'}} </p>
-
-					</div>
-
-
-				</div>
-
-				<div ng-switch-when="other">
-					<div ng-repeat="item in allData.ideas" class = "ideaBox">
-						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
-
+					<div ng-repeat="idea in prompt.ideas" class = "ideaBox">
+						<h2 id = "ideaName"> {{idea.name}}</h2>
+						<p class = "likes" ng-click="newLike(idea.ideaID)">+ {{ idea.likes }} </p>
 						<!--Load textcontent -->
-						<div class = "contentBox" ng-if=item.contentType=="text">
-							<p id = "ideaText"> {{item.content}} </p>
-						</div>
-
+							<div class = "contentBox" ng-if=idea.contentType=="text">
+								<p id = "ideaText"> {{idea.content}} </p>
+							</div>
 						<!--Load image content -->
-						<div class = "contentBox" ng-if=item.contentType=="image">
-							<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
-						</div>
-
-						<p id = "ideaTime"> {{item.time | date:'MM-dd-yyyy HH:mm'}} </p>
-
+							<div class = "contentBox" ng-if=idea.contentType=="image">
+								<img ng-src={{idea.content}} style="max-width:100%; max-height:100%">
+							</div>
+						<p id = "ideaTime"> {{idea.time | date:'MM-dd-yyyy HH:mm'}} </p>
 					</div>
-				</div>
-
-				<!-- Default: Load as in JSON file -->
-				<div ng-switch-default>
-					<div ng-repeat="item in allData.ideas" class = "ideaBox">
-						<h2 id = "ideaName"> {{item.name}}</h2>
-						<p class = "likes" ng-click="newLike(item.ideaID)">+ {{ item.likes }} </p>
-						<!--Load textcontent -->
-						<div class = "contentBox" ng-if=item.contentType=="text">
-							<p id = "ideaText"> {{item.content}} </p>
-						</div>
-
-						<!--Load image content -->
-						<div class = "contentBox" ng-if=item.contentType=="image">
-							<img ng-src={{item.content}} style="max-width:100%; max-height:100%">
-						</div>
-
-						<p id = "ideaTime"> {{item.time | date:'MM-dd-yyyy HH:mm'}} </p>
-
-					</div>
-				</div>
-
-				<div class = "newIdeaBox">
+					<div class = "newIdeaBox">
 					<h2 id = "ideaName"> Add New Idea </h2>
 						<form id = "newIdea_frm" novalidate class="simple-form">
 							<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
@@ -160,16 +84,15 @@
 				      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
 				    	</div>
 
+				    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.promptID=prompt.promptID"/>
+				    	
 				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
 				    	</form>
-					</div>
+					</div>	
 			</div>
-		<hr>
-	</div>
 
+    </div>
 
-
-</div>
 
 </body>
 </html>
