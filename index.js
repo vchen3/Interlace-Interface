@@ -146,7 +146,7 @@ expressApp.get('/updateLike/:id', function(req,res){
 
 //Add new idea to database in relevant document
 expressApp.post('/addNewIdea', function(req, res){
-  console.log('adding new idea');
+  //console.log('adding new idea');
     if (!('ideaID' in req.body)){
       //Add this dynamically somehow, find the value
       console.log('missing ideaID');
@@ -204,10 +204,13 @@ expressApp.post('/addNewIdea', function(req, res){
 
 //Update like value by returning all ideas in ideas array stored in database
 expressApp.get('/updateIdeas/:id', function(req,res){
-  console.log('updating ideas');
+  //console.log('updating ideas');
   //var objectSession = ObjectId(currentSession);
+  //console.log('promptIndex: ' + promptIndex);
+  //console.log(req.params.id);
+  //var promptIndex = req.params.id.promptID - 1;
   var promptIndex = req.params.id - 1;
-  console.log('promptIndex: ' + promptIndex);
+  console.log(promptIndex);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
@@ -219,7 +222,9 @@ expressApp.get('/updateIdeas/:id', function(req,res){
       //Result holds an array with the one relevant document
       //Send back the ideas array
       //console.log("*********");
+      //console.log(result[0].prompts[promptIndex].ideas);
       res.json(result[0].prompts[promptIndex].ideas);
+      //res.json(result[0].prompts[promptIndex].ideas);
       //res.json(result[0].ideas);
     });
    });

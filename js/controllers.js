@@ -172,9 +172,13 @@ angularApp.controller("InterfaceController",
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
+		//var currentPrompt = incomingPrompt.promptID;
+		//console.log(incomingPrompt);
 			$http.get('/updateIdeas/'+incomingPrompt).then(function(response){
-				console.log(response.data);
-				//console.log($scope.allData.prompts);
+				//console.log(response.data);
+				console.log('**');
+				//console.log($scope.allData.prompts[incomingPrompt-1]);
+				($scope.allData.prompts[incomingPrompt-1].ideas) = response.data;
 				//($scope.allData.ideas) = response.data;
 			})
 	});
