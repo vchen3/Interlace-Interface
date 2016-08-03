@@ -149,21 +149,24 @@ angularApp.controller("InterfaceController",
 		$scope.newIdea = angular.copy(InputtedIdea);
 		//console.log($scope.newIdea);
 		//console.log($scope.allData.prompts[0]);
-		var promptID = $scope.newIdea.promptID;
+		var promptID = $scope.newIdea.ID;
 		var cPrompt = $scope.allData.prompts[promptID - 1];
 
+		var ideaID = cPrompt.ideas.length + 1;
 		var fullNewIdea = {
-			"ideaID": cPrompt.ideas.length + 1,
+			"ID": promptID + "." + ideaID,
 			"name": $scope.newIdea.name,
 			"time": Date.now(),
 			"contentType": $scope.newIdea.contentType,
 			"content": $scope.newIdea.content,
 			"likes":0,
-			"promptID": $scope.newIdea.promptID
 		};
+
+		//console.log(fullNewIdea);
 
 		$http.post('/addNewIdea', fullNewIdea).then(function(response){
 			//Receiving new idea and pushing to ideas array of current prompt
+			//console.log(response.data);
 			cPrompt.ideas.push(response.data);
 
 			//Update all clients
@@ -189,31 +192,44 @@ angularApp.controller("InterfaceController",
 	//Call socket emit to update in real time
 	$scope.newLike = function(incomingID) { 
 		//console.log("CLIENT LIKING IDEA: " + incomingID);
+	
+		var stringID = String(incomingID);
+		
+		var promptID = stringID.split(".")[0];
+		var ideaID = stringID.split(".")[1];
+		var promptIndex = promptID - 1
+		var ideaIndex = ideaID - 1;
+
 		$http.get('/like/'+incomingID).then(function(response){
-			//console.log(response.data);
-			/*var ideasArray = $scope.allData.ideas;
-			for (var i = 0; i<ideasArray.length; i++){
-				var currentID = ideasArray[i].ideaID;
-				if (currentID===incomingID){
-					$scope.allData.ideas[i].likes = response.data;
-					socket.emit('updateLike',incomingID);
-				}
-			}*/
+			
+			var cIdea = $scope.allData.prompts[promptIndex].ideas[ideaIndex];
+			cIdea.likes = response.data;
+
+			socket.emit('updateLike', incomingID);
 		});
 	};
 
 	//Show real-time updates of likes by updating the scope value of all other windows
 	//Update scope value to current value stored in database 
 	socket.on('updateLike', function(receivedIdea){
+		var stringID = String(receivedIdea);
+		
+		var promptID = stringID.split(".")[0];
+		var ideaID = stringID.split(".")[1];
+		var promptIndex = promptID - 1
+		var ideaIndex = ideaID - 1;
+		
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
-				var ideasArray = $scope.allData.ideas;
+				var cIdea = $scope.allData.prompts[promptIndex].ideas[ideaIndex];
+				cIdea.likes = response.data;
+				/*var ideasArray = $scope.allData.ideas;
 				for (var i = 0; i<ideasArray.length; i++){
 					var currentID = ideasArray[i].ideaID;
 					if (currentID===receivedIdea){
 						$scope.allData.ideas[i].likes = response.data;
 					}
 	 
-	      		}
+	      		}*/
 			})
 	});
 

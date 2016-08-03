@@ -56,7 +56,7 @@
 
 					<div ng-repeat="idea in prompt.ideas" class = "ideaBox">
 						<h2 id = "ideaName"> {{idea.name}}</h2>
-						<p class = "likes" ng-click="newLike(idea.ideaID)">+ {{ idea.likes }} </p>
+						<p class = "likes" ng-click="newLike(idea.ID)">+ {{ idea.likes }} </p>
 						<!--Load textcontent -->
 							<div class = "contentBox" ng-if=idea.contentType=="text">
 								<p id = "ideaText"> {{idea.content}} </p>
@@ -84,7 +84,7 @@
 				      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
 				    	</div>
 
-				    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.promptID=prompt.promptID"/>
+				    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.ID=prompt.promptID"/>
 				    	
 				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
 				    	</form>

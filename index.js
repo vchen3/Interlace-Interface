@@ -97,21 +97,30 @@ expressApp.get('/list', function(req, res){
 //Receives the ideaID of liked idea (string integer)
 //Returns idea's updated number of likes
 expressApp.get('/like/:id', function(req,res){
-  var idNumber = Number(req.params.id);
+  var incoming = req.params.id;
+  //console.log(incoming);
+  var promptID = incoming.split(".")[0];
+  var ideaID = incoming.split(".")[1];
+  var promptIndex = promptID - 1;
+  var ideaIndex = ideaID - 1;
+
   MongoClient.connect(url, function(err, db) {
     var objectSession = ObjectId(currentSession);
     assert.equal(null, err);
     
     //Necessary for being able to increment value of dynamic variable
-    var variable = 'ideas.' + String(idNumber - 1) + '.likes';
-    var trueVar = String(variable)
     var action = {};
+    var variable = 'prompts.' + promptIndex +'.ideas.' + String(ideaIndex) + '.likes';
+    var trueVar = String(variable)
     action[trueVar] = 1;
+
+    //console.log(action);
 
     db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
     
     //Equivalent of this call, but idNumber cannot be called in this format:
-    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
+    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.ideaIndex.likes':1}});
+    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'prompts.promptIndex.ideas.ideaIndex.likes':1}});
 
     /*//Reset all likes
     db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.0.likes':0}});
@@ -123,7 +132,8 @@ expressApp.get('/like/:id', function(req,res){
       if (err) {
         throw err;
       }
-        res.json(result[0].ideas[idNumber-1].likes);
+        res.json(result[0].prompts[promptIndex].ideas[ideaIndex].likes);
+        //res.json(result[0].ideas[idNumber-1].likes);
       })
   })
 });
@@ -131,15 +141,23 @@ expressApp.get('/like/:id', function(req,res){
 
 //Update like value by returning the current number of likes stored in database
 expressApp.get('/updateLike/:id', function(req,res){
+  var incoming = req.params.id;
+  //console.log(incoming);
+  var promptID = incoming.split(".")[0];
+  var ideaID = incoming.split(".")[1];
+  var promptIndex = promptID - 1;
+  var ideaIndex = ideaID - 1;
+
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    var idNumber = Number(req.params.id);
     var objectSession = ObjectId(currentSession);
-    db.collection(currentCollection).find({_id:objectSession},{ideas:{$elemMatch:{ideaID:idNumber}}}).toArray(function(err,result){
-      if (err){
+    
+    db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
+      if (err) {
         throw err;
       }
-      res.json(result[0].ideas[0].likes);
+        res.json(result[0].prompts[promptIndex].ideas[ideaIndex].likes);
+        //res.json(result[0].ideas[idNumber-1].likes);
     })
    });
 });
@@ -147,9 +165,9 @@ expressApp.get('/updateLike/:id', function(req,res){
 //Add new idea to database in relevant document
 expressApp.post('/addNewIdea', function(req, res){
   //console.log('adding new idea');
-    if (!('ideaID' in req.body)){
+    if (!('ID' in req.body)){
       //Add this dynamically somehow, find the value
-      console.log('missing ideaID');
+      console.log('missing ID');
       return;
     }
     if (!('name' in req.body)){
@@ -176,8 +194,10 @@ expressApp.post('/addNewIdea', function(req, res){
     MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId(currentSession);
-    var promptIndex = req.body.promptID - 1;
-
+    var ideaID = req.body.ID;
+    var promptID = ideaID.split(".")[0];
+    var promptIndex = promptID - 1;
+    //console.log("PROMPT INDEX: " + promptIndex);
 
     //Necessary for being able to increment value of dynamic variable
     var variable = 'prompts.' + promptIndex + '.ideas';
@@ -196,6 +216,8 @@ expressApp.post('/addNewIdea', function(req, res){
       }
       //Result holds an array with the one relevant document
       //Send back the new idea
+      //console.log('\n');
+      //console.log(result[0].prompts[promptIndex]);
       res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
       //res.json(result[0].ideas.slice(-1)[0]);
     })
@@ -342,6 +364,7 @@ expressApp.post('/restoreSession', function(req, res){
 });
 
 expressApp.get('/moveIdeas', function(req,res){
+  console.log('moving ideas');
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var objectSession = ObjectId("578e3ed70e9540ef03359b6d");
@@ -358,25 +381,41 @@ expressApp.get('/moveIdeas', function(req,res){
       //Result holds an array with the one relevant document
       //Send back the ideas array
       var ideasArray = [
-    {
-      "ideaID" : 1,
-      "name" : "Allen",
-      "time" : 1469124849197,
-      "contentType" : "text",
-      "content" : "Friction is the force exerted by a surface as an object moves across it.",
-      "likes" : 3
-    },
-    {
-      "ideaID" : 2,
-      "name" : "Anna",
-      "time" : 1469124894977,
-      "contentType" : "image",
-      "content" : "http://cdn.funkidslive.com/wp-content/uploads/carforces-physics-245x170-custom.jpg",
-      "likes" : 0
-    }
-    ];
+        {
+          "ID" : 1.1,
+          "name" : "Chris",
+          "time" : 1469199370000,
+          "contentType" : "text",
+          "content" : "Greenland is the largest island in the world.",
+          "likes" : 3
+        },
+        {
+          "ID" : 1.2,
+          "name" : "Albus PercivalWulfricBrianDumbledore",
+          "time" : 1469199370000,
+          "contentType" : "text",
+          "content" : "Vatican City is the smallest country in the world.",
+          "likes" : 1
+        },
+        {
+          "ID" : 1.3,
+          "name" : "Ethan",
+          "time" : 1467199370000,
+          "contentType" : "image",
+          "content" : "img/mountain.jpg",
+          "likes" : 0
+        },
+        {
+          "ID" : 1.4,
+          "name" : "Ben",
+          "time" : 1465199370000,
+          "contentType" : "image",
+          "content" : "img/grandcanyon.jpg",
+          "likes" : 2
+        }
+      ];
 
-    //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.1.ideas':ideasArray}}); 
+    //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.0.ideas':ideasArray}}); 
       //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
     });
    });
