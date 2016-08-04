@@ -19,7 +19,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-route.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-route.js"></script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-resource.js"></script>
 
@@ -78,13 +77,13 @@
 		<p>Prompt results:</p>
 		<br>
 		<div class = "promptBox"  ng-init="selectedP = {}" >
-			<div ng-repeat="item in promptResults" class = "visibleSessionBox" ng-class="{selected: (item.promptID == currentPrompt)}" ng-click="addToPrompt(item.promptID)">
+			<div ng-repeat="item in promptResults" class = "visibleSessionBox" ng-class="{selected: (item.promptID == currentPrompt)}" ng-click="addToFoundPrompt(item.promptID)">
 				<br>
 				<h2 id = "ideaName"> {{item.text}}</h2>
 				<!--<h2 id = "ideaText"> {{item.teacherName}}</h2>
 				<h2 id = "ideaText"> {{item.date}}</h2>-->
 				<br>
-				<input type="button" class = "useSessionButton" value="Add to Prompt" ng-click="addToPrompt(item.promptID)"/>
+				<input type="button" class = "useSessionButton" value="Add to Prompt" ng-click="addToFoundPrompt(item.promptID)"/>
 
 			</div>
 		</div>

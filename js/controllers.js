@@ -1,5 +1,9 @@
 /*Angular App 
  * Holds all scope variables and functions for Angular/client-side
+
+ * Scope Variables *
+
+
  */
 
 
@@ -7,41 +11,23 @@ var angularApp = angular.module("myApp", ['ngRoute']);
 
 console.log("starting angular app");
 
-/*angularApp.config([
-	'$routeProvider', '$locationProvider', 
-	function($routeProvider, $locationProvider) {
-  $routeProvider.
-  	/*otherwise({
-		redirectTo: '/'
-	});
-	$locationProvider.html5Mode(true);
-}]);
-*/
-
 //Angular controller with scope variables defined
 angularApp.controller("InterfaceController", 
 	['$scope','$http', 'socket', '$route', '$routeParams', '$location', '$window',
 	function($scope,$http, socket, $route, $routeParams, $location, $window)
 {    
 
-	//Setting scope variables
+//Setting scope variables, general set-up
 	var vm = this;
 
 	$scope.$route = $route;
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
 
-    //setInterval(function(){ console.log(socket.connected); }, 5000);
-
-    /*setInterval(function(){getSessionQuery()},2000);
-    function getSessionQuery(){
-    	console.log("*");
-    	console.log($scope.sessionQuery);
-    };*/
-
 	$http.get('/list').then(function(response){
 		//Current document's information
 		$scope.allData = response.data;
+
 	});
 
 	$http.get('/getAllSessionData').then(function(response){
@@ -57,29 +43,8 @@ angularApp.controller("InterfaceController",
 		$scope.visibleSessions = visibleSessionsArray;
 	});
 
-	$scope.addToPrompt = function(destinationPromptID){
-		$scope.currentPrompt = destinationPromptID;
-		$scope.readyToAddIdea = true;
-	};
 
-	$scope.getPrompt = function(query){
-		$("#getPrompt_frm")[0].reset();
-		var qPromptText = angular.copy(query);
-		console.log(qPromptText);
-		console.log(typeof(qPromptText));
-
-		$http.post('/getPromptID', qPromptText).then(function(response){
-			console.log(response.data);
-			//Receiving new idea and pushing to ideas array of current prompt
-			//$scope.promptResults = (response.data);
-			//cPrompt.ideas.push(response.data);
-
-			//Update all clients
-			//socket.emit('updateIdeas', cPrompt.promptID);
-		});
-	};
-
-	//Functions for editing sessions
+//Functions for editing sessions
 	$scope.archiveSession = function(inputtedSession){
 		$http.post('/removeSession',inputtedSession).then(function(response){
 			($scope.allSessions) = (response.data);
@@ -104,13 +69,13 @@ angularApp.controller("InterfaceController",
 	//Append JSON object to allSessions array and call socket emit to update in real time
 	$scope.addSession = function(inputtedSession){
 		$("#newSession_frm")[0].reset();
-		$scope.newSession = angular.copy(inputtedSession);
+		var newSession = angular.copy(inputtedSession);
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
 			//"ideaID":9,
-			"promptTitle":$scope.newSession.promptTitle,
-			"teacherName":$scope.newSession.teacherName,
-			"date":$scope.newSession.date,
+			"promptTitle":newSession.promptTitle,
+			"teacherName":newSession.teacherName,
+			"date":newSession.date,
 			"prompts":[],
 			"visible":true
 		};
@@ -151,6 +116,8 @@ angularApp.controller("InterfaceController",
 		var newInput = input._id;
 		console.log(typeof(newInput));
 		$scope.currentSession = input;
+		console.log("currentSession***")
+		console.log($scope.currentSession);
 		$http.post('/setSession',input).then(function(response){
 		})
 		$http.get('/searchForPrompt/'+newInput).then(function(response){
@@ -158,16 +125,18 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+//Functions for editing prompts
+
 	//Get input from form and create new JSON object for session
 	//Post JSON object to insert it as a document into database
 	//Append JSON object to allSessions array and call socket emit to update in real time
 	$scope.addPrompt = function(inputtedPrompt){
 		$("#newPrompt_frm")[0].reset();
-		$scope.newPrompt = angular.copy(inputtedPrompt);
+		var newPrompt = angular.copy(inputtedPrompt);
 		//var savedContent = $scope.allData;
 		var fullNewPrompt = {
 			"promptID": $scope.allData.prompts.length + 1,
-			"text":$scope.newPrompt.text,
+			"text":newPrompt.text,
 			"ideas":[],
 		};
 
@@ -190,19 +159,45 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
+
+	$scope.getPrompt = function(query){
+		$("#getPrompt_frm")[0].reset();
+		var qPromptText = angular.copy(query);
+		console.log(qPromptText);
+		console.log(typeof(qPromptText));
+
+		$http.post('/getPromptID', qPromptText).then(function(response){
+			console.log(response.data);
+			//Receiving new idea and pushing to ideas array of current prompt
+			//$scope.promptResults = (response.data);
+			//cPrompt.ideas.push(response.data);
+
+			//Update all clients
+			//socket.emit('updateIdeas', cPrompt.promptID);
+		});
+	};
+
+	$scope.addToFoundPrompt = function(destinationPromptID){
+		$scope.currentPrompt = destinationPromptID;
+		$scope.readyToAddIdea = true;
+	};
+
+
+//Functions for editing ideas
+
 	$scope.addRemoteIdea = function(InputtedIdea){
 		$("#newRemoteIdea_frm")[0].reset();
-		$scope.newIdea = angular.copy(InputtedIdea);
+		var newIdea = angular.copy(InputtedIdea);
 	
 		var cPrompt = $scope.allData.prompts[$scope.currentPrompt - 1];
 
 		var ideaID = cPrompt.ideas.length + 1;
 		var fullNewIdea = {
 			"ID": $scope.currentPrompt + "." + ideaID,
-			"name": $scope.newIdea.name,
+			"name": newIdea.name,
 			"time": Date.now(),
-			"contentType": $scope.newIdea.contentType,
-			"content": $scope.newIdea.content,
+			"contentType": newIdea.contentType,
+			"content": newIdea.content,
 			"likes":0,
 		};
 
@@ -235,33 +230,17 @@ angularApp.controller("InterfaceController",
 	//Post JSON object to append to the "ideas" array in the relevant document
 	//Append JSON object to allSessions's ideas array and call socket emit to update in real time
 	$scope.addIdea = function(InputtedIdea){
-		$scope.newIdea = angular.copy(InputtedIdea);
-		//$scope.newIdeaForm.$setPristine();
-		//console.log($scope.newIdea);
-		//console.log($("#newIdea_frm"));
-		//$("#newIdea_frm")[0].reset();
-		//console.log($("#newIdea_frm")[0]);
-		//console.log(typeof($("#newIdea_frm"))[0]);
-		
-		//console.log(newIdeaForm);
-		//newIdeaForm.$setPristine();
-		//newIdeaForm[0].$setPristine();
+		var newIdea = angular.copy(InputtedIdea);
+		var promptID = newIdea.ID;
+		var cPrompt = $scope.allData.prompts[promptID - 1];
 
-		
-		
-		var promptID = $scope.newIdea.ID;
-		console.log($scope.newIdea);
-		console.log("~~~~~~");
-		console.log($scope.allData.prompts);
-		//var cPrompt = $scope.allData.prompts[promptID - 1];
-
-		/*var ideaID = cPrompt.ideas.length + 1;
+		var ideaID = cPrompt.ideas.length + 1;
 		var fullNewIdea = {
 			"ID": promptID + "." + ideaID,
-			"name": $scope.newIdea.name,
+			"name": newIdea.name,
 			"time": Date.now(),
-			"contentType": $scope.newIdea.contentType,
-			"content": $scope.newIdea.content,
+			"contentType": newIdea.contentType,
+			"content": newIdea.content,
 			"likes":0,
 		};
 
@@ -274,7 +253,7 @@ angularApp.controller("InterfaceController",
 
 			//Update all clients
 			socket.emit('updateIdeas', cPrompt.promptID);
-		});*/
+		});
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
