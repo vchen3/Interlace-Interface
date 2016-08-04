@@ -106,10 +106,8 @@
 					      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="Idea content here" ng-show="newIdea.contentType == 'text'"/><br />
 					      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
 					    	</div>
-
-					    	<input type="hidden" ng-model="newIdea.promptID" value="{{currentPrompt}}" ng-init="newIdea.ID=currentPrompt"/>
 					    	
-					    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+					    	<input type="submit" ng-click="addRemoteIdea(newIdea)" value="Save" />
 					    	</form>
 					</div>	
 

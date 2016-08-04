@@ -139,6 +139,24 @@ angularApp.controller("InterfaceController",
 		})
 	};
 
+
+	$scope.searchForSession = function(input){
+		console.log('input :' + input);
+		$http.get('/searchForSession/'+input).then(function(response){
+			$scope.sessionResults = (response.data);
+		});
+	};
+
+	$scope.addToFoundSession = function(input){
+		var newInput = input._id;
+		console.log(typeof(newInput));
+		$http.post('/setSession',input).then(function(response){
+		})
+		$http.get('/searchForPrompt/'+newInput).then(function(response){
+			$scope.promptResults = (response.data);
+		});
+	};
+
 	//Get input from form and create new JSON object for session
 	//Post JSON object to insert it as a document into database
 	//Append JSON object to allSessions array and call socket emit to update in real time
@@ -171,6 +189,58 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
+
+	$scope.addRemoteIdea = function(InputtedIdea){
+		$scope.newIdea = angular.copy(InputtedIdea);
+		//$scope.newIdeaForm.$setPristine();
+		//console.log($scope.newIdea);
+		//console.log($("#newIdea_frm"));
+		//$("#newIdea_frm")[0].reset();
+		//console.log($("#newIdea_frm")[0]);
+		//console.log(typeof($("#newIdea_frm"))[0]);
+		
+		//console.log(newIdeaForm);
+		//newIdeaForm.$setPristine();
+		//newIdeaForm[0].$setPristine();
+
+		//console.log($scope.newIdea);
+		//console.log("~~~~~~");
+		//console.log($scope.allData.prompts);
+		var cPrompt = $scope.allData.prompts[$scope.currentPrompt - 1];
+
+		var ideaID = cPrompt.ideas.length + 1;
+		var fullNewIdea = {
+			"ID": $scope.currentPrompt + "." + ideaID,
+			"name": $scope.newIdea.name,
+			"time": Date.now(),
+			"contentType": $scope.newIdea.contentType,
+			"content": $scope.newIdea.content,
+			"likes":0,
+		};
+
+		console.log(fullNewIdea);
+
+		$http.post('/addSafeIdea', fullNewIdea).then(function(response){
+			//Receiving new idea and pushing to ideas array of current prompt
+			//console.log(response.data);
+			cPrompt.ideas.push(response.data);
+
+			//Update all clients
+			socket.emit('updateIdeas', cPrompt.promptID);
+		});
+	};
+	//socket.emit and socket.on must be declared in separate functions
+	socket.on('updateIdeas', function(incomingPrompt){
+		//console.log(incomingPrompt);
+			$http.get('/updateIdeas/'+incomingPrompt).then(function(response){
+				//console.log(response.data);
+				//console.log('**');
+				//console.log($scope.allData.prompts[incomingPrompt-1]);
+				($scope.allData.prompts[incomingPrompt-1].ideas) = response.data;
+				//($scope.allData.ideas) = response.data;
+			})
+	});
+
 	//Get input from form and create new JSON object for idea
 	//Post JSON object to append to the "ideas" array in the relevant document
 	//Append JSON object to allSessions's ideas array and call socket emit to update in real time
@@ -190,10 +260,12 @@ angularApp.controller("InterfaceController",
 		
 		
 		var promptID = $scope.newIdea.ID;
-		console.log($scope.allData.prompts[0]);
+		console.log($scope.newIdea);
+		console.log("~~~~~~");
+		console.log($scope.allData.prompts);
 		//var cPrompt = $scope.allData.prompts[promptID - 1];
 
-		var ideaID = cPrompt.ideas.length + 1;
+		/*var ideaID = cPrompt.ideas.length + 1;
 		var fullNewIdea = {
 			"ID": promptID + "." + ideaID,
 			"name": $scope.newIdea.name,
@@ -212,7 +284,7 @@ angularApp.controller("InterfaceController",
 
 			//Update all clients
 			socket.emit('updateIdeas', cPrompt.promptID);
-		});
+		});*/
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
@@ -277,20 +349,6 @@ angularApp.controller("InterfaceController",
     	console.log("!error! " + err);
 	});
 
-	$scope.searchForSession = function(input){
-		console.log('input :' + input);
-		$http.get('/searchForSession/'+input).then(function(response){
-			$scope.sessionResults = (response.data);
-		});
-	};
-
-	$scope.addToFoundSession = function(input){
-		var newInput = input._id;
-		console.log(typeof(newInput));
-		$http.get('/searchForPrompt/'+newInput).then(function(response){
-			$scope.promptResults = (response.data);
-		});
-	};
 
 }]);
 
