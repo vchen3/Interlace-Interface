@@ -35,9 +35,11 @@
     	<i class="material-icons md-36">home</i>
 	</md-button>
 
-      <h1>{{allData.promptTitle}}</h1>
-      <h3>{{allData.date}}</h3>
-      <h3>{{allData.teacherName}}</h3>
+      	<h1>{{allData.promptTitle}}</h1>
+     	<h3>{{allData.date}}</h3>
+      	<h3>{{allData.teacherName}}</h3>
+
+    	
 
       	<div class = "orderByBox">
       		<p>Order by</p>
@@ -69,25 +71,25 @@
 					</div>
 					<div class = "newIdeaBox">
 					<h2 id = "ideaName"> Add New Idea </h2>
-						<form id = "newIdea_frm" novalidate class="simple-form">
-							<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
-							<br>
-						<p>What idea type would you like to share?</p>
-				      		<label for="textButton">Text</label>
-				      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
-				      		<br />
-				     		 <label for="imageButton">Image</label>
-				      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
+							<form name="newIdeaForm" id = "newIdea_frm" novalidate class="simple-form">
+								<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
+								<br>
+							<p>What idea type would you like to share?</p>
+					      		<label for="textButton">Text</label>
+					      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
+					      		<br />
+					     		 <label for="imageButton">Image</label>
+					      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
 
-				    	<div>
-				      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="Idea content here" ng-show="newIdea.contentType == 'text'"/><br />
-				      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
-				    	</div>
+					    	<div>
+					      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="Idea content here" ng-show="newIdea.contentType == 'text'"/><br />
+					      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
+					    	</div>
 
-				    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.ID=prompt.promptID"/>
-				    	
-				    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
-				    	</form>
+					    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.ID=prompt.promptID"/>
+					    	
+					    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+					    	</form>
 					</div>	
 			</div>
 
@@ -100,6 +102,17 @@
 						<input type="submit" ng-click="addPrompt(newPrompt)" value="Save" />
 					</form>
 			</div>
+
+			<!--
+			<div class = "newPromptBox">
+			<h2 id = "ideaName"> Get promptID </h2>
+				<form id = "getPrompt_frm" novalidate class="simple-form">
+					<input type="text" ng-model="qPrompt.qText" id = "ideaName" placeholder="insert prompt text"/><br />
+					
+					<input type="submit" ng-click="getPrompt(qPrompt)" value="Save" />
+				</form>
+			</div>
+			-->
 
     </div>
 

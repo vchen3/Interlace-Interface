@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
+	<meta charset="UTF-8">
+	<title>Interlace Interface</title>
+	<link rel="stylesheet" type="text/css" href="styles.css"></link>
+
+	<link href='http://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+	<base href="/" />
+	
+</head>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-route.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-route.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-resource.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="index.js" type="text/javascript"></script>
+<script src="js/controllers.js" type="text/javascript" ></script>
+
+<body ng-controller="InterfaceController">
+
+	<div class="header">
+	<md-button class="md-icon-button" onclick="location.href='/'">
+    	<i class="material-icons md-36">home</i>
+	</md-button>
+
+      	<h1>Add New Idea</h1>
+     	<h2>Which session and prompt would you like to respond to?</h2>
+   
+    </div>
+
+    <!--<div class="ideaPanel">
+	    Search for session: <input type = "text" ng-model= "sessionQuery">
+	    You entered: {{sessionQuery}}
+	    <br>
+	    <br>
+	    Results: {{sessionResults}}
+	</div>-->
+
+	<div class="ideaPanel">
+		<div class = "newPromptBox">
+			<h2 id = "ideaName"> Search for session by title</h2>
+					<form id = "searchSession_frm" novalidate class="simple-form">
+						<input type="text" ng-model="sessionQuery" placeholder="Your query here"/><br />
+						
+						<input type="submit" ng-click="searchForSession(sessionQuery)" value="Search" />
+					</form>
+		</div>
+		<br>
+		<p>Session results:</p>
+		<br>
+		<div class = "promptBox">
+			<div ng-repeat="item in sessionResults" class = "visibleSessionBox">
+				<br>
+				<h2 id = "ideaName"> {{item.promptTitle}}</h2>
+				<h2 id = "ideaText"> {{item.teacherName}}</h2>
+				<h2 id = "ideaText"> {{item.date}}</h2>
+				<br>
+				<input type="button" ng-click="addToFoundSession(item)" value="Add to Session" />
+			</div>
+
+		</div>
+
+		<br>
+		<p>Prompt results:</p>
+		<br>
+		<div class = "promptBox">
+			<div ng-repeat="item in promptResults" class = "visibleSessionBox">
+				<br>
+				<h2 id = "ideaName"> {{item.text}}</h2>
+				<!--<h2 id = "ideaText"> {{item.teacherName}}</h2>
+				<h2 id = "ideaText"> {{item.date}}</h2>-->
+				<br>
+				<input type="button" class = "useSessionButton" value="Add to Prompt" ng-click="addToPrompt(item.promptID)"/>
+
+			</div>
+		</div>
+
+		{{readyToAddIdea}}
+		{{currentPrompt}}
+
+		<div class = "newIdeaBox" ng-show="readyToAddIdea">
+					<h2 id = "ideaName"> Add New Idea </h2>
+							<form name="newIdeaForm" id = "newIdea_frm" novalidate class="simple-form">
+								<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
+								<br>
+							<p>What idea type would you like to share?</p>
+					      		<label for="textButton">Text</label>
+					      			<input id="textButton" type="radio" ng-model="newIdea.contentType" value="text">
+					      		<br />
+					     		 <label for="imageButton">Image</label>
+					      			<input id="imageButton" type="radio" ng-model="newIdea.contentType" value="image">
+
+					    	<div>
+					      		<input type="text" ng-model="newIdea.content" id = "ideaName" placeholder="Idea content here" ng-show="newIdea.contentType == 'text'"/><br />
+					      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
+					    	</div>
+
+					    	<input type="hidden" ng-model="newIdea.promptID" value="{{currentPrompt}}" ng-init="newIdea.ID=currentPrompt"/>
+					    	
+					    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+					    	</form>
+					</div>	
+
+		<br>
+		<br>
+		<p>this is here</p>
+	</div>
+
+</body>
+</html>
+
+	
+
+	    	
+	

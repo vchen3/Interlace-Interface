@@ -54,6 +54,39 @@ expressApp.get('/index', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+expressApp.get('/addIdeaPage', function(req, res){
+  res.sendFile(__dirname + '/addIdeaPage.html');
+});
+
+expressApp.get('/searchForSession/:id', function(req,res){
+  console.log('received request to search for session');
+  var input = req.params.id;
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection(currentCollection).find({"promptTitle":input}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      res.json(result);
+    });
+  });
+});
+
+expressApp.get('/searchForPrompt/:id', function(req,res){
+  console.log('received request to search for prompt');
+  var input = req.params.id;
+  var objectSession = ObjectId(input);
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      res.json(result[0].prompts);
+    });
+  });
+});
+
 
 //Set current session to use
 expressApp.post('/setSession', function(req, res){
@@ -73,6 +106,42 @@ expressApp.get('/getAllSessionData', function(req, res){
       res.json(result);
     });
   });
+});
+
+//Request for promptID by title
+expressApp.post('/getPromptID', function(req,res){
+  var requestedPrompt = req.body.qText;
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    var action = {};
+    var variable = "text";
+    var trueVar = String(variable);
+    action[trueVar] = req.body.qText;
+
+    //Result = all sessions with this prompt
+    db.collection(currentCollection).find({"prompts": {$elemMatch: action}}).toArray(function(err,result){
+      if (err){
+        throw err;
+      }
+      if (result.length = 1){
+        //console.log(result[0].prompts)
+        for (var i = 0; i<result[0].prompts.length; i++){
+          var currentPrompt = result[0].prompts[i];
+          //console.log(currentPrompt);
+          //console.log(requestedPrompt);
+          if (currentPrompt.text === requestedPrompt){
+            res.json(currentPrompt.promptID);
+          }
+        };
+      }
+      //If there are multiple prompts with this title
+      else{
+        for (var i = 0; i<result.length; i++){
+          console.log(result[i]);
+        }
+      }
+    });
+  })
 });
 
 //List information about current session
@@ -119,14 +188,7 @@ expressApp.get('/like/:id', function(req,res){
     db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
     
     //Equivalent of this call, but idNumber cannot be called in this format:
-    //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.ideaIndex.likes':1}});
     //db.collection(currentCollection).update({_id:objectSession},{$inc:{'prompts.promptIndex.ideas.ideaIndex.likes':1}});
-
-    /*//Reset all likes
-    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.0.likes':0}});
-    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.1.likes':0}});
-    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.2.likes':0}});
-    db.collection(currentCollection).update({_id:objectSession},{$set:{'ideas.3.likes':0}});*/
 
     db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
       if (err) {
@@ -163,7 +225,7 @@ expressApp.get('/updateLike/:id', function(req,res){
 });
 
 //Add new idea to database in relevant document
-expressApp.post('/addNewIdea', function(req, res){
+expressApp.post('/addSafeIdea', function(req, res){
   //console.log('adding new idea');
     if (!('ID' in req.body)){
       //Add this dynamically somehow, find the value
@@ -367,7 +429,7 @@ expressApp.get('/moveIdeas', function(req,res){
   console.log('moving ideas');
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    var objectSession = ObjectId("578e3ed70e9540ef03359b6d");
+    var objectSession = ObjectId("578fcdfee86fbe0cd2d34ea7");
     var newInput = {
       "promptID": 2,
       "text": "How do forces act on us?"
@@ -381,39 +443,31 @@ expressApp.get('/moveIdeas', function(req,res){
       //Result holds an array with the one relevant document
       //Send back the ideas array
       var ideasArray = [
-        {
-          "ID" : 1.1,
-          "name" : "Chris",
-          "time" : 1469199370000,
-          "contentType" : "text",
-          "content" : "Greenland is the largest island in the world.",
-          "likes" : 3
-        },
-        {
-          "ID" : 1.2,
-          "name" : "Albus PercivalWulfricBrianDumbledore",
-          "time" : 1469199370000,
-          "contentType" : "text",
-          "content" : "Vatican City is the smallest country in the world.",
-          "likes" : 1
-        },
-        {
-          "ID" : 1.3,
-          "name" : "Ethan",
-          "time" : 1467199370000,
-          "contentType" : "image",
-          "content" : "img/mountain.jpg",
-          "likes" : 0
-        },
-        {
-          "ID" : 1.4,
-          "name" : "Ben",
-          "time" : 1465199370000,
-          "contentType" : "image",
-          "content" : "img/grandcanyon.jpg",
-          "likes" : 2
-        }
-      ];
+    {
+      "ideaID" : 1,
+      "name" : "Paul",
+      "time" : 1469124975236,
+      "contentType" : "text",
+      "content" : "Saturn is not solid like Earth, but is instead a giant gas planet.",
+      "likes" : 0
+    },
+    {
+      "ideaID" : 2,
+      "name" : "Annie",
+      "time" : 1469125017873,
+      "contentType" : "image",
+      "content" : "http://www.seasky.org/solar-system/assets/animations/solar_system_menu.jpg",
+      "likes" : 0
+    },
+    {
+      "ideaID" : 3,
+      "name" : "Fay",
+      "time" : 1469194124925,
+      "contentType" : "text",
+      "content" : "Mercury is closest to the sun",
+      "likes" : 0
+    }
+  ];
 
     //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.0.ideas':ideasArray}}); 
       //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});

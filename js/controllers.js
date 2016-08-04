@@ -31,6 +31,14 @@ angularApp.controller("InterfaceController",
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
 
+    //setInterval(function(){ console.log(socket.connected); }, 5000);
+
+    /*setInterval(function(){getSessionQuery()},2000);
+    function getSessionQuery(){
+    	console.log("*");
+    	console.log($scope.sessionQuery);
+    };*/
+
 	$http.get('/list').then(function(response){
 		//Current document's information
 		$scope.allData = response.data;
@@ -48,6 +56,28 @@ angularApp.controller("InterfaceController",
 		} 
 		$scope.visibleSessions = visibleSessionsArray;
 	});
+
+	$scope.addToPrompt = function(destinationPromptID){
+		$scope.currentPrompt = destinationPromptID;
+		$scope.readyToAddIdea = true;
+	};
+
+	$scope.getPrompt = function(query){
+		$("#getPrompt_frm")[0].reset();
+		var qPromptText = angular.copy(query);
+		console.log(qPromptText);
+		console.log(typeof(qPromptText));
+
+		$http.post('/getPromptID', qPromptText).then(function(response){
+			console.log(response.data);
+			//Receiving new idea and pushing to ideas array of current prompt
+			//$scope.promptResults = (response.data);
+			//cPrompt.ideas.push(response.data);
+
+			//Update all clients
+			//socket.emit('updateIdeas', cPrompt.promptID);
+		});
+	};
 
 	//Functions for editing sessions
 	$scope.archiveSession = function(inputtedSession){
@@ -145,12 +175,23 @@ angularApp.controller("InterfaceController",
 	//Post JSON object to append to the "ideas" array in the relevant document
 	//Append JSON object to allSessions's ideas array and call socket emit to update in real time
 	$scope.addIdea = function(InputtedIdea){
-		$("#newIdea_frm")[0].reset();
 		$scope.newIdea = angular.copy(InputtedIdea);
+		//$scope.newIdeaForm.$setPristine();
 		//console.log($scope.newIdea);
-		//console.log($scope.allData.prompts[0]);
+		//console.log($("#newIdea_frm"));
+		//$("#newIdea_frm")[0].reset();
+		//console.log($("#newIdea_frm")[0]);
+		//console.log(typeof($("#newIdea_frm"))[0]);
+		
+		//console.log(newIdeaForm);
+		//newIdeaForm.$setPristine();
+		//newIdeaForm[0].$setPristine();
+
+		
+		
 		var promptID = $scope.newIdea.ID;
-		var cPrompt = $scope.allData.prompts[promptID - 1];
+		console.log($scope.allData.prompts[0]);
+		//var cPrompt = $scope.allData.prompts[promptID - 1];
 
 		var ideaID = cPrompt.ideas.length + 1;
 		var fullNewIdea = {
@@ -164,7 +205,7 @@ angularApp.controller("InterfaceController",
 
 		//console.log(fullNewIdea);
 
-		$http.post('/addNewIdea', fullNewIdea).then(function(response){
+		$http.post('/addSafeIdea', fullNewIdea).then(function(response){
 			//Receiving new idea and pushing to ideas array of current prompt
 			//console.log(response.data);
 			cPrompt.ideas.push(response.data);
@@ -175,11 +216,10 @@ angularApp.controller("InterfaceController",
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
-		//var currentPrompt = incomingPrompt.promptID;
 		//console.log(incomingPrompt);
 			$http.get('/updateIdeas/'+incomingPrompt).then(function(response){
 				//console.log(response.data);
-				console.log('**');
+				//console.log('**');
 				//console.log($scope.allData.prompts[incomingPrompt-1]);
 				($scope.allData.prompts[incomingPrompt-1].ideas) = response.data;
 				//($scope.allData.ideas) = response.data;
@@ -218,7 +258,7 @@ angularApp.controller("InterfaceController",
 		var ideaID = stringID.split(".")[1];
 		var promptIndex = promptID - 1
 		var ideaIndex = ideaID - 1;
-		
+
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
 				var cIdea = $scope.allData.prompts[promptIndex].ideas[ideaIndex];
 				cIdea.likes = response.data;
@@ -237,6 +277,21 @@ angularApp.controller("InterfaceController",
     	console.log("!error! " + err);
 	});
 
+	$scope.searchForSession = function(input){
+		console.log('input :' + input);
+		$http.get('/searchForSession/'+input).then(function(response){
+			$scope.sessionResults = (response.data);
+		});
+	};
+
+	$scope.addToFoundSession = function(input){
+		var newInput = input._id;
+		console.log(typeof(newInput));
+		$http.get('/searchForPrompt/'+newInput).then(function(response){
+			$scope.promptResults = (response.data);
+		});
+	};
+
 }]);
 
 'use strict';
@@ -245,7 +300,7 @@ angularApp.controller("InterfaceController",
 angularApp.factory('socket', function ($rootScope) {
   var socket = io.connect();
   //Print whether the sockets are connected every 5 seconds (true or false)
-  setInterval(function(){ console.log(socket.connected); }, 5000);
+  setInterval(function(){ console.log(socket.connected); }, 10000);
   return {
     on: function (eventName, callback) {
       //console.log('general function called');
@@ -268,6 +323,7 @@ angularApp.factory('socket', function ($rootScope) {
     }
   };
 });
+
 
 socket.on('init', function(){
 	//console.log('socket on init');
