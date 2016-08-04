@@ -150,6 +150,7 @@ angularApp.controller("InterfaceController",
 	$scope.addToFoundSession = function(input){
 		var newInput = input._id;
 		console.log(typeof(newInput));
+		$scope.currentSession = input;
 		$http.post('/setSession',input).then(function(response){
 		})
 		$http.get('/searchForPrompt/'+newInput).then(function(response){
@@ -189,23 +190,10 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
-
 	$scope.addRemoteIdea = function(InputtedIdea){
+		$("#newRemoteIdea_frm")[0].reset();
 		$scope.newIdea = angular.copy(InputtedIdea);
-		//$scope.newIdeaForm.$setPristine();
-		//console.log($scope.newIdea);
-		//console.log($("#newIdea_frm"));
-		//$("#newIdea_frm")[0].reset();
-		//console.log($("#newIdea_frm")[0]);
-		//console.log(typeof($("#newIdea_frm"))[0]);
-		
-		//console.log(newIdeaForm);
-		//newIdeaForm.$setPristine();
-		//newIdeaForm[0].$setPristine();
-
-		//console.log($scope.newIdea);
-		//console.log("~~~~~~");
-		//console.log($scope.allData.prompts);
+	
 		var cPrompt = $scope.allData.prompts[$scope.currentPrompt - 1];
 
 		var ideaID = cPrompt.ideas.length + 1;
@@ -228,6 +216,8 @@ angularApp.controller("InterfaceController",
 			//Update all clients
 			socket.emit('updateIdeas', cPrompt.promptID);
 		});
+
+		$scope.addedRemoteIdea = true;
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
