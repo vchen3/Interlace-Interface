@@ -138,8 +138,44 @@ var currentSession = "578e3ed70e9540ef03359b6d";
       if (!('prompts' in req.body)){
         req.body['prompts'] = [];
       }
-
       MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      function safelyAddSession (addition){
+        db.collection(currentCollection).save(req.body);
+        db.collection(currentCollection).find().toArray(function(err,result){
+          if (err){
+            throw err;
+          }
+          res.json(result.slice(-1)[0]);
+        });
+      };
+
+      //Check that the prompt is not already inserted
+      
+      db.collection(currentCollection).find().toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        var sessionsArray = result;
+        console.log('sessions array: ');
+        console.log(sessionsArray);
+        for (var i = 0; i<sessionsArray.length; i++){
+          if (sessionsArray[i].promptTitle == req.body.promptTitle){
+            console.log(sessionsArray[i].promptTitle);
+            console.log("This session already exists: " + req.body);
+            var errorMessage = "!ERROR!";
+            res.send(errorMessage);
+            return;
+          };
+        }
+        console.log('new session!');
+        safelyAddSession(req.body);
+      });
+    })
+  });
+
+
+      /*MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
       db.collection(currentCollection).save(req.body);
       db.collection(currentCollection).find().toArray(function(err,result){
@@ -148,8 +184,7 @@ var currentSession = "578e3ed70e9540ef03359b6d";
         }
         res.json(result.slice(-1)[0]);
       })
-     });
-  });
+     });*/
 
   //Returns all documents in collection
   expressApp.get('/getAllSessionData', function(req, res){
@@ -181,6 +216,29 @@ var currentSession = "578e3ed70e9540ef03359b6d";
           throw err;
         }
         res.json(result);
+      });
+    });
+  });
+
+  //Request for promptID by title
+  expressApp.get('/getSessionID/:id', function(req,res){
+    //console.log('here we are');
+    var requestedSessionTitle = req.params.id;
+    //console.log('whoops');
+    //console.log(requestedSessionTitle);
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+
+      //Result = all sessions with this prompt
+      db.collection(currentCollection).find({"promptTitle": requestedSessionTitle}).toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        else{
+          console.log("Total results : " + result.length);
+          var resultSessionID = (result[0].sessionID);
+          res.json(resultSessionID);
+      }
       });
     });
   });
@@ -473,7 +531,7 @@ expressApp.get('/moveIdeas', function(req,res){
   console.log('moving ideas');
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    var objectSession = ObjectId("578fcdfee86fbe0cd2d34ea7");
+    var objectSession = ObjectId("578e3ed70e9540ef03359b6d");
     var newInput = {
       "promptID": 2,
       "text": "How do forces act on us?"
@@ -487,33 +545,26 @@ expressApp.get('/moveIdeas', function(req,res){
       //Result holds an array with the one relevant document
       //Send back the ideas array
       var ideasArray = [
-    {
-      "ideaID" : 1,
-      "name" : "Paul",
-      "time" : 1469124975236,
-      "contentType" : "text",
-      "content" : "Saturn is not solid like Earth, but is instead a giant gas planet.",
-      "likes" : 0
-    },
-    {
-      "ideaID" : 2,
-      "name" : "Annie",
-      "time" : 1469125017873,
-      "contentType" : "image",
-      "content" : "http://www.seasky.org/solar-system/assets/animations/solar_system_menu.jpg",
-      "likes" : 0
-    },
-    {
-      "ideaID" : 3,
-      "name" : "Fay",
-      "time" : 1469194124925,
-      "contentType" : "text",
-      "content" : "Mercury is closest to the sun",
-      "likes" : 0
-    }
-  ];
+        {
+          "ID" : "1.2.1",
+          "name" : "Allen",
+          "time" : 1469124849197,
+          "contentType" : "text",
+          "content" : "Friction is the force exerted by a surface as an object moves across it.",
+          "likes" : 4
+        },
+        {
+          "ID" : "1.2.2",
+          "name" : "Anna",
+          "time" : 1469124894977,
+          "contentType" : "image",
+          "content" : "http://cdn.funkidslive.com/wp-content/uploads/carforces-physics-245x170-custom.jpg",
+          "likes" : 10
+        }
+      ];
 
-    //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.0.ideas':ideasArray}}); 
+
+      //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.1.ideas':ideasArray}}); 
       //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
     });
    });

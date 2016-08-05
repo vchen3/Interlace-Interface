@@ -121,7 +121,7 @@
 				<form id = "getPrompt_frm" novalidate class="simple-form">
 					<input type="text" ng-model="qPrompt.qText" id = "ideaName" placeholder="insert prompt text"/><br />
 					
-					<input type="submit" ng-click="getPrompt(qPrompt)" value="Save" />
+					<input type="submit" ng-click="getPromptID(qPrompt)" value="Save" />
 				</form>
 
 				<p ng-show = "showGetPromptIDResponse">The promptID of your search "{{qPrompt.qText}}" is {{getPromptIDResponse}} </p>

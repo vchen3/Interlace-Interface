@@ -107,16 +107,21 @@ angularApp.controller("InterfaceController",
 		};
 
 		$http.post('/addNewSession',fullNewSession).then(function(response){
-			//console.log(response.data);
-			console.log("********");
-			//Receiving new session and pushing to sessions array
-			($scope.allSessions).push(response.data);
+			if (response.data == "!ERROR!"){
+				//console.log('was  already in');
+				$scope.showErrorAddNewSession = true;
+				$scope.errorAddNewSessionResponse = "This session title already exists.  Please add a new prompt."
+			}
+			else{
+				$scope.showErrorAddNewSession = false;
+				//Receiving new session and pushing to sessions array
+				($scope.allSessions).push(response.data);
+				//Update all clients
+				socket.emit('updateSessions');
 
-			//Update all clients
-			socket.emit('updateSessions');
-
-			$scope.showAddNewSession = true;
-			$scope.addNewSessionResponse = "Your session has been submitted."
+				$scope.showAddNewSession = true;
+				$scope.addNewSessionResponse = "Your session has been submitted."
+			}
 		});
 	};
 	//socket.emit and socket.on must be declared in separate functions
@@ -151,6 +156,18 @@ angularApp.controller("InterfaceController",
 		});
 		$http.get('/searchForPrompt/'+newInput).then(function(response){
 			$scope.promptResults = (response.data);
+		});
+	};
+
+	$scope.getSessionID = function(query){
+		$("#getSession_frm")[0].reset();
+		//var qSessionTitle = angular.copy(query);
+		console.log(query);
+		console.log(typeof(query));
+
+		$http.get('/getSessionID/' + query).then(function(response){
+			$scope.getSessionIDResponse = response.data;
+			$scope.showGetSessionIDResponse = true;
 		});
 	};
 
@@ -198,7 +215,7 @@ angularApp.controller("InterfaceController",
 	});
 
 
-	$scope.getPrompt = function(query){
+	$scope.getPromptID = function(query){
 		$("#getPrompt_frm")[0].reset();
 		var qPromptText = angular.copy(query);
 		console.log(qPromptText);
