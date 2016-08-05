@@ -1,3 +1,10 @@
+/* Node App 
+ * Functions below are organized by what "level" they deal with:
+  General functions, and then functions that deal with sessions, prompts, and then ideas
+ */
+
+
+
 var express = require('express');
 var expressApp = express();
 //var socket = require(__dirname + '/socket.js');
@@ -114,11 +121,7 @@ var currentSession = "578e3ed70e9540ef03359b6d";
   //Save incoming JSON object as document in database
   expressApp.post('/addNewSession', function(req, res){
       if (!('promptTitle' in req.body)){
-        res.send('Please include a prompt title.');
-        return;
-      }
-      if (!('teacherName' in req.body)){
-        console.log("Please include a teacher's name.");
+        console.log('Please include a prompt title.');
         return;
       }
       if (!('teacherName' in req.body)){
@@ -134,7 +137,6 @@ var currentSession = "578e3ed70e9540ef03359b6d";
       }
       if (!('prompts' in req.body)){
         req.body['prompts'] = [];
-        console.log(req.body);
       }
 
       MongoClient.connect(url, function(err, db) {

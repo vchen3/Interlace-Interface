@@ -1,9 +1,16 @@
-/*Angular App 
+/* Angular App 
  * Holds all scope variables and functions for Angular/client-side
 
  * Scope Variables *
+	$scope.allData 			JSON of current document/session
+	$scope.allSessions 		ARRAY of all documents in collection
+	$scope.visibleSessions 	ARRAY of all documents in collection with attribute visible set to "true"
+	
+	$scope.currentPrompt	INT promptID of current prompt
+	$scope.currentSession	JSON of current session
 
-
+ * Functions below are organized by what "level" they deal with:
+ 	General functions, and then functions that deal with sessions, prompts, and then ideas
  */
 
 
@@ -68,8 +75,27 @@ angularApp.controller("InterfaceController",
 	//Post JSON object to insert it as a document into database
 	//Append JSON object to allSessions array and call socket emit to update in real time
 	$scope.addSession = function(inputtedSession){
-		$("#newSession_frm")[0].reset();
 		var newSession = angular.copy(inputtedSession);
+
+		if (!(newSession.hasOwnProperty('promptTitle')) || newSession.promptTitle == ""){
+			$scope.showAddNewSession = true;
+			$scope.addNewSessionResponse = "Please include a session title."
+			return;
+		}
+
+		if (!(newSession.hasOwnProperty('teacherName')) || newSession.teacherName == ""){
+			$scope.showAddNewSession = true;
+			$scope.addNewSessionResponse = "Please include the teacher's name."
+			return;
+		}
+
+		if (!(newSession.hasOwnProperty('date')) || newSession.date == ""){
+			$scope.showAddNewSession = true;
+			$scope.addNewSessionResponse = "Please include the date."
+			return;
+		}
+
+		$("#newSession_frm")[0].reset();
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
 			//"ideaID":9,
@@ -88,6 +114,9 @@ angularApp.controller("InterfaceController",
 
 			//Update all clients
 			socket.emit('updateSessions');
+
+			$scope.showAddNewSession = true;
+			$scope.addNewSessionResponse = "Your session has been submitted."
 		});
 	};
 	//socket.emit and socket.on must be declared in separate functions
@@ -95,13 +124,13 @@ angularApp.controller("InterfaceController",
 		$http.get('/getAllSessionData/').then(function(response){
 			//console.log(response.data);
 			$scope.allSessions = response.data;
-		})
+		});
 	});
 
 	//Set current session
 	$scope.useSession = function(inputtedSession){
 		$http.post('/setSession',inputtedSession).then(function(response){
-		})
+		});
 	};
 
 
@@ -119,7 +148,7 @@ angularApp.controller("InterfaceController",
 		console.log("currentSession***")
 		console.log($scope.currentSession);
 		$http.post('/setSession',input).then(function(response){
-		})
+		});
 		$http.get('/searchForPrompt/'+newInput).then(function(response){
 			$scope.promptResults = (response.data);
 		});
@@ -167,7 +196,8 @@ angularApp.controller("InterfaceController",
 		console.log(typeof(qPromptText));
 
 		$http.post('/getPromptID', qPromptText).then(function(response){
-			console.log(response.data);
+			$scope.getPromptIDResponse = response.data;
+			$scope.showGetPromptIDResponse = true;
 			//Receiving new idea and pushing to ideas array of current prompt
 			//$scope.promptResults = (response.data);
 			//cPrompt.ideas.push(response.data);
@@ -186,8 +216,26 @@ angularApp.controller("InterfaceController",
 //Functions for editing ideas
 
 	$scope.addRemoteIdea = function(InputtedIdea){
-		$("#newRemoteIdea_frm")[0].reset();
 		var newIdea = angular.copy(InputtedIdea);
+
+		if (!(newIdea.hasOwnProperty('name')) || newIdea.name == ""){
+			$scope.showAddRemoteIdea = true;
+			$scope.addRemoteIdeaResponse = "Please include the author's name."
+			return;
+		}
+
+		if (!(newIdea.hasOwnProperty('contentType')) || newIdea.contentType == ""){
+			$scope.showAddRemoteIdea = true;
+			$scope.addRemoteIdeaResponse = "Please include the idea's content type."
+			return;
+		}
+
+		if (!(newIdea.hasOwnProperty('content')) || newIdea.content == ""){
+			$scope.showAddRemoteIdea = true;
+			$scope.addRemoteIdeaResponse = "Please include idea content."
+			return;
+		}
+		$("#newRemoteIdea_frm")[0].reset();
 	
 		var cPrompt = $scope.allData.prompts[$scope.currentPrompt - 1];
 
@@ -210,9 +258,13 @@ angularApp.controller("InterfaceController",
 
 			//Update all clients
 			socket.emit('updateIdeas', cPrompt.promptID);
+
+			$scope.showAddRemoteIdea = true;
+			$scope.addRemoteIdeaResponse = "Your idea has been submitted."
 		});
 
-		$scope.addedRemoteIdea = true;
+		$scope.showAddRemoteIdea = true;
+		$scope.addRemoteIdeaResponse = "fell thru."
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
@@ -231,6 +283,27 @@ angularApp.controller("InterfaceController",
 	//Append JSON object to allSessions's ideas array and call socket emit to update in real time
 	$scope.addIdea = function(InputtedIdea){
 		var newIdea = angular.copy(InputtedIdea);
+		console.log(newIdea);
+		if (!(newIdea.hasOwnProperty('name')) || newIdea.name == ""){
+			$scope.showAddNewIdea = true;
+			$scope.addNewIdeaResponse = "Please include the author's name."
+			return;
+		}
+
+		if (!(newIdea.hasOwnProperty('contentType')) || newIdea.contentType == ""){
+			$scope.showAddNewIdea = true;
+			$scope.addNewIdeaResponse = "Please include the idea's content type."
+			return;
+		}
+
+		if (!(newIdea.hasOwnProperty('content')) || newIdea.content == ""){
+			$scope.showAddNewIdea = true;
+			$scope.addNewIdeaResponse = "Please include idea content."
+			return;
+		}
+
+		$("#newIdea_frm")[0].reset();
+
 		var promptID = newIdea.ID;
 		var cPrompt = $scope.allData.prompts[promptID - 1];
 
@@ -253,6 +326,9 @@ angularApp.controller("InterfaceController",
 
 			//Update all clients
 			socket.emit('updateIdeas', cPrompt.promptID);
+
+			$scope.showAddRemoteIdea = true;
+			$scope.addRemoteIdeaResponse = "Your idea has been submitted."
 		});
 	};
 	//socket.emit and socket.on must be declared in separate functions

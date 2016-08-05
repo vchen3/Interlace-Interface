@@ -78,11 +78,16 @@ html, body{
 	position: relative;
 }
 
+.results{
+	width: inherit;
+}
+
 .promptBox{
 	width: inherit;
 	margin: 10px;
 	float: left;
 	border-bottom: 1px solid black;
+	padding-bottom: 50px;
 }
 
 .ideaBox{

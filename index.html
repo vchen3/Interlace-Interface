@@ -70,8 +70,8 @@
 						<p id = "ideaTime"> {{idea.time | date:'MM-dd-yyyy HH:mm'}} </p>
 					</div>
 					<div class = "newIdeaBox">
-					<h2 id = "ideaName"> Add New Idea </h2>
-							<form name="newIdeaForm" id = "newIdea_frm" novalidate class="simple-form">
+						<h2 id = "ideaName"> Add New Idea </h2>
+							<form name="newIdea_frm" id = "newIdea_frm" novalidate class="simple-form">
 								<input type="text" ng-model="newIdea.name" id = "ideaName" placeholder="Name"/><br />
 								<br>
 							<p>What idea type would you like to share?</p>
@@ -88,11 +88,20 @@
 
 					    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.ID=prompt.promptID"/>
 					    	
-					    	<input type="submit" ng-click="addIdea(newIdea)" value="Save" />
+					    	<input type="submit" ng-show="newIdea_frm.$dirty"  ng-click="addIdea(newIdea)" value="Save" />
 					    	</form>
+					    	<br>
+					    	<div class = "results" ng-show = "showAddNewIdea">
+								{{addNewIdeaResponse}}
+							</div>
+
 					</div>	
+					
 			</div>
 
+			<br>
+			<br>
+			<br>
 
 			<div class = "newPromptBox">
 			<h2 id = "ideaName"> Add New Prompt </h2>
@@ -103,7 +112,7 @@
 					</form>
 			</div>
 
-			<!--
+			
 			<div class = "newPromptBox">
 			<h2 id = "ideaName"> Get promptID </h2>
 				<form id = "getPrompt_frm" novalidate class="simple-form">
@@ -111,9 +120,10 @@
 					
 					<input type="submit" ng-click="getPrompt(qPrompt)" value="Save" />
 				</form>
-			</div>
-			-->
 
+				<p ng-show = "showGetPromptIDResponse">The promptID of your search "{{qPrompt.qText}}" is {{getPromptIDResponse}} </p>
+			</div>
+			
     </div>
 
 

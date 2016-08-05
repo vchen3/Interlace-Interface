@@ -57,7 +57,7 @@
 					</form>
 		</div>
 		<br>
-		<p>Session results:</p>
+		<div class = "results">Session results:</div>
 		<br>
 		<div class = "promptBox"  ng-init="selectedNode = {}">
 			<div ng-repeat="item in sessionResults" class = "visibleSessionBox" ng-class="{selected: (item == currentSession)}" ng-click="addToFoundSession(item)">
@@ -74,7 +74,7 @@
 		</div>
 
 		<br>
-		<p>Prompt results:</p>
+		<div class = "results">Prompt results:</div>
 		<br>
 		<div class = "promptBox"  ng-init="selectedP = {}" >
 			<div ng-repeat="item in promptResults" class = "visibleSessionBox" ng-class="{selected: (item.promptID == currentPrompt)}" ng-click="addToFoundPrompt(item.promptID)">
@@ -105,13 +105,16 @@
 					      		<input type="url" ng-model="newIdea.content" id = "ideaName" placeholder="Image url here" ng-show="newIdea.contentType == 'image'"/><br />
 					    	</div>
 					    	
-					    	<input type="submit" ng-click="addRemoteIdea(newIdea)" value="Save" />
+					    	<input type="submit" ng-click="addRemoteIdea(newIdea)" value="Save" ng-show="newRemoteIdea_frm.$dirty" />
 					    	</form>
+			<br>
+			<div class = "results" ng-show = "showAddRemoteIdea">
+				{{addRemoteIdeaResponse}}
+			</div>
+
 		</div>	
 
-		<div ng-show = "addedRemoteIdea">
-			<p>Your idea has been submitted.</p>
-		</div>
+		
 
 	</div>
 
