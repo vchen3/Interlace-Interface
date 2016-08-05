@@ -110,6 +110,9 @@
 						
 						<input type="submit" ng-click="addPrompt(newPrompt)" value="Save" />
 					</form>
+					<div class = "results" ng-show = "showErrorAddNewPrompt">
+						{{errorAddNewPromptResponse}}
+					</div>
 			</div>
 
 			
@@ -123,6 +126,7 @@
 
 				<p ng-show = "showGetPromptIDResponse">The promptID of your search "{{qPrompt.qText}}" is {{getPromptIDResponse}} </p>
 			</div>
+
 			
     </div>
 

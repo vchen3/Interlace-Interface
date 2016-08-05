@@ -80,6 +80,7 @@ html, body{
 
 .results{
 	width: inherit;
+	background-color: green;
 }
 
 .promptBox{

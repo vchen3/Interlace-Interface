@@ -173,11 +173,20 @@ angularApp.controller("InterfaceController",
 			//console.log(typeof(response.data));
 			//console.log($scope.allData.prompts);
 			//Receiving new session and pushing to sessions array
-			($scope.allData.prompts).push(response.data);
+			//console.log('response: ' + response.data);
+			if (response.data == "!ERROR!"){
+				//console.log('was  already in');
+				$scope.showErrorAddNewPrompt = true;
+				$scope.errorAddNewPromptResponse = "This prompt is already part of the session.  Please add a new prompt."
+			}
+			else{
+				$scope.showErrorAddNewPrompt = false;
+				($scope.allData.prompts).push(response.data);
 			//console.log($scope.allData.prompts);
 
 			//Update all clients
 			socket.emit('updatePrompts');
+		}
 		});
 	};
 	//socket.emit and socket.on must be declared in separate functions

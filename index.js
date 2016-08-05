@@ -208,25 +208,51 @@ var currentSession = "578e3ed70e9540ef03359b6d";
       if (!('text' in req.body)){
         res.send('Please include a prompt.');
         return;
-      }
+      };
+      if (!('promptID' in req.body)){
+        res.send('Please include a promptID.');
+        return;
+      };
       if (!('ideas' in req.body)){
-        req.body['prompts'] = [];
-        console.log(req.body);
-      }
+        req.body['ideas'] = [];
+        //console.log(req.body);
+      };
+
 
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
       var objectSession = ObjectId(currentSession);
-      //db.collection(currentCollection).save(req.body);
-      db.collection(currentCollection).update({_id:objectSession},{$push : {prompts:req.body}});
+      function safelyAddPrompt (addition){
+        db.collection(currentCollection).update({_id:objectSession},{$push : {prompts:addition}});
+        db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+          if (err){
+            throw err;
+          }
+          res.json(result[0].prompts.slice(-1)[0]);
+        })
+      };
+
+      //Check that the prompt is not already inserted
       db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
         if (err){
           throw err;
         }
-        res.json(result[0].prompts.slice(-1)[0]);
-      })
-     });
-  });
+        var promptsArray = result[0].prompts;
+        for (var i = 0; i<promptsArray.length; i++){
+          if (promptsArray[i].text == req.body.text){
+            //console.log(promptsArray[i].text);
+            //console.log("This prompt is already part of the session: " + req.body.text);
+            var errorMessage = "!ERROR!";
+            res.send(errorMessage);
+            return;
+          };
+        }
+        console.log('new prompt!');
+        safelyAddPrompt(req.body);
+      });
+
+    });
+    });
 
     expressApp.get('/updatePrompts', function(req, res){
     MongoClient.connect(url, function(err, db) {
@@ -256,23 +282,32 @@ var currentSession = "578e3ed70e9540ef03359b6d";
         if (err){
           throw err;
         }
-        if (result.length = 1){
-          //console.log(result[0].prompts)
-          for (var i = 0; i<result[0].prompts.length; i++){
-            var currentPrompt = result[0].prompts[i];
-            //console.log(currentPrompt);
-            //console.log(requestedPrompt);
-            if (currentPrompt.text === requestedPrompt){
-              res.json(currentPrompt.promptID);
-            }
-          };
-        }
-        //If there are multiple prompts with this title
         else{
+          console.log("Total results : " + result.length);
           for (var i = 0; i<result.length; i++){
-            console.log(result[i]);
+              console.log(result[i]);
           }
-        }
+
+          /*if (result.length = 1){
+            //console.log(result[0].prompts)
+            for (var i = 0; i<result[0].prompts.length; i++){
+              var currentPrompt = result[0].prompts[i];
+              //console.log(currentPrompt);
+              //console.log(requestedPrompt);
+              if (currentPrompt.text === requestedPrompt){
+                res.json(currentPrompt.promptID);
+                return;
+              }
+            };
+          }
+         //If there are multiple prompts with this title
+          //else{
+            //for (var i = 0; i<result.length; i++){
+              //console.log(result[i]);
+            //}
+            //console.log("multiple results");
+          //}*/
+      }
       });
     })
   });
