@@ -166,8 +166,17 @@ angularApp.controller("InterfaceController",
 		console.log(typeof(query));
 
 		$http.get('/getSessionID/' + query).then(function(response){
-			$scope.getSessionIDResponse = response.data;
-			$scope.showGetSessionIDResponse = true;
+			if (response.data == "!ERROR!"){
+				//console.log('was  already in');
+				$scope.showErrorGetSessionIDSession = true;
+				$scope.showGetSessionIDResponse = false;
+				$scope.errorGetSessionIDResponse = "This session could not be found.  Please try searching again."
+			}
+			else{
+				$scope.getSessionIDResponse = response.data;
+				$scope.showGetSessionIDResponse = true;
+				$scope.showErrorGetSessionIDSession = false;
+			}
 		});
 	};
 

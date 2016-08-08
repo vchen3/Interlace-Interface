@@ -222,10 +222,8 @@ var currentSession = "578e3ed70e9540ef03359b6d";
 
   //Request for promptID by title
   expressApp.get('/getSessionID/:id', function(req,res){
-    //console.log('here we are');
     var requestedSessionTitle = req.params.id;
-    //console.log('whoops');
-    //console.log(requestedSessionTitle);
+    console.log('getting sID of session ' + requestedSessionTitle);
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
 
@@ -235,7 +233,13 @@ var currentSession = "578e3ed70e9540ef03359b6d";
           throw err;
         }
         else{
-          console.log("Total results : " + result.length);
+          if (result.length == 0){
+            console.log('no results!');
+            var errorMessage = "!ERROR!";
+            res.send(errorMessage);
+            return;
+          }
+          //console.log("Total results : " + result.length);
           var resultSessionID = (result[0].sessionID);
           res.json(resultSessionID);
       }
