@@ -65,6 +65,8 @@ var currentSession = "57a8a1ca7909460733f208b2";
     res.sendFile(__dirname + '/addIdeaPage.html');
   });
 
+
+
   //List information about current session
   expressApp.get('/list', function(req, res){
       MongoClient.connect(url, function(err, db) {
@@ -120,16 +122,25 @@ var currentSession = "57a8a1ca7909460733f208b2";
 
   //Save incoming JSON object as document in database
   expressApp.post('/addNewSession', function(req, res){
+      if (!('sessionID' in req.body)){
+         MongoClient.connect(url, function(err, db) {
+          console.log('adding sessionID');
+          db.collection(currentCollection).find().toArray(function(err,result){
+            var arrayLength = result.length;
+            req.body['sessionID'] = arrayLength + 1;
+          });
+         });
+      }
       if (!('promptTitle' in req.body)){
-        console.log('Please include a prompt title.');
+        res.json('Please include a prompt title.');
         return;
       }
       if (!('teacherName' in req.body)){
-        console.log("Please include a teacher's name.");
+        res.json("Please include a teacher's name.");
         return;
       }
       if (!('date' in req.body)){
-        console.log("Please include the date.");
+        res.json("Please include the date.");
         return;
       }
       if (!('visible' in req.body)){
@@ -138,10 +149,13 @@ var currentSession = "57a8a1ca7909460733f208b2";
       if (!('prompts' in req.body)){
         req.body['prompts'] = [];
       }
+     
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
       function safelyAddSession (addition){
-        db.collection(currentCollection).save(req.body);
+        console.log('safely adding ');
+        console.log(addition);
+        db.collection(currentCollection).save(addition);
         db.collection(currentCollection).find().toArray(function(err,result){
           if (err){
             throw err;
@@ -209,8 +223,11 @@ var currentSession = "57a8a1ca7909460733f208b2";
   });
 
   //Request for sessionID by title
-  expressApp.get('/getSessionID/:id', function(req,res){
-    var requestedSessionTitle = req.params.id;
+  expressApp.post('/getSessionID', function(req,res){
+    console.log('getting session ID');
+    console.log(req.body);
+    var requestedSessionTitle = req.body.title;
+    //console.log('body ' + req.body);
     console.log('getting sID of session ' + requestedSessionTitle);
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
@@ -557,4 +574,273 @@ expressApp.get('/moveIdeas', function(req,res){
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+
+
+/***API Commands***/
+//Save incoming JSON object as document in database
+  expressApp.post('/APIaddNewSession', function(req, res){
+      if (!('sessionID' in req.body)){
+         MongoClient.connect(url, function(err, db) {
+          console.log('adding sessionID');
+          db.collection(currentCollection).find().toArray(function(err,result){
+            var arrayLength = result.length;
+            req.body['sessionID'] = arrayLength + 1;
+          });
+         });
+      }
+      if (!('promptTitle' in req.body)){
+        res.json('Please include a prompt title.');
+        return;
+      }
+      if (!('teacherName' in req.body)){
+        res.json("Please include a teacher's name.");
+        return;
+      }
+      if (!('date' in req.body)){
+        res.json("Please include the date.");
+        return;
+      }
+      if (!('visible' in req.body)){
+        req.body['visible'] = true;
+      }
+      if (!('prompts' in req.body)){
+        req.body['prompts'] = [];
+      }
+     
+      MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      function safelyAddSession (addition){
+        console.log('safely adding ');
+        console.log(addition);
+        db.collection(currentCollection).save(addition);
+        db.collection(currentCollection).find().toArray(function(err,result){
+          if (err){
+            throw err;
+          }
+          res.json(result.slice(-1)[0]);
+        });
+      };
+
+      //Check that the prompt is not already inserted
+      
+      db.collection(currentCollection).find().toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        var sessionsArray = result;
+        //console.log('sessions array: ');
+        //console.log(sessionsArray);
+        for (var i = 0; i<sessionsArray.length; i++){
+          if (sessionsArray[i].promptTitle == req.body.promptTitle){
+            //console.log(sessionsArray[i].promptTitle);
+            //console.log("This session already exists: " + req.body);
+            var errorMessage = "!ERROR!";
+            res.send(errorMessage);
+            return;
+          };
+        }
+        console.log('new session!');
+        safelyAddSession(req.body);
+      });
+    })
+  });
+
+
+//Request for sessionID by title
+  expressApp.post('/APIgetSessionID', function(req,res){
+    console.log('getting session ID');
+    console.log(req.body);
+    var requestedSessionTitle = req.body.title;
+    //console.log('body ' + req.body);
+    console.log('getting sID of session ' + requestedSessionTitle);
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+
+      //Result = all sessions with this prompt
+      db.collection(currentCollection).find({"promptTitle": requestedSessionTitle}).toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        else{
+          if (result.length == 0){
+            console.log('no results!');
+            var errorMessage = "!ERROR!";
+            res.send(errorMessage);
+            return;
+          }
+          //console.log("Total results : " + result.length);
+          var resultSessionID = (result[0].sessionID);
+          res.json(resultSessionID);
+      }
+      });
+    });
+  });
+
+  //Save incoming JSON object as prompt in document database
+  expressApp.post('/APIaddNewPrompt', function(req, res){
+      if (!('text' in req.body)){
+        res.send('Please include a prompt.');
+        return;
+      };
+      if (!('sessionID' in req.body)){
+        res.send('Please include the sessionID.');
+        return;
+      };
+      console.log(req.body);
+
+      MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      var objectSession = ObjectId(currentSession);
+      function safelyAddPrompt (addition){
+        db.collection(currentCollection).update({_id:objectSession},{$push : {prompts:addition}});
+        db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+          if (err){
+            throw err;
+          }
+          res.json(result[0].prompts.slice(-1)[0]);
+        })
+      };
+
+      //Check that the prompt is not already inserted
+      db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        var promptsArray = result[0].prompts;
+        for (var i = 0; i<promptsArray.length; i++){
+          if (promptsArray[i].text == req.body.text){
+            console.log('prompt already within');
+            //console.log(promptsArray[i].text);
+            //console.log("This prompt is already part of the session: " + req.body.text);
+            var errorMessage = "!ERROR!";
+            res.send(errorMessage);
+            return;
+          };
+        }
+
+        var promptID = promptsArray.length + 1;
+        var newPromptID = req.body.sessionID + "." + promptID;
+        //req.body['promptID'] = newPromptID;
+        var officialPrompt = {};
+        officialPrompt['text'] = req.body.text;
+        officialPrompt['promptID'] = newPromptID;
+        officialPrompt['ideas'] = [];
+
+        console.log('NOW saving new prompt!');
+        console.log(officialPrompt);
+        safelyAddPrompt(officialPrompt);
+      });
+
+    });
+    });
+
+//Request for promptID by title and sessionID, receive promptID
+  expressApp.post('/APIgetPromptID', function(req,res){
+    var requestedPrompt = req.body;
+    console.log("requested prompt's sessionID : " + requestedPrompt.sessionID);
+    var numberSession = Number(requestedPrompt.sessionID);
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+
+      //Result = an array with the single queried session
+      db.collection(currentCollection).find({"sessionID": numberSession}).toArray(function(err,result){
+        if (err){
+          throw err;
+        }
+        else{
+          console.log("Total results : " + result.length);
+          
+          //console.log('attempting to return session ID');
+          var promptsArray = result[0].prompts;
+          console.log(promptsArray);
+          for (var i = 0; i<promptsArray.length; i++){
+            if (promptsArray[i].text == requestedPrompt.text){
+              console.log('sending back ' + promptsArray[i].promptID);
+              res.json(promptsArray[i].promptID);
+              return;
+            }
+          }
+          console.log('not found');
+          var errorMessage = "!ERROR!";
+          res.send(errorMessage);
+          return;
+        }
+      });
+    })
+  });
+
+//Add new idea to database in relevant document
+  expressApp.post('/APIaddSafeIdea', function(req, res){
+
+    //console.log('adding new idea');
+      if (!('promptID' in req.body)){
+        res.send("Please include the promptID.");
+        return;
+      }
+      if (!('name' in req.body)){
+        res.send("Please include the author's name.");
+        return;
+      }
+      if (!('contentType' in req.body)){
+        res.send("Please specify what type of content you'd like to share.");
+        return;
+      }
+      if (!('content' in req.body)){
+        res.send("Please include your idea's content.");
+        return;
+      }
+
+
+      MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      
+      var IDArray = String(req.body.promptID).split(".");
+      var mySessionID = Number(IDArray[0]);
+      var promptID = Number(IDArray[1]);
+      var promptIndex = promptID - 1;
+
+      function safelyAddIdea (addition){
+        //Necessary for being able to increment value of dynamic variable
+        var variable = 'prompts.' + promptIndex + '.ideas';
+        var trueVar = String(variable)
+        var action = {};
+        action[trueVar] = addition;
+        //console.log(action);
+        db.collection(currentCollection).update({sessionID: mySessionID}, {$push : action});
+      };
+
+        db.collection(currentCollection).find({sessionID: mySessionID}).toArray(function(err,result){
+          if (err){
+            throw err;
+          }
+          var ideaID = (result[0].prompts[promptIndex].ideas).length + 1;
+          console.log('ideaID: ' + ideaID);
+          officialIdea = {};
+          officialIdea['ID'] = req.body.promptID + "." + ideaID;
+          officialIdea['name'] = req.body.name;
+          officialIdea['time'] = Date.now();
+          officialIdea['contentType'] = req.body.contentType;
+          officialIdea['content'] = req.body.content;
+          officialIdea['likes'] = 0;
+
+          //console.log(officialIdea);
+          safelyAddIdea(officialIdea);
+        })
+      });
+
+    MongoClient.connect(url, function(err, db) {
+      var IDArray = String(req.body.promptID).split(".");
+      var mySessionID = Number(IDArray[0]);
+      var promptID = Number(IDArray[1]);
+      var promptIndex = promptID - 1;
+
+      assert.equal(null, err);
+        db.collection(currentCollection).find({sessionID: mySessionID}).toArray(function(err,result){
+          console.log('SENDING OFFICIAL RESULT');
+          res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
+          //res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
+        });
+      });
+  });
+
 

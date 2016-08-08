@@ -91,12 +91,12 @@
 			<div class = "newPromptBox">
 			<h2 id = "ideaName"> Get sessionID </h2>
 				<form id = "getSession_frm" novalidate class="simple-form">
-					<input type="text" ng-model="qSession" placeholder="Insert session title"/><br />
+					<input type="text" ng-model="qSession.title" placeholder="Insert session title"/><br />
 					
 					<input type="submit" ng-click="getSessionID(qSession)" value="Save" />
 				</form>
 
-				<p ng-show = "showGetSessionIDResponse">The sessionID of your search "{{qSession}}" is {{getSessionIDResponse}} </p>
+				<p ng-show = "showGetSessionIDResponse">The sessionID of your search "{{qSession.title}}" is {{getSessionIDResponse}} </p>
 				<p ng-show = "showErrorGetSessionIDSession">{{errorGetSessionIDResponse}}</p>
 			</div>
 	</div>

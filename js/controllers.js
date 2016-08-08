@@ -166,14 +166,14 @@ angularApp.controller("InterfaceController",
 	$scope.getSessionID = function(query){
 		$("#getSession_frm")[0].reset();
 		//var qSessionTitle = angular.copy(query);
-	
-		if ((query == "") || typeof(query)=="undefined"){
+		console.log(query);
+		if ((query.title == "") || typeof(query)=="undefined"){
 			$scope.showErrorGetSessionIDSession = true;
 			$scope.errorGetSessionIDResponse = "Please insert a session title to search for."
 			return;
 		}
-
-		$http.get('/getSessionID/' + query).then(function(response){
+		console.log('getting session ID of ' + query.title);
+		$http.post('/getSessionID/', query).then(function(response){
 			if (response.data == "!ERROR!"){
 				//console.log('was  already in');
 				$scope.showErrorGetSessionIDSession = true;
