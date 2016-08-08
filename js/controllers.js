@@ -98,7 +98,7 @@ angularApp.controller("InterfaceController",
 		$("#newSession_frm")[0].reset();
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
-			//"ideaID":9,
+			"sessionID":$scope.allSessions.length + 1,
 			"promptTitle":newSession.promptTitle,
 			"teacherName":newSession.teacherName,
 			"date":newSession.date,
@@ -110,7 +110,7 @@ angularApp.controller("InterfaceController",
 			if (response.data == "!ERROR!"){
 				//console.log('was  already in');
 				$scope.showErrorAddNewSession = true;
-				$scope.errorAddNewSessionResponse = "This session title already exists.  Please add a new prompt."
+				$scope.errorAddNewSessionResponse = "This session title already exists.  Please add a new session title."
 			}
 			else{
 				$scope.showErrorAddNewSession = false;
@@ -159,11 +159,19 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+	//Get input from form and search for session by title
+	//If no session with this title can be found, display error message
+	//Otherwise, show the found session
+
 	$scope.getSessionID = function(query){
 		$("#getSession_frm")[0].reset();
 		//var qSessionTitle = angular.copy(query);
-		console.log(query);
-		console.log(typeof(query));
+	
+		if ((query == "") || typeof(query)=="undefined"){
+			$scope.showErrorGetSessionIDSession = true;
+			$scope.errorGetSessionIDResponse = "Please insert a session title to search for."
+			return;
+		}
 
 		$http.get('/getSessionID/' + query).then(function(response){
 			if (response.data == "!ERROR!"){
@@ -182,26 +190,27 @@ angularApp.controller("InterfaceController",
 
 //Functions for editing prompts
 
-	//Get input from form and create new JSON object for session
-	//Post JSON object to insert it as a document into database
-	//Append JSON object to allSessions array and call socket emit to update in real time
+	//Get input from form and create new JSON object for prompt
+	//Post JSON object to insert it as a prompt in relevant document
+	//If prompt is not already listed within this document, append new prompt to allData.prompts array and call socket emit to update in real time
 	$scope.addPrompt = function(inputtedPrompt){
+		if ((inputtedPrompt == "") || typeof(inputtedPrompt)=="undefined"){
+			$scope.showErrorAddNewPrompt = true;
+			$scope.errorAddNewPromptResponse = "Please insert a prompt title to add."
+			return;
+		}
+
 		$("#newPrompt_frm")[0].reset();
-		var newPrompt = angular.copy(inputtedPrompt);
-		//var savedContent = $scope.allData;
+		var currentSessionID = $scope.allData.sessionID;
+		var currentPromptNumber = $scope.allData.prompts.length + 1;
 		var fullNewPrompt = {
-			"promptID": $scope.allData.prompts.length + 1,
-			"text":newPrompt.text,
+			"promptID": currentSessionID + "." + currentPromptNumber,
+			"text":inputtedPrompt,
 			"ideas":[],
 		};
 
 		$http.post('/addNewPrompt',fullNewPrompt).then(function(response){
-			//console.log(typeof(response.data));
-			//console.log($scope.allData.prompts);
-			//Receiving new session and pushing to sessions array
-			//console.log('response: ' + response.data);
 			if (response.data == "!ERROR!"){
-				//console.log('was  already in');
 				$scope.showErrorAddNewPrompt = true;
 				$scope.errorAddNewPromptResponse = "This prompt is already part of the session.  Please add a new prompt."
 			}
@@ -225,20 +234,38 @@ angularApp.controller("InterfaceController",
 
 
 	$scope.getPromptID = function(query){
+		if (typeof(query) == "undefined"){
+			console.log('undefined query');
+			$scope.showErrorGetPromptIDResponse = true;
+			$scope.errorGetPromptIDResponse = "Please include content to search for."
+			return;
+		}
+		if (!(query.hasOwnProperty('qText')) || query.qText == ""){
+			console.log('no qtext');
+			$scope.showErrorGetPromptIDResponse = true;
+			$scope.errorGetPromptIDResponse = "Please include prompt text to search for."
+			return;
+		}
+		if (!(query.hasOwnProperty('qSessionID')) || query.qSessionID == ""){
+			console.log('no qsessionID');
+			$scope.showErrorGetPromptIDResponse = true;
+			$scope.errorGetPromptIDResponse = "Please include a session ID to search for."
+			return;
+		}
+		var qPrompt = angular.copy(query);
+		
 		$("#getPrompt_frm")[0].reset();
-		var qPromptText = angular.copy(query);
-		console.log(qPromptText);
-		console.log(typeof(qPromptText));
 
-		$http.post('/getPromptID', qPromptText).then(function(response){
-			$scope.getPromptIDResponse = response.data;
-			$scope.showGetPromptIDResponse = true;
-			//Receiving new idea and pushing to ideas array of current prompt
-			//$scope.promptResults = (response.data);
-			//cPrompt.ideas.push(response.data);
-
-			//Update all clients
-			//socket.emit('updateIdeas', cPrompt.promptID);
+		$http.post('/getPromptID', qPrompt).then(function(response){
+			if (response.data == "!ERROR!"){
+				$scope.showErrorGetPromptIDResponse = true;
+				$scope.showGetPromptIDResponse = false;
+				$scope.errorGetPromptIDResponse = "This prompt could not be found.  Please try again."
+			}
+			else{
+				$scope.getPromptIDResponse = response.data;
+				$scope.showGetPromptIDResponse = true;
+			}	
 		});
 	};
 
@@ -246,7 +273,6 @@ angularApp.controller("InterfaceController",
 		$scope.currentPrompt = destinationPromptID;
 		$scope.readyToAddIdea = true;
 	};
-
 
 //Functions for editing ideas
 

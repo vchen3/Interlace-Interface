@@ -72,7 +72,7 @@
 			<div class = "newSessionBox">
 				<h2 id = "ideaName"> Create New Session </h2>
 					<form name = "newSession_frm" id = "newSession_frm" novalidate class="simple-form">
-						<input type="text" ng-model="newSession.promptTitle" id = "ideaName" placeholder="Prompt Title"/><br />
+						<input type="text" ng-model="newSession.promptTitle" id = "ideaName" placeholder="Title"/><br />
 						<input type="text" ng-model="newSession.teacherName" id = "ideaName" placeholder="Teacher Name"/><br />
 						<input type="text" ng-model="newSession.date" id = "ideaName" placeholder="Date"/><br />
 
@@ -91,7 +91,7 @@
 			<div class = "newPromptBox">
 			<h2 id = "ideaName"> Get sessionID </h2>
 				<form id = "getSession_frm" novalidate class="simple-form">
-					<input type="text" ng-model="qSession" placeholder="Insert session prompt title"/><br />
+					<input type="text" ng-model="qSession" placeholder="Insert session title"/><br />
 					
 					<input type="submit" ng-click="getSessionID(qSession)" value="Save" />
 				</form>

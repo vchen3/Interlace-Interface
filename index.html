@@ -88,7 +88,7 @@
 
 					    	<input type="hidden" ng-model="newIdea.promptID" value="{{prompt.promptID}}" ng-init="newIdea.ID=prompt.promptID"/>
 					    	
-					    	<input type="submit" ng-show="newIdea_frm.$dirty"  ng-click="addIdea(newIdea)" value="Save" />
+					    	<input type="submit" ng-show="newIdea_frm.$dirty" ng-click="addIdea(newIdea)" value="Save" />
 					    	</form>
 					    	<br>
 					    	<div class = "results" ng-show = "showAddNewIdea">
@@ -105,10 +105,10 @@
 
 			<div class = "newPromptBox">
 			<h2 id = "ideaName"> Add New Prompt </h2>
-					<form id = "newPrompt_frm" novalidate class="simple-form">
-						<input type="text" ng-model="newPrompt.text" id = "ideaName" placeholder="New Prompt Text"/><br />
+					<form id = "newPrompt_frm" name = "newPrompt_frm" novalidate class="simple-form">
+						<input type="text" ng-model="newPrompttext" id = "ideaName" placeholder="New Prompt Text"/><br />
 						
-						<input type="submit" ng-click="addPrompt(newPrompt)" value="Save" />
+						<input type="submit" ng-show="newPrompt_frm.$dirty" ng-click="addPrompt(newPrompttext)" value="Save" />
 					</form>
 					<div class = "results" ng-show = "showErrorAddNewPrompt">
 						{{errorAddNewPromptResponse}}
@@ -117,14 +117,17 @@
 
 			
 			<div class = "newPromptBox">
-			<h2 id = "ideaName"> Get promptID </h2>
+			<h2 id = "ideaName"> Get Prompt ID </h2>
 				<form id = "getPrompt_frm" novalidate class="simple-form">
-					<input type="text" ng-model="qPrompt.qText" id = "ideaName" placeholder="insert prompt text"/><br />
+					<input type="text" ng-model="qPrompt.qText" id = "ideaName" placeholder="Insert prompt text"/><br />
+
+					<input type="text" ng-model="qPrompt.qSessionID" id = "sessionID" placeholder="Insert session ID"/><br />
 					
 					<input type="submit" ng-click="getPromptID(qPrompt)" value="Save" />
 				</form>
 
 				<p ng-show = "showGetPromptIDResponse">The promptID of your search "{{qPrompt.qText}}" is {{getPromptIDResponse}} </p>
+				<p ng-show = "showErrorGetPromptIDResponse">{{errorGetPromptIDResponse}} </p>
 			</div>
 
 			

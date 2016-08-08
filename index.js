@@ -157,12 +157,12 @@ var currentSession = "578e3ed70e9540ef03359b6d";
           throw err;
         }
         var sessionsArray = result;
-        console.log('sessions array: ');
-        console.log(sessionsArray);
+        //console.log('sessions array: ');
+        //console.log(sessionsArray);
         for (var i = 0; i<sessionsArray.length; i++){
           if (sessionsArray[i].promptTitle == req.body.promptTitle){
-            console.log(sessionsArray[i].promptTitle);
-            console.log("This session already exists: " + req.body);
+            //console.log(sessionsArray[i].promptTitle);
+            //console.log("This session already exists: " + req.body);
             var errorMessage = "!ERROR!";
             res.send(errorMessage);
             return;
@@ -173,18 +173,6 @@ var currentSession = "578e3ed70e9540ef03359b6d";
       });
     })
   });
-
-
-      /*MongoClient.connect(url, function(err, db) {
-      assert.equal(null, err);
-      db.collection(currentCollection).save(req.body);
-      db.collection(currentCollection).find().toArray(function(err,result){
-        if (err){
-          throw err;
-        }
-        res.json(result.slice(-1)[0]);
-      })
-     });*/
 
   //Returns all documents in collection
   expressApp.get('/getAllSessionData', function(req, res){
@@ -220,7 +208,7 @@ var currentSession = "578e3ed70e9540ef03359b6d";
     });
   });
 
-  //Request for promptID by title
+  //Request for sessionID by title
   expressApp.get('/getSessionID/:id', function(req,res){
     var requestedSessionTitle = req.params.id;
     console.log('getting sID of session ' + requestedSessionTitle);
@@ -329,47 +317,34 @@ var currentSession = "578e3ed70e9540ef03359b6d";
     });
   });
 
-  //Request for promptID by title
+  //Request for promptID by title and sessionID, receive promptID
   expressApp.post('/getPromptID', function(req,res){
-    var requestedPrompt = req.body.qText;
+    var requestedPrompt = req.body;
+    console.log("requested prompt's sessionID : " + requestedPrompt.qSessionID);
+    var numberSession = Number(requestedPrompt.qSessionID);
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      var action = {};
-      var variable = "text";
-      var trueVar = String(variable);
-      action[trueVar] = req.body.qText;
 
-      //Result = all sessions with this prompt
-      db.collection(currentCollection).find({"prompts": {$elemMatch: action}}).toArray(function(err,result){
+      //Result = an array with the single queried session
+      db.collection(currentCollection).find({"sessionID": numberSession}).toArray(function(err,result){
         if (err){
           throw err;
         }
         else{
-          console.log("Total results : " + result.length);
-          for (var i = 0; i<result.length; i++){
-              console.log(result[i]);
+          //console.log("Total results : " + result.length);
+          //console.log(result);
+          //console.log('attempting to return session ID');
+          var promptsArray = result[0].prompts;
+          for (var i = 0; i<promptsArray.length; i++){
+            if (promptsArray[i].text == requestedPrompt.qText){
+              res.json(promptsArray[i].promptID);
+              return;
+            }
           }
-
-          /*if (result.length = 1){
-            //console.log(result[0].prompts)
-            for (var i = 0; i<result[0].prompts.length; i++){
-              var currentPrompt = result[0].prompts[i];
-              //console.log(currentPrompt);
-              //console.log(requestedPrompt);
-              if (currentPrompt.text === requestedPrompt){
-                res.json(currentPrompt.promptID);
-                return;
-              }
-            };
-          }
-         //If there are multiple prompts with this title
-          //else{
-            //for (var i = 0; i<result.length; i++){
-              //console.log(result[i]);
-            //}
-            //console.log("multiple results");
-          //}*/
-      }
+          var errorMessage = "!ERROR!";
+          res.send(errorMessage);
+          return;
+        }
       });
     })
   });
@@ -548,30 +523,15 @@ expressApp.get('/moveIdeas', function(req,res){
       }
       //Result holds an array with the one relevant document
       //Send back the ideas array
-      var ideasArray = [
-        {
-          "ID" : "1.2.1",
-          "name" : "Allen",
-          "time" : 1469124849197,
-          "contentType" : "text",
-          "content" : "Friction is the force exerted by a surface as an object moves across it.",
-          "likes" : 4
-        },
-        {
-          "ID" : "1.2.2",
-          "name" : "Anna",
-          "time" : 1469124894977,
-          "contentType" : "image",
-          "content" : "http://cdn.funkidslive.com/wp-content/uploads/carforces-physics-245x170-custom.jpg",
-          "likes" : 10
-        }
-      ];
+      var promptsArray = [ { "promptID" : 1.1, "text" : "Share a fact or an image about the world.", "ideas" : [ { "ID" : "1.1.1", "name" : "Chris", "time" : 1469199370000, "contentType" : "text", "content" : "Greenland is the largest island in the world.", "likes" : 17 }, { "ID" : "1.1.2", "name" : "Albus PercivalWulfricBrianDumbledore", "time" : 1469199370000, "contentType" : "text", "content" : "Vatican City is the smallest country in the world.", "likes" : 10 }, { "ID" : "1.1.3", "name" : "Ethan", "time" : 1467199370000, "contentType" : "image", "content" : "img/mountain.jpg", "likes" : 3 }, { "ID" : "1.1.4", "name" : "Ben", "time" : 1465199370000, "contentType" : "image", "content" : "img/grandcanyon.jpg", "likes" : 2 } ] }, { "promptID" : 1.2, "text" : "How do forces act on us?", "ideas" : [ { "ID" : "1.2.1", "name" : "Allen", "time" : 1469124849197, "contentType" : "text", "content" : "Friction is the force exerted by a surface as an object moves across it.", "likes" : 4 }, { "ID" : "1.2.2", "name" : "Anna", "time" : 1469124894977, "contentType" : "image", "content" : "http://cdn.funkidslive.com/wp-content/uploads/carforces-physics-245x170-custom.jpg", "likes" : 10 } ] } ];
 
-
-      //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts.1.ideas':ideasArray}}); 
+        //SET TO PROMPTS!!
+        //db.collection.currentCollection.save(newSession);
+      db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts':promptsArray}}); 
       //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
     });
    });
+
 });
 
 
