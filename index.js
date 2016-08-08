@@ -50,7 +50,7 @@ var url = 'mongodb://localhost:27017/InterfaceDatabase';
 var currentCollection = 'Geography';
 
 //Set default currentSession to be "World Geography" document on start
-var currentSession = "578e3ed70e9540ef03359b6d";
+var currentSession = "57a8a1ca7909460733f208b2";
 
 //Load default HTML 
   expressApp.get('/', function(req, res){
@@ -420,23 +420,29 @@ var currentSession = "578e3ed70e9540ef03359b6d";
     //console.log('promptIndex: ' + promptIndex);
     //console.log(req.params.id);
     //var promptIndex = req.params.id.promptID - 1;
-    var promptIndex = req.params.id - 1;
-    console.log(promptIndex);
+
+
+    var IDArray = req.params.id.split(".");
+    var mySessionID = Number(IDArray[0]);
+    var promptID = Number(IDArray[1]);
+    console.log('promptID: ' + promptID);
+    var promptIndex = Number(promptID - 1);
+    console.log('promptIndex: ' + promptIndex);
+
+
+    //var promptIndex = req.params.id - 1;
+    //console.log(promptIndex);
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      var objectSession = ObjectId(currentSession);
+      //var objectSession = ObjectId(currentSession);
       //Send back all ideas
-      db.collection(currentCollection).find({_id:objectSession}).toArray(function(err, result) {
+      db.collection(currentCollection).find({sessionID:mySessionID}).toArray(function(err, result) {
         if (err){
           throw err;
         }
         //Result holds an array with the one relevant document
         //Send back the ideas array
-        //console.log("*********");
-        //console.log(result[0].prompts[promptIndex].ideas);
         res.json(result[0].prompts[promptIndex].ideas);
-        //res.json(result[0].prompts[promptIndex].ideas);
-        //res.json(result[0].ideas);
       });
      });
   });
@@ -447,8 +453,15 @@ var currentSession = "578e3ed70e9540ef03359b6d";
   expressApp.get('/like/:id', function(req,res){
     var incoming = req.params.id;
     //console.log(incoming);
-    var promptID = incoming.split(".")[0];
-    var ideaID = incoming.split(".")[1];
+    
+    var IDArray = String(incoming).split(".");
+    var mySessionID = Number(IDArray[0]);
+    var promptID = Number(IDArray[1]);
+    var ideaID = Number(IDArray[2]);
+    /*console.log('session ID: ' + mySessionID);
+    console.log('promptID: ' + promptID);
+    console.log('ideaID: ' + ideaID);*/
+    
     var promptIndex = promptID - 1;
     var ideaIndex = ideaID - 1;
 
@@ -464,15 +477,16 @@ var currentSession = "578e3ed70e9540ef03359b6d";
 
       //console.log(action);
 
-      db.collection(currentCollection).update({_id:objectSession}, {$inc : action});
+      db.collection(currentCollection).update({'sessionID':mySessionID}, {$inc : action});
       
       //Equivalent of this call, but idNumber cannot be called in this format:
       //db.collection(currentCollection).update({_id:objectSession},{$inc:{'prompts.promptIndex.ideas.ideaIndex.likes':1}});
 
-      db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
+      db.collection(currentCollection).find({'sessionID':mySessionID},{}).toArray(function(err,result){
         if (err) {
           throw err;
         }
+          //console.log(result[0].prompts[promptIndex].ideas[ideaIndex].likes);
           res.json(result[0].prompts[promptIndex].ideas[ideaIndex].likes);
           //res.json(result[0].ideas[idNumber-1].likes);
         })
@@ -484,16 +498,21 @@ var currentSession = "578e3ed70e9540ef03359b6d";
   expressApp.get('/updateLike/:id', function(req,res){
     var incoming = req.params.id;
     //console.log(incoming);
-    var promptID = incoming.split(".")[0];
-    var ideaID = incoming.split(".")[1];
+    var IDArray = String(incoming).split(".");
+    var mySessionID = Number(IDArray[0]);
+    var promptID = Number(IDArray[1]);
+    var ideaID = Number(IDArray[2]);
+    /*console.log('session ID: ' + mySessionID);
+    console.log('promptID: ' + promptID);
+    console.log('ideaID: ' + ideaID);*/
+
     var promptIndex = promptID - 1;
     var ideaIndex = ideaID - 1;
 
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      var objectSession = ObjectId(currentSession);
       
-      db.collection(currentCollection).find({_id:objectSession},{}).toArray(function(err,result){
+      db.collection(currentCollection).find({'sessionID': mySessionID},{}).toArray(function(err,result){
         if (err) {
           throw err;
         }

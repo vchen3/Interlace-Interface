@@ -364,13 +364,20 @@ angularApp.controller("InterfaceController",
 		}
 
 		$("#newIdea_frm")[0].reset();
-
-		var promptID = newIdea.ID;
+		//console.log(newIdea.ID);
+		//console.log(typeof(newIdea.ID));
+		var incomingID = newIdea.ID;
+		var IDArray = String(newIdea.ID).split('.');
+		console.log('ID Array: ' + IDArray);
+		var promptID = IDArray[1];
 		var cPrompt = $scope.allData.prompts[promptID - 1];
+		console.log("***");
+		console.log(promptID);
+		console.log($scope.allData.prompts[promptID]);
 
 		var ideaID = cPrompt.ideas.length + 1;
 		var fullNewIdea = {
-			"ID": promptID + "." + ideaID,
+			"ID": incomingID + "." + ideaID,
 			"name": newIdea.name,
 			"time": Date.now(),
 			"contentType": newIdea.contentType,
@@ -394,13 +401,16 @@ angularApp.controller("InterfaceController",
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
-		//console.log(incomingPrompt);
+		console.log('calling update on prompt ' + incomingPrompt);
 			$http.get('/updateIdeas/'+incomingPrompt).then(function(response){
 				//console.log(response.data);
-				//console.log('**');
-				//console.log($scope.allData.prompts[incomingPrompt-1]);
-				($scope.allData.prompts[incomingPrompt-1].ideas) = response.data;
-				//($scope.allData.ideas) = response.data;
+				console.log('**');
+				var IDArray = String(incomingPrompt).split(".");
+			    var mySessionID = Number(IDArray[0]);
+			    var promptID = Number(IDArray[1]);
+			    var promptIndex = promptID - 1;
+				($scope.allData.prompts[promptIndex].ideas) = response.data;
+				
 			})
 	});
 
@@ -409,13 +419,17 @@ angularApp.controller("InterfaceController",
 	//to display the new value without refreshing the page
 	//Call socket emit to update in real time
 	$scope.newLike = function(incomingID) { 
-		//console.log("CLIENT LIKING IDEA: " + incomingID);
+		console.log("CLIENT LIKING IDEA: " + incomingID);
 	
-		var stringID = String(incomingID);
-		
-		var promptID = stringID.split(".")[0];
-		var ideaID = stringID.split(".")[1];
-		var promptIndex = promptID - 1
+		var IDArray = String(incomingID).split(".");
+		var sessionID = Number(IDArray[0]);
+		var promptID = Number(IDArray[1]);
+		var ideaID = Number(IDArray[2]);
+		/*console.log('session ID: ' + sessionID);
+		console.log('promptID: ' + promptID);
+		console.log('ideaID: ' + ideaID);*/
+
+		var promptIndex = promptID - 1;
 		var ideaIndex = ideaID - 1;
 
 		$http.get('/like/'+incomingID).then(function(response){
@@ -430,11 +444,15 @@ angularApp.controller("InterfaceController",
 	//Show real-time updates of likes by updating the scope value of all other windows
 	//Update scope value to current value stored in database 
 	socket.on('updateLike', function(receivedIdea){
-		var stringID = String(receivedIdea);
-		
-		var promptID = stringID.split(".")[0];
-		var ideaID = stringID.split(".")[1];
-		var promptIndex = promptID - 1
+		var IDArray = String(receivedIdea).split(".");
+		var sessionID = Number(IDArray[0]);
+		var promptID = Number(IDArray[1]);
+		var ideaID = Number(IDArray[2]);
+		/*console.log('session ID: ' + sessionID);
+		console.log('promptID: ' + promptID);
+		console.log('ideaID: ' + ideaID);*/
+
+		var promptIndex = promptID - 1;
 		var ideaIndex = ideaID - 1;
 
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
