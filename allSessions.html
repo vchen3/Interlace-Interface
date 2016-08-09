@@ -38,10 +38,6 @@
       <h1>All Sessions</h1>
       <h2>Click to use specific session</h2>
       <h3>Dr. E</h3>
-      <!--<input type = "button" value = "set color" ng-click="myStyle={'background-color':'red'}">-->
-
-    <!--Hello <input ng-model='name'> <hr/>
-  	<p>{{name}}</p>-->
 
     </div>
 
@@ -77,26 +73,26 @@
 						<input type="text" ng-model="newSession.date" id = "ideaName" placeholder="Date"/><br />
 
 						<input type="submit" ng-show="newSession_frm.$dirty" ng-click="addSession(newSession)" value="Save" />
+
+						<p ng-show = "showErrorAddNewSession"> {{errorAddNewSessionResponse}}</p>
 					</form>
+				<p ng-show = "showAddNewSession">{{addNewSessionResponse}} </p>
 			</div>
+					
 
 			<br>
-			<div class = "results" ng-show = "showAddNewSession">
-				{{addNewSessionResponse}}
-			</div>
-			<div class = "results" ng-show = "showErrorAddNewSession">
-				{{errorAddNewSessionResponse}}
-			</div>
+			
+			
 
 			<div class = "newPromptBox">
 			<h2 id = "ideaName"> Get sessionID </h2>
-				<form id = "getSession_frm" novalidate class="simple-form">
+				<form id = "getSession_frm" name = "getSession_frm" novalidate class="simple-form">
 					<input type="text" ng-model="qSession.title" placeholder="Insert session title"/><br />
 					
-					<input type="submit" ng-click="getSessionID(qSession)" value="Save" />
+					<input type="submit" ng-show="getSession_frm.$dirty" ng-click="getSessionID(qSession)" value="Save" />
 				</form>
 
-				<p ng-show = "showGetSessionIDResponse">The sessionID of your search "{{qSession.title}}" is {{getSessionIDResponse}} </p>
+				<p ng-show = "showGetSessionIDResponse">The sessionID of your search "{{qSession.title}}" is {{getSessionIDResponse}}. </p>
 				<p ng-show = "showErrorGetSessionIDSession">{{errorGetSessionIDResponse}}</p>
 			</div>
 	</div>

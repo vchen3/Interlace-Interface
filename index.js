@@ -399,24 +399,30 @@ var currentSession = "57a8a1ca7909460733f208b2";
 
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      var objectSession = ObjectId(currentSession);
-      var ideaID = req.body.ID;
-      var promptID = ideaID.split(".")[0];
+      
+      var IDArray = String(req.body.ID).split('.');
+      console.log('ID Array: ' + IDArray);
+      var mySessionID = IDArray[0];
+      var promptID = IDArray[1]; 
       var promptIndex = promptID - 1;
-      //console.log("PROMPT INDEX: " + promptIndex);
+
+      console.log("PROMPT INDEX: " + promptIndex);
 
       //Necessary for being able to increment value of dynamic variable
       var variable = 'prompts.' + promptIndex + '.ideas';
       var trueVar = String(variable)
       var action = {};
       action[trueVar] = req.body;
-      //console.log(action);
-      db.collection(currentCollection).update({_id:objectSession}, {$push : action});
-      
+      console.log(action);
+      db.collection(currentCollection).update({sessionID:Number(mySessionID)}, {$push : action});
+    
       //Equivalent of this call, but promptIndex cannot be called in this format:
       //db.collection(currentCollection).update({_id:objectSession},{$push:{'prompts.promptIndex.ideas':req.body}});
 
-      db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+      console.log("searching for session ID " + mySessionID);
+      console.log("searching for promptID " + promptID);
+      console.log("searching for promptIndex " + promptIndex);
+      db.collection(currentCollection).find({sessionID:Number(mySessionID)}).toArray(function(err, result) {
         if (err){
           throw err;
         }
@@ -424,6 +430,10 @@ var currentSession = "57a8a1ca7909460733f208b2";
         //Send back the new idea
         //console.log('\n');
         //console.log(result[0].prompts[promptIndex]);
+        //console.log("RESULTS");
+        //console.log(result);
+        console.log("ideas array");
+        //console.log(result[0].prompts[promptIndex].ideas);
         res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
         //res.json(result[0].ideas.slice(-1)[0]);
       })

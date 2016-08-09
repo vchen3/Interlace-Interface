@@ -107,10 +107,9 @@
 					    	
 					    	<input type="submit" ng-click="addRemoteIdea(newIdea)" value="Save" ng-show="newRemoteIdea_frm.$dirty" />
 					    	</form>
+
+					    	<p ng-show = "showAddRemoteIdea">{{addRemoteIdeaResponse}}</p>
 			<br>
-			<div class = "results" ng-show = "showErrorAddNewPrompt">
-				{{errorAddNewPromptResponse}}
-			</div>
 
 		</div>	
 
