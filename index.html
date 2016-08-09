@@ -31,23 +31,14 @@
 <body ng-controller="InterfaceController">
 
 	<div class="header">
-	<md-button class="md-icon-button" onclick="location.href='/'">
-    	<i class="material-icons md-36">home</i>
+	<md-button class="md-icon-button">
+    	<div class = "homeButton" onclick="location.href='/'" ><i class="material-icons md-36">home</i><p>Home</p></div>
+    	<div class = "addIdeaButton" onclick="location.href='/addIdea'" ><i class="material-icons md-36">add_circle_outline</i><p>Add Idea</p></div>
 	</md-button>
 
       	<h1>{{allData.promptTitle}}</h1>
      	<h3>{{allData.date}}</h3>
       	<h3>{{allData.teacherName}}</h3>
-
-    	
-
-      	<div class = "orderByBox">
-      		<p>Order by</p>
-	      	<select ng-model="myVar">
-				<option value="name">Name</option>
-				<option value="time">Time</option>
-			</select>
-		</div>
    
     </div>
 

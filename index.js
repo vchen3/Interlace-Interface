@@ -61,7 +61,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
     res.sendFile(__dirname + '/index.html');
   });
 
-  expressApp.get('/addIdeaPage', function(req, res){
+  expressApp.get('/addIdea', function(req, res){
     res.sendFile(__dirname + '/addIdeaPage.html');
   });
 
@@ -401,39 +401,32 @@ var currentSession = "57a8a1ca7909460733f208b2";
       assert.equal(null, err);
       
       var IDArray = String(req.body.ID).split('.');
-      console.log('ID Array: ' + IDArray);
+      //console.log('ID Array: ' + IDArray);
       var mySessionID = IDArray[0];
       var promptID = IDArray[1]; 
       var promptIndex = promptID - 1;
 
-      console.log("PROMPT INDEX: " + promptIndex);
+      //console.log("PROMPT INDEX: " + promptIndex);
 
       //Necessary for being able to increment value of dynamic variable
       var variable = 'prompts.' + promptIndex + '.ideas';
       var trueVar = String(variable)
       var action = {};
       action[trueVar] = req.body;
-      console.log(action);
+      //console.log(action);
       db.collection(currentCollection).update({sessionID:Number(mySessionID)}, {$push : action});
     
       //Equivalent of this call, but promptIndex cannot be called in this format:
       //db.collection(currentCollection).update({_id:objectSession},{$push:{'prompts.promptIndex.ideas':req.body}});
 
-      console.log("searching for session ID " + mySessionID);
+      /*console.log("searching for session ID " + mySessionID);
       console.log("searching for promptID " + promptID);
-      console.log("searching for promptIndex " + promptIndex);
+      console.log("searching for promptIndex " + promptIndex);*/
       db.collection(currentCollection).find({sessionID:Number(mySessionID)}).toArray(function(err, result) {
         if (err){
           throw err;
         }
         //Result holds an array with the one relevant document
-        //Send back the new idea
-        //console.log('\n');
-        //console.log(result[0].prompts[promptIndex]);
-        //console.log("RESULTS");
-        //console.log(result);
-        console.log("ideas array");
-        //console.log(result[0].prompts[promptIndex].ideas);
         res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
         //res.json(result[0].ideas.slice(-1)[0]);
       })
@@ -442,13 +435,6 @@ var currentSession = "57a8a1ca7909460733f208b2";
 
   //Update like value by returning all ideas in ideas array stored in database
   expressApp.get('/updateIdeas/:id', function(req,res){
-    //console.log('updating ideas');
-    //var objectSession = ObjectId(currentSession);
-    //console.log('promptIndex: ' + promptIndex);
-    //console.log(req.params.id);
-    //var promptIndex = req.params.id.promptID - 1;
-
-
     var IDArray = req.params.id.split(".");
     var mySessionID = Number(IDArray[0]);
     var promptID = Number(IDArray[1]);

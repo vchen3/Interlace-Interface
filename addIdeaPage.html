@@ -30,8 +30,9 @@
 <body ng-controller="InterfaceController">
 
 	<div class="header">
-	<md-button class="md-icon-button" onclick="location.href='/'">
-    	<i class="material-icons md-36">home</i>
+	<md-button class="md-icon-button">
+    	<div class = "homeButton" onclick="location.href='/'" ><i class="material-icons md-36">home</i><p>Home</p></div>
+    	<div class = "addIdeaButton" onclick="location.href='/addIdea'" ><i class="material-icons md-36">add_circle_outline</i><p>Add Idea</p></div>
 	</md-button>
 
       	<h1>Add New Idea</h1>
@@ -67,7 +68,7 @@
 				<h2 id = "ideaText"> {{item.teacherName}}</h2>
 				<h2 id = "ideaText"> {{item.date}}</h2>
 				<br>
-				<input type="button" ng-click="addToFoundSession(item)" value="Add to Session" />
+				<input type="button" ng-click="addToFoundSession(item)" value="Select Session" />
 			</div>
 
 
@@ -83,7 +84,7 @@
 				<!--<h2 id = "ideaText"> {{item.teacherName}}</h2>
 				<h2 id = "ideaText"> {{item.date}}</h2>-->
 				<br>
-				<input type="button" class = "useSessionButton" value="Add to Prompt" ng-click="addToFoundPrompt(item.promptID)"/>
+				<input type="button" class = "useSessionButton" value="Select Prompt" ng-click="addToFoundPrompt(item.promptID)"/>
 
 			</div>
 		</div>

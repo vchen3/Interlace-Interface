@@ -34,9 +34,20 @@ html, body{
 	cursor: pointer;
 }
 
+.homeButton{
+	padding: 5px;
+	cursor: pointer;
+	float: left;
+}
+
+.addIdeaButton{
+	padding: 5px;
+	cursor:pointer;
+}
+
  /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
-.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-24 { font-size: 24px; cursor: pointer; padding-bottom: 5px;}
 .material-icons.md-36 { font-size: 36px; cursor: pointer; padding-left: 10px; padding-top:5px;}
 .material-icons.md-48 { font-size: 48px; }
 
@@ -121,7 +132,7 @@ html, body{
 }
 
 .selected{
-	background-color: red;
+	background-color: lightgreen;
 	height: 220px;
 	width: 190px;
 	margin: 10px;

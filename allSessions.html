@@ -32,8 +32,9 @@
 <body ng-controller="InterfaceController">
 
 	<div class="header">
-	<md-button class="md-icon-button" onclick="location.href='/'">
-    	<i class="material-icons md-36">home</i>
+	<md-button class="md-icon-button">
+    	<div class = "homeButton" onclick="location.href='/'" ><i class="material-icons md-36">home</i><p>Home</p></div>
+    	<div class = "addIdeaButton" onclick="location.href='/addIdea'" ><i class="material-icons md-36">add_circle_outline</i><p>Add Idea</p></div>
 	</md-button>
       <h1>All Sessions</h1>
       <h2>Click to use specific session</h2>
