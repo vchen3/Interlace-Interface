@@ -3,8 +3,6 @@
   General functions, and then functions that deal with sessions, prompts, and then ideas
  */
 
-
-
 var express = require('express');
 var expressApp = express();
 //var socket = require(__dirname + '/socket.js');
@@ -85,7 +83,9 @@ var currentSession = "57a8a1ca7909460733f208b2";
      });
   });
 
+
 //Functions for editing sessions
+  //Archive relevant document by setting "visible" attribute to false
   expressApp.post('/removeSession', function(req, res){
       //Incoming entire session document
       MongoClient.connect(url, function(err, db) {
@@ -104,6 +104,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
      });
   });
 
+  //Restore relevant document by setting "visible" attribute to true
   expressApp.post('/restoreSession', function(req, res){
       //Incoming entire session document
       MongoClient.connect(url, function(err, db) {
@@ -121,6 +122,8 @@ var currentSession = "57a8a1ca7909460733f208b2";
   });
 
   //Save incoming JSON object as document in database
+  //If the incoming session title is unique, returns the newly created document
+  //Error message if a session with this title already exists
   expressApp.post('/addNewSession', function(req, res){
       if (!('sessionID' in req.body)){
          MongoClient.connect(url, function(err, db) {
@@ -131,8 +134,8 @@ var currentSession = "57a8a1ca7909460733f208b2";
           });
          });
       }
-      if (!('promptTitle' in req.body)){
-        res.json('Please include a prompt title.');
+      if (!('title' in req.body)){
+        res.json('Please include a session title.');
         return;
       }
       if (!('teacherName' in req.body)){
@@ -164,8 +167,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
         });
       };
 
-      //Check that the prompt is not already inserted
-      
+      //Check that the session is not already inserted
       db.collection(currentCollection).find().toArray(function(err,result){
         if (err){
           throw err;
@@ -174,7 +176,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
         //console.log('sessions array: ');
         //console.log(sessionsArray);
         for (var i = 0; i<sessionsArray.length; i++){
-          if (sessionsArray[i].promptTitle == req.body.promptTitle){
+          if (sessionsArray[i].title == req.body.title){
             //console.log(sessionsArray[i].promptTitle);
             //console.log("This session already exists: " + req.body);
             var errorMessage = "!ERROR!";
@@ -213,7 +215,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
     var input = req.params.id;
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      db.collection(currentCollection).find({"promptTitle":input}).toArray(function(err,result){
+      db.collection(currentCollection).find({"title":input}).toArray(function(err,result){
         if (err){
           throw err;
         }
@@ -233,7 +235,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
       assert.equal(null, err);
 
       //Result = all sessions with this prompt
-      db.collection(currentCollection).find({"promptTitle": requestedSessionTitle}).toArray(function(err,result){
+      db.collection(currentCollection).find({"title": requestedSessionTitle}).toArray(function(err,result){
         if (err){
           throw err;
         }
@@ -253,7 +255,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
   });
 
 // Functions for editing prompts
-
+  //Search for prompt by ID
   expressApp.get('/searchForPrompt/:id', function(req,res){
     console.log('received request to search for prompt');
     var input = req.params.id;
@@ -368,7 +370,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
 
 //Functions for editing ideas 
 
-  //Add new idea to database in relevant document
+  //Add new idea to database in relevant document, receive newly made idea
   expressApp.post('/addSafeIdea', function(req, res){
     //console.log('adding new idea');
       if (!('ID' in req.body)){
@@ -419,21 +421,17 @@ var currentSession = "57a8a1ca7909460733f208b2";
       //Equivalent of this call, but promptIndex cannot be called in this format:
       //db.collection(currentCollection).update({_id:objectSession},{$push:{'prompts.promptIndex.ideas':req.body}});
 
-      /*console.log("searching for session ID " + mySessionID);
-      console.log("searching for promptID " + promptID);
-      console.log("searching for promptIndex " + promptIndex);*/
       db.collection(currentCollection).find({sessionID:Number(mySessionID)}).toArray(function(err, result) {
         if (err){
           throw err;
         }
         //Result holds an array with the one relevant document
         res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
-        //res.json(result[0].ideas.slice(-1)[0]);
       })
      });
   });
 
-  //Update like value by returning all ideas in ideas array stored in database
+  //Update ideas array based on prompt ID; return new ideas array
   expressApp.get('/updateIdeas/:id', function(req,res){
     var IDArray = req.params.id.split(".");
     var mySessionID = Number(IDArray[0]);
@@ -442,12 +440,8 @@ var currentSession = "57a8a1ca7909460733f208b2";
     var promptIndex = Number(promptID - 1);
     console.log('promptIndex: ' + promptIndex);
 
-
-    //var promptIndex = req.params.id - 1;
-    //console.log(promptIndex);
     MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      //var objectSession = ObjectId(currentSession);
       //Send back all ideas
       db.collection(currentCollection).find({sessionID:mySessionID}).toArray(function(err, result) {
         if (err){
@@ -471,9 +465,6 @@ var currentSession = "57a8a1ca7909460733f208b2";
     var mySessionID = Number(IDArray[0]);
     var promptID = Number(IDArray[1]);
     var ideaID = Number(IDArray[2]);
-    /*console.log('session ID: ' + mySessionID);
-    console.log('promptID: ' + promptID);
-    console.log('ideaID: ' + ideaID);*/
     
     var promptIndex = promptID - 1;
     var ideaIndex = ideaID - 1;
@@ -499,9 +490,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
         if (err) {
           throw err;
         }
-          //console.log(result[0].prompts[promptIndex].ideas[ideaIndex].likes);
           res.json(result[0].prompts[promptIndex].ideas[ideaIndex].likes);
-          //res.json(result[0].ideas[idNumber-1].likes);
         })
     })
   });
@@ -515,10 +504,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
     var mySessionID = Number(IDArray[0]);
     var promptID = Number(IDArray[1]);
     var ideaID = Number(IDArray[2]);
-    /*console.log('session ID: ' + mySessionID);
-    console.log('promptID: ' + promptID);
-    console.log('ideaID: ' + ideaID);*/
-
+   
     var promptIndex = promptID - 1;
     var ideaIndex = ideaID - 1;
 
@@ -536,7 +522,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
   });
 
 
-//A functional way to move many ideas into the database at once
+//An easy way to move many ideas into the database at once
 
 expressApp.get('/moveIdeas', function(req,res){
   console.log('moving ideas');
@@ -547,8 +533,7 @@ expressApp.get('/moveIdeas', function(req,res){
       "promptID": 2,
       "text": "How do forces act on us?"
     }; 
-    //db.collection(currentCollection).update({_id:objectSession}, {$push:{prompts:newInput}});
-    
+       
     db.collection(currentCollection).find({_id:objectSession}).toArray(function(err, result) {
       if (err){
         throw err;
@@ -559,7 +544,7 @@ expressApp.get('/moveIdeas', function(req,res){
 
         //SET TO PROMPTS!!
         //db.collection.currentCollection.save(newSession);
-      db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts':promptsArray}}); 
+      //db.collection(currentCollection).update({_id:objectSession}, {$set:{'prompts':promptsArray}}); 
       //db.collection(currentCollection).update({_id:objectSession},{$inc:{'ideas.idNumber.likes':1}});
     });
    });
@@ -572,20 +557,25 @@ http.listen(3000, function(){
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
 /***API Commands***/
 //Save incoming JSON object as document in database
   expressApp.post('/APIaddNewSession', function(req, res){
-      if (!('sessionID' in req.body)){
-         MongoClient.connect(url, function(err, db) {
-          console.log('adding sessionID');
-          db.collection(currentCollection).find().toArray(function(err,result){
-            var arrayLength = result.length;
-            req.body['sessionID'] = arrayLength + 1;
-          });
-         });
-      }
-      if (!('promptTitle' in req.body)){
-        res.json('Please include a prompt title.');
+    console.log("**Received add new session request**");
+    console.log(req.body);
+
+      if (!('title' in req.body)){
+        res.json('Please include a session title.');
         return;
       }
       if (!('teacherName' in req.body)){
@@ -596,17 +586,11 @@ http.listen(3000, function(){
         res.json("Please include the date.");
         return;
       }
-      if (!('visible' in req.body)){
-        req.body['visible'] = true;
-      }
-      if (!('prompts' in req.body)){
-        req.body['prompts'] = [];
-      }
-     
+      
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
       function safelyAddSession (addition){
-        console.log('safely adding ');
+        console.log('safely adding new session');
         console.log(addition);
         db.collection(currentCollection).save(addition);
         db.collection(currentCollection).find().toArray(function(err,result){
@@ -614,6 +598,7 @@ http.listen(3000, function(){
             throw err;
           }
           res.json(result.slice(-1)[0]);
+          //socket.emit('updateSessions');
         });
       };
 
@@ -627,16 +612,24 @@ http.listen(3000, function(){
         //console.log('sessions array: ');
         //console.log(sessionsArray);
         for (var i = 0; i<sessionsArray.length; i++){
-          if (sessionsArray[i].promptTitle == req.body.promptTitle){
-            //console.log(sessionsArray[i].promptTitle);
+          if (sessionsArray[i].title == req.body.title){
+            //console.log(sessionsArray[i].title);
             //console.log("This session already exists: " + req.body);
             var errorMessage = "!ERROR!";
             res.send(errorMessage);
             return;
           };
         }
-        console.log('new session!');
-        safelyAddSession(req.body);
+        var officialSession = {};
+        var arrayLength = result.length;
+        officialSession['sessionID'] = arrayLength + 1;
+        officialSession['title'] = req.body.title;
+        officialSession['teacherName'] = req.body.teacherName;
+        officialSession['date'] = req.body.date;
+        officialSession['visible'] = true;
+        officialSession['prompts'] = [];
+
+        safelyAddSession(officialSession);
       });
     })
   });
@@ -644,8 +637,8 @@ http.listen(3000, function(){
 
 //Request for sessionID by title
   expressApp.post('/APIgetSessionID', function(req,res){
-    console.log('getting session ID');
-    console.log(req.body);
+    console.log("**Received get session ID request**");
+   
     var requestedSessionTitle = req.body.title;
     //console.log('body ' + req.body);
     console.log('getting sID of session ' + requestedSessionTitle);
@@ -653,7 +646,7 @@ http.listen(3000, function(){
       assert.equal(null, err);
 
       //Result = all sessions with this prompt
-      db.collection(currentCollection).find({"promptTitle": requestedSessionTitle}).toArray(function(err,result){
+      db.collection(currentCollection).find({"title": requestedSessionTitle}).toArray(function(err,result){
         if (err){
           throw err;
         }
@@ -674,6 +667,8 @@ http.listen(3000, function(){
 
   //Save incoming JSON object as prompt in document database
   expressApp.post('/APIaddNewPrompt', function(req, res){
+    console.log("**Received add new prompt request**");
+    console.log(req.body);
       if (!('text' in req.body)){
         res.send('Please include a prompt.');
         return;
@@ -732,6 +727,7 @@ http.listen(3000, function(){
 
 //Request for promptID by title and sessionID, receive promptID
   expressApp.post('/APIgetPromptID', function(req,res){
+    console.log("**Received get prompt ID request**");
     var requestedPrompt = req.body;
     console.log("requested prompt's sessionID : " + requestedPrompt.sessionID);
     var numberSession = Number(requestedPrompt.sessionID);
@@ -766,7 +762,8 @@ http.listen(3000, function(){
   });
 
 //Add new idea to database in relevant document
-  expressApp.post('/APIaddSafeIdea', function(req, res){
+  expressApp.post('/APIaddNewIdea', function(req, res){
+    console.log("**received add safe idea request**");
 
     //console.log('adding new idea');
       if (!('promptID' in req.body)){
@@ -796,6 +793,8 @@ http.listen(3000, function(){
       var promptIndex = promptID - 1;
 
       function safelyAddIdea (addition){
+        console.log("Safely adding: ");
+        console.log(addition);
         //Necessary for being able to increment value of dynamic variable
         var variable = 'prompts.' + promptIndex + '.ideas';
         var trueVar = String(variable)
@@ -840,3 +839,37 @@ http.listen(3000, function(){
   });
 
 
+
+  expressApp.get('/APIuploadImage', function(req, res){
+    var imageData = image.toDataURL();        // get dataURI/encryption
+    //console.log(imageData);
+    //imageData = imageData.substr(22);         // remove part of encryption "data:image/
+    //worksheetData["Image"] = imageData;       // image data to be added in the future
+  });
+
+
+/*
+  if(confirm("Worksheet Submitted! \n(Theoretically)")){
+    drawQRCode(worksheetData["ID"], function(data) {
+      //if (err) throw err;
+      worksheetData["Image"] = data.substr(22);
+      xhr = new XMLHttpRequest();
+      var url = "http://localhost:3000/upload_model";
+      //xhr.submittedData = files_post; 
+      //xhr.onload = successfullyUpLoaded;
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+      xhr.setRequestHeader('dataType', 'json');
+      xhr.setRequestHeader('Content-length', imageData.length);
+      xhr.setRequestHeader('cross-origin', true);
+      xhr.setRequestHeader('Access-Control-Allow-Origin', 'localhost:3000/upload_model'); 
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+        }
+      }
+
+      var data = JSON.stringify(worksheetData);
+      xhr.send(data);
+    });
+  }*/

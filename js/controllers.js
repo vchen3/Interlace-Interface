@@ -31,14 +31,14 @@ angularApp.controller("InterfaceController",
 	$scope.$location = $location;
     $scope.$routeParams = $routeParams;
 
+    //Get current document's information
 	$http.get('/list').then(function(response){
-		//Current document's information
 		$scope.allData = response.data;
 
 	});
 
+	//Get all mongoDB documents' information
 	$http.get('/getAllSessionData').then(function(response){
-		//All mongoDB documents' information
 		$scope.allSessions = response.data;
 
 		var visibleSessionsArray = [];
@@ -52,6 +52,7 @@ angularApp.controller("InterfaceController",
 
 
 //Functions for editing sessions
+	//Archive relevant document by setting "visible" attribute to false
 	$scope.archiveSession = function(inputtedSession){
 		$http.post('/removeSession',inputtedSession).then(function(response){
 			($scope.allSessions) = (response.data);
@@ -61,6 +62,7 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+	//Restore relevant document by setting "visible" attribute to true
 	$scope.restoreSession = function(inputtedSession){
 		$http.post('/restoreSession',inputtedSession).then(function(response){
 			//Receiving new session and pushing to sessions array
@@ -79,7 +81,7 @@ angularApp.controller("InterfaceController",
 		$scope.showErrorAddNewSession = false;
 		var newSession = angular.copy(inputtedSession);
 
-		if (!(newSession.hasOwnProperty('promptTitle')) || newSession.promptTitle == ""){
+		if (!(newSession.hasOwnProperty('title')) || newSession.title == ""){
 			$scope.showAddNewSession = true;
 			$scope.addNewSessionResponse = "Please include a session title."
 			return;
@@ -99,7 +101,7 @@ angularApp.controller("InterfaceController",
 		//var savedContent = $scope.allData;
 		var fullNewSession = {
 			"sessionID":$scope.allSessions.length + 1,
-			"promptTitle":newSession.promptTitle,
+			"title":newSession.title,
 			"teacherName":newSession.teacherName,
 			"date":newSession.date,
 			"prompts":[],
@@ -140,7 +142,7 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
-
+	//Search for session by title
 	$scope.searchForSession = function(input){
 		console.log('input :' + input);
 		$http.get('/searchForSession/'+input).then(function(response){
@@ -148,6 +150,7 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+	//Add prompt to selected session
 	$scope.addToFoundSession = function(input){
 		var newInput = input._id;
 		//console.log(typeof(newInput));
@@ -163,8 +166,7 @@ angularApp.controller("InterfaceController",
 
 	//Get input from form and search for session by title
 	//If no session with this title can be found, display error message
-	//Otherwise, show the found session
-
+	//Otherwise, show the found session's ID
 	$scope.getSessionID = function(query){
 		$scope.showErrorGetSessionIDSession = false;
 		$scope.showGetSessionIDResponse = false;
@@ -197,7 +199,8 @@ angularApp.controller("InterfaceController",
 
 	//Get input from form and create new JSON object for prompt
 	//Post JSON object to insert it as a prompt in relevant document
-	//If prompt is not already listed within this document, append new prompt to allData.prompts array and call socket emit to update in real time
+	//If prompt is not already listed within this document, append new prompt to allData.prompts array
+	//Call socket emit to update in real time
 	$scope.addPrompt = function(inputtedPrompt){
 		$scope.showErrorAddNewPrompt = false;
 		if ((inputtedPrompt == "") || typeof(inputtedPrompt)=="undefined"){
@@ -238,7 +241,9 @@ angularApp.controller("InterfaceController",
 		})
 	});
 
-
+	//Get input from form and search for prompt text within a session
+	//If no prompt within this session can be found, display error message
+	//Otherwise, show the found prompt's ID
 	$scope.getPromptID = function(query){
 		$scope.showGetPromptIDResponse = false;
 		$scope.showErrorGetPromptIDResponse = false;
@@ -277,6 +282,7 @@ angularApp.controller("InterfaceController",
 		});
 	};
 
+	//Add idea to selected prompt
 	$scope.addToFoundPrompt = function(destinationPromptID){
 		$scope.currentPrompt = destinationPromptID;
 		console.log("Setting currentPrompt to " + destinationPromptID);
@@ -284,7 +290,9 @@ angularApp.controller("InterfaceController",
 	};
 
 //Functions for editing ideas
-
+	//Get input from form and create new JSON object for idea
+	//Post JSON object to insert it as a idea to specified prompt in relevant document
+	//Call socket emit to update in real time
 	$scope.addRemoteIdea = function(InputtedIdea){
 		var newIdea = angular.copy(InputtedIdea);
 		console.log("!!New Idea!!")
@@ -312,7 +320,7 @@ angularApp.controller("InterfaceController",
 		console.log("$scope.currentPrompt " + $scope.currentPrompt);
 
 		var IDArray = String($scope.currentPrompt).split('.');
-		console.log('ID Array: ' + IDArray);
+		//console.log('ID Array: ' + IDArray);
 		var promptID = IDArray[1];
 		var cPrompt = $scope.allData.prompts[promptID - 1];
 		console.log("*CURRENT PROMPT*");
@@ -346,9 +354,6 @@ angularApp.controller("InterfaceController",
 			$scope.showAddRemoteIdea = true;
 			$scope.addRemoteIdeaResponse = "Your idea has been submitted."
 		});
-
-		//$scope.showAddRemoteIdea = true;
-		//$scope.addRemoteIdeaResponse = "fell thru."
 	};
 	//socket.emit and socket.on must be declared in separate functions
 	socket.on('updateIdeas', function(incomingPrompt){
@@ -484,14 +489,6 @@ angularApp.controller("InterfaceController",
 			$http.get('/updateLike/'+receivedIdea).then(function(response){
 				var cIdea = $scope.allData.prompts[promptIndex].ideas[ideaIndex];
 				cIdea.likes = response.data;
-				/*var ideasArray = $scope.allData.ideas;
-				for (var i = 0; i<ideasArray.length; i++){
-					var currentID = ideasArray[i].ideaID;
-					if (currentID===receivedIdea){
-						$scope.allData.ideas[i].likes = response.data;
-					}
-	 
-	      		}*/
 			})
 	});
 

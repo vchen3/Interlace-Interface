@@ -50,7 +50,7 @@
 		<div ng-repeat="item in allSessions | filter:{visible:true}" class = "visibleSessionBox">
 			<h5 ng-click="archiveSession(item)" class = "archiveButton">[archive]</h5>
 			<br>
-			<h2 id = "ideaName"> {{item.promptTitle}}</h2>
+			<h2 id = "ideaName"> {{item.title}}</h2>
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
 			<h2 id = "ideaText"> {{item.date}}</h2>
 			<br>
@@ -60,7 +60,7 @@
 		<div ng-repeat="item in allSessions | filter:{visible:false}" class = "invisibleSessionBox">
 			<h5 ng-click="restoreSession(item)" class = "restoreButton">[restore]</h5>
 			<br>
-			<h2 id = "ideaName"> {{item.promptTitle}}</h2>
+			<h2 id = "ideaName"> {{item.title}}</h2>
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
 			<h2 id = "ideaText"> {{item.date}}</h2>
 
@@ -69,7 +69,7 @@
 			<div class = "newSessionBox">
 				<h2 id = "ideaName"> Create New Session </h2>
 					<form name = "newSession_frm" id = "newSession_frm" novalidate class="simple-form">
-						<input type="text" ng-model="newSession.promptTitle" id = "ideaName" placeholder="Title"/><br />
+						<input type="text" ng-model="newSession.title" id = "ideaName" placeholder="Title"/><br />
 						<input type="text" ng-model="newSession.teacherName" id = "ideaName" placeholder="Teacher Name"/><br />
 						<input type="text" ng-model="newSession.date" id = "ideaName" placeholder="Date"/><br />
 
