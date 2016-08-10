@@ -23,7 +23,7 @@ expressApp.use(express.static(path.join(__dirname, '/public'))); //Add CSS
 expressApp.use('/js', express.static(path.join(__dirname,'/js'))); //Add controller, data
 expressApp.use('/lib', express.static(path.join(__dirname,'/lib'))); //Add Angular and socket
 
-//Connect with socket.io
+//Connect with socket.io between Angular App (controllers.js) and Express App (index.js)
 io.on('connection', function(socket){
   socket.on('updateAll', function(ideaObject){
     io.emit('updateAll', ideaObject);
@@ -40,7 +40,17 @@ io.on('connection', function(socket){
   socket.on('updatePrompts', function(ideaID){
   io.emit('updatePrompts', ideaID);
   });
+  socket.on('APItest', function(ideaID){
+  io.emit('APItest', ideaID);
+  });
 });
+
+/*Connect with socket.io within Express App (index.js) 
+//(Note Aug 10: Not successfully implemented, but a hopeful future step for real time updates in the browser when API functions are called
+var serverIO = require('socket.io-client');
+var serverSocket = serverIO();
+serverSocket.on('connect', function () {
+});*/
 
 //Connect with mongoDB, set currentCollection and URL to local database
 var MongoClient = require('mongodb').MongoClient;
@@ -64,6 +74,9 @@ var currentSession = "57a8a1ca7909460733f208b2";
   expressApp.get('/addIdea', function(req, res){
     res.sendFile(__dirname + '/addIdeaPage.html');
   });
+
+
+
 
 
 
@@ -620,8 +633,8 @@ Returns complete session:
             throw err;
           }
           res.json(result.slice(-1)[0]);
-          //socket.emit('updateSessions');
         });
+        //serverSocket.emit('APItest');
       };
 
       //Check that the prompt is not already inserted
@@ -656,6 +669,9 @@ Returns complete session:
     })
   });
 
+/*serverSocket.on('APItest', function(){
+  expressApp.get('/getAllSessionData');
+});*/
 
 /*
 GETTING SESSION ID

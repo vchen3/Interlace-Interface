@@ -1,3 +1,5 @@
+<!-- -->
+
 <!DOCTYPE html>
 <html ng-app="myApp">
 <head>
@@ -45,8 +47,6 @@
     <div ng-controller="InterfaceController">
 
 	<div class="ideaPanel">
-	<!--<p ng-click="myStyle={'background-color':'red'}" ng-style = "myStyle">mp3 </p>
-	<pre>myStyle = {{myStyle}}</pre>-->
 		<div ng-repeat="item in allSessions | filter:{visible:true}" class = "visibleSessionBox">
 			<h5 ng-click="archiveSession(item)" class = "archiveButton">[archive]</h5>
 			<br>

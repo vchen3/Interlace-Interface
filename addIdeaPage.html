@@ -66,7 +66,9 @@
 
 				<h2 id = "ideaName"> {{item.title}}</h2>
 				<h2 id = "ideaText"> {{item.teacherName}}</h2>
-				<h2 id = "ideaText"> {{item.date}}</h2>
+				<h2 id = "ideaText">{{item.date | date:'MM-dd-yyyy'}}</h3>
+				<h3 ng-if=typeof(item.date)=="String"> {{item.date}}</h3>
+     			
 				<br>
 				<input type="button" ng-click="addToFoundSession(item)" value="Select Session" />
 			</div>
