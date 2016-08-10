@@ -1,23 +1,43 @@
 # Interlace-Interface
 
 Open three tabs in terminal and run the following commands:
+
+
 TAB 1: ulimit -n 1024 && mongod
+
+
 TAB 2: mongo --shell
+
+
 TAB 3: node index.js
+
 
 
 Download the latest version of npm, node, and all dependencies listed in package.json 
 
 
+
 Most important files:
+
+
 	* js/controllers.js
+
+
 		- Main file holding all scope variables and functions for client-side Angular application
+
+
 	* index.js
+
+
 		- Main file holding all scope variables and functions for server Express/Node application
+
+
 		- Handles GET/POST requests, connects with socket.io and mongoDB, and API commands
 
 
+
 Structure of an example document (session) in a database:
+
 
 {
 	"_id" : ObjectId("57a8a1ca7909460733f208b2"),
