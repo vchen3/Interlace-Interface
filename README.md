@@ -3,11 +3,11 @@
 Open three tabs in terminal and run the following commands:
 
 
-*TAB 1: ulimit -n 1024 && mongod
+	* TAB 1: ulimit -n 1024 && mongod
 
-TAB 2: mongo --shell
+	* TAB 2: mongo --shell
 
-TAB 3: node index.js*
+	* TAB 3: node index.js
 
 
 
