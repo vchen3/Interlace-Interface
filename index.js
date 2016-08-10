@@ -568,10 +568,30 @@ http.listen(3000, function(){
 
 
 
-/***API Commands***/
-//Save incoming JSON object as document in database
+/***API Commands***
+
+ADDING A NEW SESSION
+Save incoming JSON object as document in database
+Expecting JSON object:
+  {
+    "title": Session Title (String),
+    "teacher": Teacher Name (String),
+    "date": (String or Timestamp)
+  }
+
+If the provided title is not already stored in the database, then
+Returns complete session:
+  {
+    sessionID: Means of identifying session (Interface-generated integer),
+    title: User-inputted title (String),
+    teacherName: User-inputted name (String),
+    date: User-inputted date (String),
+    visible: true (Boolean),
+    prompts:[] (Empty array of prompts)
+  }
+*/
   expressApp.post('/APIaddNewSession', function(req, res){
-    console.log("**Received add new session request**");
+    console.log("**\nReceived add new session request**");
     console.log(req.body);
 
       if (!('title' in req.body)){
@@ -635,9 +655,21 @@ http.listen(3000, function(){
   });
 
 
-//Request for sessionID by title
+/*
+GETTING SESSION ID
+Request for sessionID by title
+Expecting JSON object:
+  {
+    "title": Session Title (String),
+  }
+
+If the provided title is a valid session title already stored in the database, then
+Returns sessionID:
+    sessionID: Means of identifying session (Interface-generated integer),
+  
+*/
   expressApp.post('/APIgetSessionID', function(req,res){
-    console.log("**Received get session ID request**");
+    console.log("\n**Received get session ID request**");
    
     var requestedSessionTitle = req.body.title;
     //console.log('body ' + req.body);
@@ -665,9 +697,25 @@ http.listen(3000, function(){
     });
   });
 
-  //Save incoming JSON object as prompt in document database
+
+  /*ADDING A NEW PROMPT
+  Save incoming JSON object as prompt in specified document in database
+  Expecting JSON object:
+    {
+      "text": Prompt text (String),
+      "sessionID": ID of session to add to (String or Number)
+    }
+
+  If the prompt title is not already stored in specified session, then
+  Returns complete prompt:
+    {
+      promptID: Means of identifying prompt (Interface-generated string stored as SessionID.PromptID),
+      text: User-inputted text (String),
+      ideas:[] (Empty array of prompts)
+    }
+  */
   expressApp.post('/APIaddNewPrompt', function(req, res){
-    console.log("**Received add new prompt request**");
+    console.log("\n**Received add new prompt request**");
     console.log(req.body);
       if (!('text' in req.body)){
         res.send('Please include a prompt.');
@@ -681,10 +729,12 @@ http.listen(3000, function(){
 
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
-      var objectSession = ObjectId(currentSession);
+
+      var mySessionID = Number(req.body.sessionID);
+
       function safelyAddPrompt (addition){
-        db.collection(currentCollection).update({_id:objectSession},{$push : {prompts:addition}});
-        db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+        db.collection(currentCollection).update({sessionID:mySessionID},{$push : {prompts:addition}});
+        db.collection(currentCollection).find({sessionID:mySessionID}).toArray(function(err,result){
           if (err){
             throw err;
           }
@@ -693,16 +743,16 @@ http.listen(3000, function(){
       };
 
       //Check that the prompt is not already inserted
-      db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
+      db.collection(currentCollection).find({sessionID:mySessionID}).toArray(function(err,result){
         if (err){
           throw err;
         }
         var promptsArray = result[0].prompts;
         for (var i = 0; i<promptsArray.length; i++){
           if (promptsArray[i].text == req.body.text){
-            console.log('prompt already within');
+            //console.log('prompt already within');
             //console.log(promptsArray[i].text);
-            //console.log("This prompt is already part of the session: " + req.body.text);
+            console.log("This prompt is already part of the session: " + req.body.text);
             var errorMessage = "!ERROR!";
             res.send(errorMessage);
             return;
@@ -725,9 +775,22 @@ http.listen(3000, function(){
     });
     });
 
-//Request for promptID by title and sessionID, receive promptID
+  /*
+  GETTING PROMPT ID
+  //Request for promptID by text and sessionID, receive promptID
+  Expecting JSON object:
+    {
+      "text": Prompt text (String),
+      "sessionID": ID of session to add to (String or Number)
+    }
+
+  If the provided text is a valid prompt title already stored in the database, then
+  Returns promptID:
+      promptID: Means of identifying promptID (Interface-generated integer stored as SessionID.PromptID),
+    
+  */
   expressApp.post('/APIgetPromptID', function(req,res){
-    console.log("**Received get prompt ID request**");
+    console.log("\n**Received get prompt ID request**");
     var requestedPrompt = req.body;
     console.log("requested prompt's sessionID : " + requestedPrompt.sessionID);
     var numberSession = Number(requestedPrompt.sessionID);
@@ -761,9 +824,31 @@ http.listen(3000, function(){
     })
   });
 
-//Add new idea to database in relevant document
+  /*ADDING A NEW IDEA
+  Save incoming JSON object as idea in specified prompt in document in database
+  Expecting JSON object:
+    {
+      "promptID": Prompt text (String),
+      "name": Name of student (String),
+      "contentType": "text" or "image" (String),
+      "content": text, url, or dataURL (String)
+    }
+
+  Returns complete idea:
+    {
+      text: User-inputted text (String),
+      ideas:[] (Empty array of prompts)
+
+      "ID": Means of identifying idea (Interface-generated string stored as SessionID.PromptID.IdeaID),
+      "name": User-inputted name (String),
+      "time": Interface-generated time (Timestamp),
+      "contentType": User-inputted contentType (String),
+      "content": User-inputted content (String),
+      "likes" 0 (Integer)
+    }
+  */
   expressApp.post('/APIaddNewIdea', function(req, res){
-    console.log("**received add safe idea request**");
+    console.log("**\nreceived add safe idea request**");
 
     //console.log('adding new idea');
       if (!('promptID' in req.body)){
@@ -833,43 +918,7 @@ http.listen(3000, function(){
         db.collection(currentCollection).find({sessionID: mySessionID}).toArray(function(err,result){
           console.log('SENDING OFFICIAL RESULT');
           res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
-          //res.json(result[0].prompts[promptIndex].ideas.slice(-1)[0]);
         });
       });
   });
 
-
-
-  expressApp.get('/APIuploadImage', function(req, res){
-    var imageData = image.toDataURL();        // get dataURI/encryption
-    //console.log(imageData);
-    //imageData = imageData.substr(22);         // remove part of encryption "data:image/
-    //worksheetData["Image"] = imageData;       // image data to be added in the future
-  });
-
-
-/*
-  if(confirm("Worksheet Submitted! \n(Theoretically)")){
-    drawQRCode(worksheetData["ID"], function(data) {
-      //if (err) throw err;
-      worksheetData["Image"] = data.substr(22);
-      xhr = new XMLHttpRequest();
-      var url = "http://localhost:3000/upload_model";
-      //xhr.submittedData = files_post; 
-      //xhr.onload = successfullyUpLoaded;
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-      xhr.setRequestHeader('dataType', 'json');
-      xhr.setRequestHeader('Content-length', imageData.length);
-      xhr.setRequestHeader('cross-origin', true);
-      xhr.setRequestHeader('Access-Control-Allow-Origin', 'localhost:3000/upload_model'); 
-
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-        }
-      }
-
-      var data = JSON.stringify(worksheetData);
-      xhr.send(data);
-    });
-  }*/

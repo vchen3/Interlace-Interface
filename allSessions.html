@@ -52,7 +52,8 @@
 			<br>
 			<h2 id = "ideaName"> {{item.title}}</h2>
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
-			<h2 id = "ideaText"> {{item.date}}</h2>
+			<h2 id = "ideaText" ng-if=typeof(item.date)=="String"> {{item.date}}</h2>
+			<h2 id = "ideaText" > {{item.date | date:'MM-dd-yyyy' }}</h2>
 			<br>
 			<input type="button" class = "useSessionButton" onclick="location.href='/index'" ng-click="useSession(item)" value="Use Session" />
 
@@ -62,6 +63,7 @@
 			<br>
 			<h2 id = "ideaName"> {{item.title}}</h2>
 			<h2 id = "ideaText"> {{item.teacherName}}</h2>
+			<h2 id = "ideaText" ng-if=typeof(item.date)=="String"> {{item.date}}</h2>
 			<h2 id = "ideaText"> {{item.date}}</h2>
 
 		</div>
