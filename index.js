@@ -1,6 +1,8 @@
 /* Node App 
  * Functions below are organized by what "level" they deal with:
   General functions, and then functions that deal with sessions, prompts, and then ideas
+
+  Connect with socket and mongoDB
  */
 
 var express = require('express');
@@ -40,7 +42,7 @@ io.on('connection', function(socket){
   });
 });
 
-//Connect with mongoDB and set currentCollection
+//Connect with mongoDB, set currentCollection and URL to local database
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
