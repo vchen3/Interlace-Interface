@@ -34,6 +34,8 @@ Most important files:
 
 
 
+Note: This program strongly depends on the integrity of the IDs (in terms of being relative to the index in the database) of each session, prompt, and idea.  When deleting content from the database, be aware of how that will affect the assigning of future IDs and users' abilities to interact with them (ex. Liking an idea may no longer work even if one idea's ID is incorrect)
+
 Structure of an example document (session) in a database:
 
 
