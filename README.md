@@ -17,13 +17,13 @@ TO RUN: Open three tabs in terminal and run the following commands:
 Most important files:
 
 
-	* js/controllers.js
+	* !js/controllers.js!
 
 
 		- Main file holding all scope variables and functions for client-side Angular application
 
 
-	* index.js
+	* !index.js!
 
 
 		- Main file holding all scope variables and functions for server Express/Node application
@@ -33,7 +33,17 @@ Most important files:
 
 
 
+Folders:
+
+/js							Holds controllers.js
+/lib and /node_modules		Holds Angular library and node modules
+/public						Holds /img folder of temporary images and .css page
+
+
+
+
 //Note: This program depends on the session/prompt/idea IDs corresponding with the index of where they're stored in the database.  For example, often when searching for an idea, instead of looping through ideas within the prompt and taking the correct idea, this program goes by index of all ideas within the "Ideas" array.  This is usually not a problem since users only have the ability to add to the database.  However, when someone with that privilege deletes content from the database, be aware of how that will affect the assigning of future IDs and users' abilities to interact with them (ex. You may not be able to add ideas to a prompt with a corrupted ID.)  See [EXAMPLE ERROR] below.
+
 
 
 

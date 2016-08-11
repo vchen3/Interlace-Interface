@@ -76,10 +76,6 @@ var currentSession = "57a8a1ca7909460733f208b2";
   });
 
 
-
-
-
-
   //List information about current session
   expressApp.get('/list', function(req, res){
       MongoClient.connect(url, function(err, db) {
