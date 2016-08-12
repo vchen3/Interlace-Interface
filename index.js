@@ -302,6 +302,7 @@ var currentSession = "57a8a1ca7909460733f208b2";
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
       var objectSession = ObjectId(currentSession);
+
       function safelyAddPrompt (addition){
         db.collection(currentCollection).update({_id:objectSession},{$push : {prompts:addition}});
         db.collection(currentCollection).find({_id:objectSession}).toArray(function(err,result){
@@ -533,7 +534,8 @@ var currentSession = "57a8a1ca7909460733f208b2";
   });
 
 
-//An easy way to move many ideas into the database at once
+/*
+//An easy way to move many ideas into the database at once for developer's use only (testing)
 
 expressApp.get('/moveIdeas', function(req,res){
   console.log('moving ideas');
@@ -560,7 +562,7 @@ expressApp.get('/moveIdeas', function(req,res){
     });
    });
 
-});
+});*/
 
 
 http.listen(3000, function(){
