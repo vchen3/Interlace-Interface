@@ -1,10 +1,12 @@
-# Interlace-Interface
+**[Interlace-Interface](https://docs.google.com/presentation/d/1yvhLQJ7hRzljVvPQbLTe5dbzsLeWmw1e5GT7RAu74uY/edit?usp=sharing)**
+
+
+
+**TO RUN:** 
 Download the latest version of npm, node, and all dependencies listed in package.json 
 
-
-TO RUN: Open three tabs in terminal and run the following commands:
-
-
+Open three tabs in terminal and run the following commands:
+	
 	TAB 1: ulimit -n 1024 && mongod
 
 	TAB 2: mongo --shell
@@ -12,40 +14,34 @@ TO RUN: Open three tabs in terminal and run the following commands:
 	TAB 3: node index.js
 
 
-Folders:
+**Folders**
 
 
-	/js							Holds controllers.js
+	/js				Holds controllers.js
 
 
 	/lib and /node_modules		Holds Angular library and node modules
 
 
-	/public						Holds /img folder of temporary images and .css page
-
-
-	/exampleDocument.json 		Structure of an example document (session) in a database
+	/public				Holds /img folder of temporary images and .css page
 
 
 
-Most important files:
+
+**Most important files**:
 
 
-	**js/controllers.js**
+	- js/controllers.js
+	- 	Main file holding all scope variables and functions for client-side Angular application
 
 
-		- Main file holding all scope variables and functions for client-side Angular application
+	- index.js
+	- 	Main file holding all scope variables and functions for server Express/Node application
+	- 	Handles GET/POST requests, connects with socket.io and mongoDB, and API commands
+	
+	- exampleDocument.json 	
 
-
-	**index.js**
-
-
-		- Main file holding all scope variables and functions for server Express/Node application
-
-
-		- Handles GET/POST requests, connects with socket.io and mongoDB, and API commands
-
-
+	- 	Structure of an example document (session) in a database
 
 
 
