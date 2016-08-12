@@ -1,4 +1,4 @@
-**[Interlace-Interface](https://docs.google.com/presentation/d/1yvhLQJ7hRzljVvPQbLTe5dbzsLeWmw1e5GT7RAu74uY/edit?usp=sharing)**
+[Interlace-Interface](https://docs.google.com/presentation/d/1yvhLQJ7hRzljVvPQbLTe5dbzsLeWmw1e5GT7RAu74uY/edit?usp=sharing)
 
 
 
@@ -40,7 +40,6 @@ Open three tabs in terminal and run the following commands:
 	- 	Handles GET/POST requests, connects with socket.io and mongoDB, and API commands
 	
 	- exampleDocument.json 	
-
 	- 	Structure of an example document (session) in a database
 
 
