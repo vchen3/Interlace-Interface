@@ -1,7 +1,11 @@
 /* Angular App 
  * Holds all scope variables and functions for Angular/client-side
 
+ * Engaging between Angular and the Node app often happens by sending http
+ * requests to the node app, then having node send back relevant data. 
+
  * Scope Variables *
+ 	**USED WITHIN CONTROLLERS.JS**
 	$scope.allData 			JSON of current document/session
 	$scope.allSessions 		ARRAY of all documents in collection
 	$scope.visibleSessions 	ARRAY of all documents in collection with attribute visible set to "true"
@@ -9,8 +13,16 @@
 	$scope.currentPrompt	INT promptID of current prompt
 	$scope.currentSession	JSON of current session
 
+	**USED WITHIN HTML**
+ 	Some scope variables are purely for maintaining what HTML content is displayed
+ 	ex. In allSessions.html, decide whether or not to show session message, and then what message to show
+	 	$scope.showAddNewSession = false;
+		$scope.showErrorAddNewSession = false;
+		$scope.addNewSessionResponse = "Your session has been submitted.";
+
  * Functions below are organized by what "level" they deal with:
  	General functions, and then functions that deal with sessions, prompts, and then ideas
+
  */
 
 
@@ -81,6 +93,7 @@ angularApp.controller("InterfaceController",
 		$scope.showErrorAddNewSession = false;
 		var newSession = angular.copy(inputtedSession);
 
+		//Be sure that all forms in the field are filled
 		if (!(newSession.hasOwnProperty('title')) || newSession.title == ""){
 			$scope.showAddNewSession = true;
 			$scope.addNewSessionResponse = "Please include a session title."
@@ -98,7 +111,8 @@ angularApp.controller("InterfaceController",
 			$scope.addNewSessionResponse = "Please include the date."
 			return;
 		}
-		//var savedContent = $scope.allData;
+		
+		//Create full session (with all attributes) to be inputted in database
 		var fullNewSession = {
 			"sessionID":$scope.allSessions.length + 1,
 			"title":newSession.title,
@@ -108,12 +122,15 @@ angularApp.controller("InterfaceController",
 			"visible":true
 		};
 
+		//Post full session to node app, which will connect with mongoDB
 		$http.post('/addNewSession',fullNewSession).then(function(response){
+			//If this session already exists within the database, the node app will send back
+			//the error message '!ERROR!'.  As of now, it is crucial to have unique session titles
+			//because the program gets sessionIDs by searching by session title
 			if (response.data == "!ERROR!"){
-				//console.log('was  already in');
 				$scope.showAddNewSession = false;
 				$scope.showErrorAddNewSession = true;
-				$scope.errorAddNewSessionResponse = "This session title already exists.  Please add a unique session title."
+				$scope.errorAddNewSessionResponse = "This session title already exists.  Please add a unique session title.";
 			}
 			else{
 				$("#newSession_frm")[0].reset();
@@ -124,7 +141,7 @@ angularApp.controller("InterfaceController",
 
 				$scope.showAddNewSession = true;
 				$scope.showErrorAddNewSession = false;
-				$scope.addNewSessionResponse = "Your session has been submitted."
+				$scope.addNewSessionResponse = "Your session has been submitted.";
 			}
 		});
 	};
